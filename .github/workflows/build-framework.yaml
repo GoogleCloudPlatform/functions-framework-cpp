@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+    - name: install-deps
+      run: vcpkg install gtest
     - name: configure
-      run: cmake -GNinja -S ${{github.workflow}} -B ${{runner.workspace}}/build
+      run: cmake -S . -B ${{runner.workspace}}/build -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
     - name: build
       run: cmake --build ${{runner.workspace}}/build
     - name: test
