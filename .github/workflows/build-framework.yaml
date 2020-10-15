@@ -12,9 +12,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: configure
-      run: cmake -S . -B ${{runner.workspace}}/build
-    - name: build
-      run: cmake --build ${{runner.workspace}}/build
-    - name: test
-      working-directory: ${{runner.workspace}}/build
-      run: ctest
+      run: vcpkg install gtest
+    - name: log
+      run: vcpkg integrate install
+#      run: cmake -S . -B ${{runner.workspace}}/build
+#    - name: build
+#      run: cmake --build ${{runner.workspace}}/build
+#    - name: test
+#      working-directory: ${{runner.workspace}}/build
+#      run: ctest
