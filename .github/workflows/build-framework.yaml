@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-    - name: configure
+    - name: install-deps
       run: vcpkg install gtest
     - name: configure
       run: cmake -S . -B ${{runner.workspace}}/build -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
