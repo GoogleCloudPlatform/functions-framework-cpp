@@ -13,9 +13,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: configure
       run: vcpkg install gtest
-    - name: log
-      run: vcpkg integrate install
-#      run: cmake -S . -B ${{runner.workspace}}/build
+    - name: configure
+      run: cmake -S . -B ${{runner.workspace}}/build -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
 #    - name: build
 #      run: cmake --build ${{runner.workspace}}/build
 #    - name: test
