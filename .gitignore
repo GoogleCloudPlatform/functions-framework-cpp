@@ -1,0 +1,18 @@
+# Common build output directory names
+.build/
+_build/
+
+# Used by some IDEs and LSP plugins
+compile_commands.json
+
+# Backup files for Emacs
+*~
+
+# Ignore IDEA / IntelliJ files
+.idea/
+cmake-build-*/
+
+# Ignore Visual Studio Code files
+.vsbuild/
+.vscode/
+
