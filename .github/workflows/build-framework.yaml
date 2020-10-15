@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+    - name: cache-vcpkg
+      id: cache-vcpkg
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/vcpkg
+        key: ${{ runner.os }}-vcpkg
     - name: install-deps
       run: vcpkg install gtest
     - name: configure
