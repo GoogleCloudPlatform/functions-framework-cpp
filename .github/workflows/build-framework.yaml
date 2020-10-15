@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: configure
-      run: cmake -GNinja -S . -B ${{runner.workspace}}/build
+      run: cmake -S . -B ${{runner.workspace}}/build
     - name: build
       run: cmake --build ${{runner.workspace}}/build
     - name: test
