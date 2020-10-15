@@ -1,0 +1,21 @@
+name: build-framework
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build-ubuntu:
+    name: Compile the Framework and Run Unit tests
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: configure
+      run: cmake -GNinja -S ${{github.workflow}} -B ${{runner.workspace}}/build
+    - name: build
+      run: cmake --build ${{runner.workspace}}/build
+    - name: test
+      working-directory: ${{runner.workspace}}/build
+      run: ctest
