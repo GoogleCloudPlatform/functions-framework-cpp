@@ -32,4 +32,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+include(CTest)
 add_subdirectory(google/cloud/functions)
