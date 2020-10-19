@@ -90,4 +90,4 @@ std::string LanguageVersion() {
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
-}  // namespace google::cloud::functions
+}  // namespace google::cloud::functions_internal

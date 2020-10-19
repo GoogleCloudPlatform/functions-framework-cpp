@@ -30,6 +30,6 @@ std::string CompilerFlags();
 std::string BuildMetadata();
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
-}  // namespace google::cloud::functions
+}  // namespace google::cloud::functions_internal
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_BUILD_INFO_H

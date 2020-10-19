@@ -40,6 +40,6 @@ std::string CompilerVersion();
 std::string LanguageVersion();
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
-}  // namespace google::cloud::functions
+}  // namespace google::cloud::functions_internal
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_COMPILER_INFO_H
