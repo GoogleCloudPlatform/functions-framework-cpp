@@ -21,12 +21,22 @@ jobs:
     - name: install-deps
       run: vcpkg install gtest
     - name: configure
-      run: cmake -S . -B ${{runner.workspace}}/build -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+      run: >
+        cmake -S . -B ${{runner.workspace}}/build
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
     - name: build
       run: cmake --build ${{runner.workspace}}/build
     - name: test
       working-directory: ${{runner.workspace}}/build
       run: ctest
+    - name: install clang-tidy
+      run: sudo apt install clang-tidy-10
+    - name: tidy
+      run: >
+        git ls-files -z |
+        grep -zE '\.cc$' |
+        xargs --verbose -P 2 -n 1 -0 clang-tidy-10 -p=${{runner.workspace}}/build
 
   clang-format:
     name: Run clang-format over the code
