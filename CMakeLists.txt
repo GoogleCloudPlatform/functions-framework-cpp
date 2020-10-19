@@ -16,15 +16,18 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-set(PACKAGE_BUGREPORT "http://github.com/GoogleCloudPlatform/functions-framework-cpp")
+set(PACKAGE_BUGREPORT
+    "http://github.com/GoogleCloudPlatform/functions-framework-cpp")
 project(functions-framework-cpp CXX)
 
 set(FUNCTIONS_FRAMEWORK_CPP_VERSION_MAJOR 0)
 set(FUNCTIONS_FRAMEWORK_CPP_VERSION_MINOR 0)
 set(FUNCTIONS_FRAMEWORK_CPP_VERSION_PATCH 1)
-string(CONCAT FUNCTIONS_FRAMEWORK_CPP_VERSION "${FUNCTIONS_FRAMEWORK_CPP_VERSION_MAJOR}"
-        ".${FUNCTIONS_FRAMEWORK_CPP_VERSION_MINOR}"
-        ".${FUNCTIONS_FRAMEWORK_CPP_VERSION_PATCH}")
+string(
+    CONCAT FUNCTIONS_FRAMEWORK_CPP_VERSION
+           "${FUNCTIONS_FRAMEWORK_CPP_VERSION_MAJOR}"
+           ".${FUNCTIONS_FRAMEWORK_CPP_VERSION_MINOR}"
+           ".${FUNCTIONS_FRAMEWORK_CPP_VERSION_PATCH}")
 
 # Configure the compiler options, we will be using C++17 features.
 set(CMAKE_CXX_STANDARD 17)

@@ -29,15 +29,15 @@ function (google_cloud_cpp_initialize_git_head var)
             # Run `git rev-parse --short HEAD` and capture the output in a
             # variable.
             execute_process(
-                    COMMAND "${GOOGLE_CLOUD_CPP_GIT_PROGRAM}" rev-parse --short HEAD
-                    OUTPUT_VARIABLE GIT_HEAD_LOG
-                    ERROR_VARIABLE GIT_HEAD_LOG)
+                COMMAND "${GOOGLE_CLOUD_CPP_GIT_PROGRAM}" rev-parse --short HEAD
+                OUTPUT_VARIABLE GIT_HEAD_LOG
+                ERROR_VARIABLE GIT_HEAD_LOG)
             string(REPLACE "\n" "" result "${GIT_HEAD_LOG}")
         endif ()
     endif ()
     set(${var}
-            "${result}"
-            PARENT_SCOPE)
+        "${result}"
+        PARENT_SCOPE)
 endfunction ()
 
 # Capture the compiler version and the git revision into variables, then
@@ -56,11 +56,11 @@ endif ()
 # is initialized from `git rev-parse --short HEAD`, but the developer (or the
 # script building via CMake) can override the value.
 set(GOOGLE_CLOUD_CPP_BUILD_METADATA
-        "${GOOGLE_CLOUD_CPP_GIT_HEAD}"
-        CACHE STRING "Append build metadata to the library version number")
+    "${GOOGLE_CLOUD_CPP_GIT_HEAD}"
+    CACHE STRING "Append build metadata to the library version number")
 # This option is rarely needed. Mark it as "advanced" to remove it from the
 # default CMake UIs.
 mark_as_advanced(GOOGLE_CLOUD_CPP_BUILD_METADATA)
 
 message(STATUS "google-cloud-cpp build metadata set to"
-        " ${GOOGLE_CLOUD_CPP_BUILD_METADATA}")
+               " ${GOOGLE_CLOUD_CPP_BUILD_METADATA}")
