@@ -19,8 +19,6 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
-using ::testing::HasSubstr;
-
 TEST(CompilerInfo, CompilerId) {
   auto const cn = CompilerId();
   EXPECT_NE(cn, "");
