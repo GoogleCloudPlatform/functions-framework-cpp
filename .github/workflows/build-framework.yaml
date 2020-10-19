@@ -30,6 +30,8 @@ jobs:
     - name: test
       working-directory: ${{runner.workspace}}/build
       run: ctest
+    - name: install clang-tidy
+      run: sudo apt install clang-tidy-10
     - name: tidy
       run: >
         git ls-files -z |
