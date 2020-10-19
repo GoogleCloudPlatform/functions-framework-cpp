@@ -51,7 +51,7 @@ jobs:
   cmake-format:
     name: Verify CMake files are properly formatted
     runs-on: ubuntu-20.04
-    stes:
+    steps:
       - uses: actions/checkout@v2
       - name: install cmake-format
         run: pip install cmakelang==0.6.13
