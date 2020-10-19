@@ -36,8 +36,8 @@ jobs:
       run: >
         git ls-files -z |
         grep -zE '\.cc$' |
-        xargs -P 2 -n 50 -0 |
-        clang-tidy-10 -p ${{runner.workspace}}/build
+        xargs -P 2 -n 1 -0 |
+        clang-tidy-10 -p=${{runner.workspace}}/build
 
   clang-format:
     name: Run clang-format over the code
