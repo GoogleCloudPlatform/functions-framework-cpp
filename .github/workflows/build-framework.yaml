@@ -31,7 +31,11 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: ctest
     - name: tidy
-      run: git ls-files -z | grep -zE '\.cc$' | xargs -P 2 -n 50 -0 | clang-tidy -p ${{runner.workspace}}/build
+      run: >
+        git ls-files -z |
+        grep -zE '\.cc$' |
+        xargs -P 2 -n 50 -0 |
+        clang-tidy-10 -p ${{runner.workspace}}/build
 
   clang-format:
     name: Run clang-format over the code
