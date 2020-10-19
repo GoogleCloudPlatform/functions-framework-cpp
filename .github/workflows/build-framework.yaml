@@ -58,6 +58,6 @@ jobs:
       - name: cmake-format
         run: >
           git ls-files -z | grep -zE '((^|/)CMakeLists\.txt|\.cmake)$' |
-          xargs -P 2 -n 1 -0 cmake-format -i
+          xargs -P 2 -n 1 -0 /home/runner/.local/bin/cmake-format -i
       - name: check-diff
         run: git diff --ignore-submodules=all --color --exit-code .
