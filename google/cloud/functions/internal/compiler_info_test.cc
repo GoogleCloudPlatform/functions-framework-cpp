@@ -16,7 +16,7 @@
 #include <gmock/gmock.h>
 
 namespace google::cloud::functions_internal {
-inline namespace GOOGLE_CLOUD_CPP_NS {
+inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
 using ::testing::HasSubstr;

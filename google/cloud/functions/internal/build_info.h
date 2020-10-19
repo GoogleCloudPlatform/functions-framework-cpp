@@ -18,7 +18,7 @@
 #include "google/cloud/functions/version.h"
 
 namespace google::cloud::functions_internal {
-inline namespace GOOGLE_CLOUD_CPP_NS {
+inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
 /// The compiler version.
 std::string Compiler();

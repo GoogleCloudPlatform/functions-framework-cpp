@@ -18,7 +18,7 @@
 #include <sstream>
 
 namespace google::cloud::functions {
-inline namespace GOOGLE_CLOUD_CPP_NS {
+inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
 using ::testing::HasSubstr;
@@ -54,5 +54,5 @@ TEST(VersionTest, NoBuildInfoInRelease) {
 }
 
 }  // namespace
-}  // namespace GOOGLE_CLOUD_CPP_NS
+}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions

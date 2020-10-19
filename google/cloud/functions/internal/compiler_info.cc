@@ -16,7 +16,7 @@
 #include <sstream>
 
 namespace google::cloud::functions_internal {
-inline namespace GOOGLE_CLOUD_CPP_NS {
+inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
 /**
  * The macros for determining the compiler ID are taken from:
