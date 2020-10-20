@@ -6,12 +6,12 @@ on:
   pull_request:
 
 jobs:
-  strategy:
-    matrix:
-      sanitizer: ["address", "undefined", "thread"]
   sanitized-build:
-    name: Sanitize with -fsanitize=${{matrix.sanitizer}}
+    name: Compile with multiple sanitizers
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        sanitizer: ["address", "undefined", "thread"]
     steps:
       - uses: actions/checkout@v2
       - name: cache-vcpkg
@@ -23,7 +23,7 @@ jobs:
           key: ${{ runner.os }}-vcpkg
       - name: install-deps
         run: vcpkg install gtest
-      - name: configure
+      - name: configure with -fsanitize=${{matrix.sanitizer}}
         run: >
           cmake -S . -B ${{runner.workspace}}/build
           -DCMAKE_CXX_COMPILER=clang++-10
@@ -31,9 +31,9 @@ jobs:
           -DCMAKE_CXX_FLAGS=-fsanitize=${{matrix.sanitizer}}
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
-      - name: build
+      - name: build with -fsanitize=${{matrix.sanitizer}}
         run: cmake --build ${{runner.workspace}}/build
-      - name: test
+      - name: test with -fsanitize=${{matrix.sanitizer}}
         working-directory: ${{runner.workspace}}/build
         env:
           ASAN_OPTIONS: detect_leaks=1:color=always
