@@ -7,7 +7,7 @@ on:
 
 jobs:
   asan:
-    name: Sanitize with -fsanitize-address
+    name: Sanitize with -fsanitize=address
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -25,11 +25,14 @@ jobs:
           cmake -S . -B ${{runner.workspace}}/build
           -DCMAKE_CXX_COMPILER=clang++-10
           -DCMAKE_BUILD_TYPE=Debug
-          -DCMAKE_CXX_FLAGS=-fsanitize-address
+          -DCMAKE_CXX_FLAGS=-fsanitize=address
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
       - name: build
         run: cmake --build ${{runner.workspace}}/build
       - name: test
         working-directory: ${{runner.workspace}}/build
+        env:
+          ASAN_OPTIONS: detect_leaks=1:color=always
+          LSAN_OPTIONS: report_objects=1
         run: ctest
