@@ -20,6 +20,8 @@ configure_file(internal/build_info.cc.in internal/build_info.cc)
 configure_file(internal/version_info.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/internal/version_info.h)
 
+find_package(Boost REQUIRED)
+
 add_library(
     googleapis_functions_framework # cmake-format: sort
     ${CMAKE_CURRENT_BINARY_DIR}/internal/build_info.cc
@@ -28,15 +30,19 @@ add_library(
     internal/compiler_info.h
     internal/version_info.h
     version.cc
-    version.h)
+    version.h http_request.cc http_request.h internal/wrap_request.cc internal/wrap_request.h internal/wrap_request_test.cc)
 target_include_directories(googleapis_functions_framework
                            PUBLIC ${PROJECT_SOURCE_DIR})
+target_link_libraries(googleapis_functions_framework
+        PUBLIC Boost::headers)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
     set(googleapis_functions_framework_unit_tests
         # cmake-format: sort
-        internal/compiler_info_test.cc version_test.cc)
+        internal/compiler_info_test.cc
+            internal/wrap_request_test.cc
+            version_test.cc)
 
     foreach (fname ${googleapis_functions_framework_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
