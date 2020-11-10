@@ -30,7 +30,7 @@ inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
  */
 class HttpRequest {
  public:
-  using Headers = std::multimap<std::string, std::string>;
+  using HeadersType = std::multimap<std::string, std::string>;
 
   /// The HTTP verb (GET, PUT, POST, etc) in the request
   [[nodiscard]] std::string const& verb() const { return impl_->verb(); }
@@ -42,7 +42,7 @@ class HttpRequest {
   [[nodiscard]] std::string const& payload() const { return impl_->payload(); }
 
   /// The request HTTP headers
-  [[nodiscard]] Headers const& headers() const { return impl_->headers(); }
+  [[nodiscard]] HeadersType const& headers() const { return impl_->headers(); }
 
   /// The HTTP version for the request
   [[nodiscard]] int version_major() const { return impl_->version_major(); }
@@ -54,7 +54,7 @@ class HttpRequest {
     [[nodiscard]] virtual std::string const& verb() const = 0;
     [[nodiscard]] virtual std::string const& target() const = 0;
     [[nodiscard]] virtual std::string const& payload() const = 0;
-    [[nodiscard]] virtual Headers const& headers() const = 0;
+    [[nodiscard]] virtual HeadersType const& headers() const = 0;
     [[nodiscard]] virtual int version_major() const = 0;
     [[nodiscard]] virtual int version_minor() const = 0;
   };

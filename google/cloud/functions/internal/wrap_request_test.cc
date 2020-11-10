@@ -30,7 +30,7 @@ TEST(WrapRequestTest, Basic) {
   auto constexpr kHttp11 = 11;
   br.version(kHttp11);
 
-  auto actual = FromBeast(std::move(br));
+  auto actual = MakeHttpRequest(std::move(br));
   EXPECT_EQ(actual.target(), "/some/random/target");
   EXPECT_EQ(actual.verb(), "PUT");
   EXPECT_EQ(actual.payload(), "Hello World\n");

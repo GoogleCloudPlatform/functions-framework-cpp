@@ -26,7 +26,7 @@ using BeastRequest =
     boost::beast::http::request<boost::beast::http::string_body>;
 
 /// Wrap a Boost.Beast request into a functions framework HTTP request.
-::google::cloud::functions::HttpRequest FromBeast(BeastRequest request);
+::google::cloud::functions::HttpRequest MakeHttpRequest(BeastRequest request);
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal

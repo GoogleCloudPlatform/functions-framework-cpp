@@ -19,7 +19,7 @@ inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 class WrapBeastImpl : public google::cloud::functions::HttpRequest::Impl {
  public:
-  using Headers = google::cloud::functions::HttpRequest::Headers;
+  using Headers = google::cloud::functions::HttpRequest::HeadersType;
 
   explicit WrapBeastImpl(BeastRequest request)
       : verb_(request.method_string()), target_(request.target()) {
@@ -56,7 +56,7 @@ class WrapBeastImpl : public google::cloud::functions::HttpRequest::Impl {
 };
 }  // namespace
 
-::google::cloud::functions::HttpRequest FromBeast(BeastRequest request) {
+::google::cloud::functions::HttpRequest MakeHttpRequest(BeastRequest request) {
   return functions::HttpRequest(
       std::make_unique<WrapBeastImpl>(std::move(request)));
 }

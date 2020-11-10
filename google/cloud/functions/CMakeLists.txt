@@ -39,6 +39,8 @@ add_library(
 target_include_directories(googleapis_functions_framework
                            PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(googleapis_functions_framework PUBLIC Boost::headers)
+target_compile_definitions(googleapis_functions_framework
+                           PUBLIC BOOST_BEAST_USE_STD_STRING_VIEW)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
