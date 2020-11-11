@@ -26,7 +26,7 @@ TEST(WrapResponseTest, Payload) {
   functions::HttpResponse response;
   EXPECT_THAT(response.payload(), IsEmpty());
   auto const hello = std::string("Hello");
-  response.payload(std::string(hello));
+  response.set_payload(std::string(hello));
   EXPECT_EQ(response.payload(), hello);
   auto const goodbye = std::string("Goodbye");
 }
@@ -36,18 +36,18 @@ TEST(WrapResponseTest, Result) {
   auto constexpr kOk = 200;
   EXPECT_EQ(response.result(), kOk);
   auto constexpr kNotFound = 404;
-  response.result(kNotFound);
+  response.set_result(kNotFound);
   EXPECT_EQ(response.result(), kNotFound);
 }
 
 TEST(WrapResponseTest, Headers) {
   functions::HttpResponse response;
   EXPECT_THAT(response.headers(), IsEmpty());
-  response.header("Content-Type", "application/json");
+  response.set_header("Content-Type", "application/json");
   EXPECT_THAT(response.headers(),
               ElementsAre(std::make_pair("Content-Type", "application/json")));
-  response.header("x-goog-test", "a");
-  response.header("x-goog-test", "b");
+  response.set_header("x-goog-test", "a");
+  response.set_header("x-goog-test", "b");
   EXPECT_THAT(response.headers(),
               ElementsAre(std::make_pair("Content-Type", "application/json"),
                           std::make_pair("x-goog-test", "b")));
@@ -57,7 +57,7 @@ TEST(WrapResponseTest, Version) {
   functions::HttpResponse response;
   EXPECT_EQ(response.version_major(), 1);
   EXPECT_EQ(response.version_minor(), 1);
-  response.version(1, 0);
+  response.set_version(1, 0);
   EXPECT_EQ(response.version_major(), 1);
   EXPECT_EQ(response.version_minor(), 0);
 }

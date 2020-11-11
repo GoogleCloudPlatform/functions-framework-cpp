@@ -27,16 +27,16 @@ class WrapResponseImpl : public google::cloud::functions::HttpResponse::Impl {
   WrapResponseImpl() = default;
   ~WrapResponseImpl() override = default;
 
-  void payload(std::string v) override { response_.body() = std::move(v); }
+  void set_payload(std::string v) override { response_.body() = std::move(v); }
   [[nodiscard]] std::string const& payload() const override {
     return response_.body();
   }
-  void result(int code) override { response_.result(code); }
+  void set_result(int code) override { response_.result(code); }
   [[nodiscard]] int result() const override {
     return static_cast<int>(response_.result_int());
   }
 
-  void header(std::string_view name, std::string_view value) override {
+  void set_header(std::string_view name, std::string_view value) override {
     response_.set(name, value);
   }
   [[nodiscard]] Headers headers() const override {
@@ -48,7 +48,7 @@ class WrapResponseImpl : public google::cloud::functions::HttpResponse::Impl {
   }
 
   static inline auto constexpr kBeastHttpVersionFactor = 10;
-  void version(int major, int minor) override {
+  void set_version(int major, int minor) override {
     response_.version(major * kBeastHttpVersionFactor + minor);
   }
   [[nodiscard]] int version_major() const override {

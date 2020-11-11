@@ -36,34 +36,34 @@ class HttpResponse {
   HttpResponse();
 
   /// The request payload
-  void payload(std::string v) { impl_->payload(std::move(v)); }
+  void set_payload(std::string v) { impl_->set_payload(std::move(v)); }
   [[nodiscard]] std::string const& payload() const { return impl_->payload(); }
 
   /// Set the status result
-  void result(int code) { impl_->result(code); }
+  void set_result(int code) { impl_->set_result(code); }
   [[nodiscard]] int result() const { return impl_->result(); }
 
   /// The request HTTP headers
-  void header(std::string_view name, std::string_view value) {
-    impl_->header(name, value);
+  void set_header(std::string_view name, std::string_view value) {
+    impl_->set_header(name, value);
   }
   [[nodiscard]] HeadersType headers() const { return impl_->headers(); }
 
   /// The HTTP version for the request
-  void version(int major, int minor) { impl_->version(major, minor); }
+  void set_version(int major, int minor) { impl_->set_version(major, minor); }
   [[nodiscard]] int version_major() const { return impl_->version_major(); }
   [[nodiscard]] int version_minor() const { return impl_->version_minor(); }
 
   class Impl {
    public:
     virtual ~Impl() = 0;
-    virtual void payload(std::string) = 0;
+    virtual void set_payload(std::string) = 0;
     [[nodiscard]] virtual std::string const& payload() const = 0;
-    virtual void result(int code) = 0;
+    virtual void set_result(int code) = 0;
     [[nodiscard]] virtual int result() const = 0;
-    virtual void header(std::string_view name, std::string_view value) = 0;
+    virtual void set_header(std::string_view name, std::string_view value) = 0;
     [[nodiscard]] virtual HeadersType headers() const = 0;
-    virtual void version(int major, int minor) = 0;
+    virtual void set_version(int major, int minor) = 0;
     [[nodiscard]] virtual int version_major() const = 0;
     [[nodiscard]] virtual int version_minor() const = 0;
   };
