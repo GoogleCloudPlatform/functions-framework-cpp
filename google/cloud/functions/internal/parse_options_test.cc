@@ -20,8 +20,6 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
-using ::testing::HasSubstr;
-
 TEST(WrapRequestTest, Help) {
   char const* argv[] = {
       "unused",
