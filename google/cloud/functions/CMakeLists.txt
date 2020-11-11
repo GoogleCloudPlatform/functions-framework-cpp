@@ -50,8 +50,8 @@ if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
     set(googleapis_functions_framework_unit_tests
         # cmake-format: sort
-        internal/compiler_info_test.cc internal/wrap_request_test.cc
-            http_response_test.cc version_test.cc)
+        http_response_test.cc internal/compiler_info_test.cc
+        internal/wrap_request_test.cc version_test.cc)
 
     foreach (fname ${googleapis_functions_framework_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
