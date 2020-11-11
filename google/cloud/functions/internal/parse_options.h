@@ -22,7 +22,7 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
 /// Parse the command-line options in @p argv
-boost::program_options::variables_map ParseOptions(int& argc,
+boost::program_options::variables_map ParseOptions(int argc,
                                                    char const* const argv[]);
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS

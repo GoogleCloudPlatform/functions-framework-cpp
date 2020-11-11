@@ -20,13 +20,21 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
+TEST(WrapRequestTest, NoCmd) {
+  char const* argv[] = {};
+  auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
+  EXPECT_EQ(vm.count("help"), 0);
+}
+
+TEST(WrapRequestTest, NoArgs) {
+  char const* argv[] = {"unused"};
+  auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
+  EXPECT_EQ(vm.count("help"), 0);
+}
+
 TEST(WrapRequestTest, Help) {
-  char const* argv[] = {
-      "unused",
-      "--help",
-  };
-  int argc = sizeof(argv) / sizeof(argv[0]);
-  auto const vm = ParseOptions(argc, argv);
+  char const* argv[] = {"unused", "--help"};
+  auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
   EXPECT_NE(vm.count("help"), 0);
 }
 
@@ -45,8 +53,7 @@ TEST(WrapRequestTest, AcceptsRequiredOptions) {
       "unused",       "--port=8085",          "--address=localhost",
       "--target=foo", "--signature-type=bar",
   };
-  int argc = sizeof(argv) / sizeof(argv[0]);
-  auto const vm = ParseOptions(argc, argv);
+  auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
   EXPECT_EQ(vm.count("help"), 0);
   EXPECT_EQ(vm["port"].as<int>(), 8085);
   EXPECT_EQ(vm["address"].as<std::string>(), "localhost");
@@ -56,51 +63,35 @@ TEST(WrapRequestTest, AcceptsRequiredOptions) {
 
 TEST(WrapRequestTest, UseEnvForPort) {
   ::setenv("PORT", "8081", 1);
-  char const* argv[] = {
-      "unused",
-  };
-  int argc = sizeof(argv) / sizeof(argv[0]);
-  auto const vm = ParseOptions(argc, argv);
+  char const* argv[] = {"unused"};
+  auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
   EXPECT_EQ(vm["port"].as<int>(), 8081);
 }
 
 TEST(WrapRequestTest, CommandLineOverridesEnv) {
   ::setenv("PORT", "8081", 1);
-  char const* argv[] = {
-      "unused",
-      "--port=8082",
-  };
-  int argc = sizeof(argv) / sizeof(argv[0]);
-  auto const vm = ParseOptions(argc, argv);
+  char const* argv[] = {"unused", "--port=8082"};
+  auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
   EXPECT_EQ(vm["port"].as<int>(), 8082);
 }
 
 TEST(WrapRequestTest, PortEnvInvalid) {
   ::setenv("PORT", "not-a-number", 1);
-  char const* argv[] = {
-      "unused",
-      "--port=8080",
-  };
+  char const* argv[] = {"unused"};
   int argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
 
 TEST(WrapRequestTest, PortEnvTooLow) {
   ::setenv("PORT", "-1", 1);
-  char const* argv[] = {
-      "unused",
-      "--port=8080",
-  };
+  char const* argv[] = {"unused"};
   int argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
 
 TEST(WrapRequestTest, PortEnvTooHigh) {
   ::setenv("PORT", "65536", 1);
-  char const* argv[] = {
-      "unused",
-      "--port=8080",
-  };
+  char const* argv[] = {"unused"};
   int argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
@@ -111,12 +102,12 @@ TEST(WrapRequestTest, PortCommandLineInvalid) {
   char const* argv_2[] = {"unused", "--port=-1"};
   char const* argv_3[] = {"unused", "--port=65536"};
 
-  int argc = sizeof(argv_1) / sizeof(argv_1[0]);
-  EXPECT_THROW(ParseOptions(argc, argv_1), std::exception);
-  argc = sizeof(argv_2) / sizeof(argv_2[0]);
-  EXPECT_THROW(ParseOptions(argc, argv_2), std::exception);
-  argc = sizeof(argv_3) / sizeof(argv_3[0]);
-  EXPECT_THROW(ParseOptions(argc, argv_3), std::exception);
+  EXPECT_THROW(ParseOptions(sizeof(argv_1) / sizeof(argv_1[0]), argv_1),
+               std::exception);
+  EXPECT_THROW(ParseOptions(sizeof(argv_2) / sizeof(argv_2[0]), argv_2),
+               std::exception);
+  EXPECT_THROW(ParseOptions(sizeof(argv_3) / sizeof(argv_3[0]), argv_3),
+               std::exception);
 }
 
 }  // namespace

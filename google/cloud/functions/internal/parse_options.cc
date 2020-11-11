@@ -22,25 +22,13 @@ namespace po = boost::program_options;
 
 auto constexpr kDefaultPort = 8080;
 
-po::variables_map ParseOptions(int& argc, char const* const argv[]) {
-  // Validate a port value
-  auto validate_port = [](int value) {
-    if (value < std::numeric_limits<std::uint16_t>::min() ||
-        value > std::numeric_limits<std::uint16_t>::max()) {
-      std::ostringstream os;
-      os << "The PORT environment variable value (" << value
-         << ") is out of range.";
-      throw std::invalid_argument(std::move(os).str());
-    }
-  };
+po::variables_map ParseOptions(int argc, char const* const argv[]) {
   // Initialize the default port with the value from the "PORT" environment
   // variable or with 8080.
-  auto port = [&]() -> std::uint16_t {
+  auto port = [&]() {
     auto const* env = std::getenv("PORT");
     if (env == nullptr) return kDefaultPort;
-    auto value = std::stoi(env);
-    validate_port(value);
-    return static_cast<std::uint16_t>(value);
+    return std::stoi(env);
   }();
 
   // Parse the command-line options.
@@ -64,13 +52,23 @@ po::variables_map ParseOptions(int& argc, char const* const argv[]) {
       //
       ("port", po::value<int>()->default_value(port), "set listening port");
   po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
+  char const* a[] = {"missing-command"};
+  // Boost.Options throws an exception if argc == 0, we want to avoid that.
+  auto ac = argc == 0 ? 1 : argc;
+  auto const* av = argc == 0 ? a : argv;
+  po::store(po::parse_command_line(ac, av, desc), vm);
   po::notify(vm);
   if (vm.count("help") != 0) {
     std::cout << desc << "\n";
   }
-  validate_port(vm["port"].as<int>());
-  return vm;
+  auto port_value = vm["port"].as<int>();
+  if (port_value >= std::numeric_limits<std::uint16_t>::min() &&
+      port_value <= std::numeric_limits<std::uint16_t>::max()) {
+    return vm;
+  }
+  std::ostringstream os;
+  os << "The configured port (" << port_value << ") is out of range.";
+  throw std::invalid_argument(std::move(os).str());
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
