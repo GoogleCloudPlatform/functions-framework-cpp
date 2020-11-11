@@ -10,6 +10,11 @@
 #  -readability-braces-around-statements: we think that often a one liner, such
 #      as `if (expr) return;` is more readable.
 #
+#  -google-runtime-references: this was based on a previous version of the
+#      Google Style Guide. References are encouraged and we think they better
+#      express the intent:
+#      https://google.github.io/styleguide/cppguide.html#Inputs_and_Outputs
+#
 #  -readability-redundant-declaration: A friend declaration inside a class
 #      counts as a declaration, so if we also declare that friend outside the
 #      class in order to document it as part of the public API, that will
@@ -45,6 +50,7 @@ Checks: >
   readability-*,
   -google-readability-namespace-comments,
   -google-readability-braces-around-statements,
+  -google-runtime-references,
   -readability-braces-around-statements,
   -readability-redundant-declaration,
   -modernize-use-trailing-return-type,
