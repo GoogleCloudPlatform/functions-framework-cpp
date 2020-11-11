@@ -27,6 +27,8 @@ add_library(
     ${CMAKE_CURRENT_BINARY_DIR}/internal/build_info.cc
     http_request.cc
     http_request.h
+    http_response.cc
+    http_response.h
     internal/build_info.h
     internal/compiler_info.cc
     internal/compiler_info.h
@@ -34,6 +36,8 @@ add_library(
     internal/wrap_request.cc
     internal/wrap_request.h
     internal/wrap_request_test.cc
+    internal/wrap_response.cc
+    internal/wrap_response.h
     version.cc
     version.h)
 target_include_directories(googleapis_functions_framework
@@ -47,7 +51,7 @@ if (BUILD_TESTING)
     set(googleapis_functions_framework_unit_tests
         # cmake-format: sort
         internal/compiler_info_test.cc internal/wrap_request_test.cc
-        version_test.cc)
+            http_response_test.cc version_test.cc)
 
     foreach (fname ${googleapis_functions_framework_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
