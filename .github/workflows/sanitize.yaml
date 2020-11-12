@@ -7,7 +7,7 @@ on:
 
 jobs:
   sanitized-build:
-    name: sanitize
+    name: ""
     runs-on: ubuntu-20.04
     strategy:
       matrix:
