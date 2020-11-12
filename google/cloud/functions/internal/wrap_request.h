@@ -15,8 +15,8 @@
 #ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_WRAP_REQUEST_H
 #define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_WRAP_REQUEST_H
 
-#include "google/cloud/functions/http_request.h"
 #include "google/cloud/functions/internal/http_message_types.h"
+#include "google/cloud/functions/http_request.h"
 #include "google/cloud/functions/version.h"
 
 namespace google::cloud::functions_internal {
