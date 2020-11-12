@@ -58,12 +58,14 @@ TEST(CallUserFunctionTest, ReturnError) {
   EXPECT_EQ(response.result_int(), kNotFound);
 }
 
+functions::HttpResponse AlwaysThrow(functions::HttpRequest const& /*request*/) {
+  throw std::runtime_error("uh-oh");
+}
+
 TEST(CallUserFunctionTest, ReturnErrorOnException) {
-  auto func = [&](functions::HttpRequest const& /*request*/)
-      -> functions::HttpResponse { throw std::runtime_error("uh-oh"); };
   BeastRequest request;
   request.target("/foo/bar/bad");
-  auto response = CallUserFunction(func, std::move(request));
+  auto response = CallUserFunction(AlwaysThrow, std::move(request));
   EXPECT_EQ(response.result(), http::status::internal_server_error);
 }
 
