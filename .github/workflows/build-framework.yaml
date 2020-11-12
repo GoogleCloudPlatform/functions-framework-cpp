@@ -17,7 +17,7 @@ jobs:
       with:
         path: |
           ~/.cache/vcpkg
-        key: ${{ runner.os }}-vcpkg
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
     - name: install-deps
       run: vcpkg install gtest boost-beast boost-program-options
     - name: configure
