@@ -20,6 +20,16 @@ jobs:
         path: |
           ~/.cache/vcpkg
         key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+    - name: debug1
+      run: type ninja
+    - name: debug2
+      run: ls -l /usr/bin/ninja
+    - name: debug3
+      run: ninja --version
+    - name: debug4
+      run: cmake --help
+    - name: debug5
+      run: type vcpkg
     - name: configure
       run: >
         cmake -S . -B ${{runner.workspace}}/build -GNinja
