@@ -21,6 +21,12 @@
 #include <string>
 #include <string_view>
 
+namespace google::cloud::functions_internal {
+inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+struct UnwrapResponse;
+}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+}  // namespace google::cloud::functions_internal
+
 namespace google::cloud::functions {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
@@ -71,6 +77,7 @@ class HttpResponse {
   explicit HttpResponse(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
 
  private:
+  friend struct functions_internal::UnwrapResponse;
   std::shared_ptr<Impl> impl_;
 };
 
