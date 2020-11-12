@@ -20,7 +20,6 @@ inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
 using ::testing::Contains;
-using ::testing::HasSubstr;
 namespace http = ::boost::beast::http;
 
 TEST(CallUserFunctionTest, Basic) {
