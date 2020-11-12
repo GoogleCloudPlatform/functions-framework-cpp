@@ -15,6 +15,8 @@
 #include "google/cloud/functions/internal/parse_options.h"
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <limits>
+#include <stdexcept>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
