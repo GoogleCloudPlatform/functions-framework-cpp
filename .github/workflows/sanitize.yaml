@@ -16,6 +16,8 @@ jobs:
       matrix:
         sanitizer: ["address", "undefined", "thread"]
     steps:
+      - name: install ninja
+        run: sudo apt install ninja-build
       - uses: actions/checkout@v2
       - name: cache-vcpkg
         id: cache-vcpkg
@@ -26,7 +28,7 @@ jobs:
           key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ matrix.sanitizer }}-${{ hashFiles('vcpkg.json') }}
       - name: -fsanitize=${{matrix.sanitizer}} / configure
         run: >
-          cmake -S . -B ${{runner.workspace}}/build
+          cmake -S . -B ${{runner.workspace}}/build -GNinja
           -DCMAKE_CXX_COMPILER=clang++-10
           -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_CXX_FLAGS=-fsanitize=${{matrix.sanitizer}}
