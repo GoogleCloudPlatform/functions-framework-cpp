@@ -20,7 +20,7 @@ jobs:
         with:
           path: |
             ~/.cache/vcpkg
-          key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+          key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ matrix.sanitizer }}-${{ hashFiles('vcpkg.json') }}
       - name: -fsanitize=${{matrix.sanitizer}} / configure
         run: >
           cmake -S . -B ${{runner.workspace}}/build
