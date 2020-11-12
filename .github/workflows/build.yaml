@@ -20,11 +20,9 @@ jobs:
         path: |
           ~/.cache/vcpkg
         key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
-    - name: debug1
-      run: type ninja
     - name: configure
       run: >
-        cmake -S . -B ${{runner.workspace}}/build -G"Ninja - Multi-Config"
+        cmake -S . -B ${{runner.workspace}}/build -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
     - name: build
