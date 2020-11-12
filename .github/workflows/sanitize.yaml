@@ -20,9 +20,7 @@ jobs:
         with:
           path: |
             ~/.cache/vcpkg
-          key: ${{ runner.os }}-vcpkg
-      - name: install-deps
-        run: vcpkg install gtest boost
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
       - name: configure with -fsanitize=${{matrix.sanitizer}}
         run: >
           cmake -S . -B ${{runner.workspace}}/build
