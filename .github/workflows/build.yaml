@@ -10,6 +10,8 @@ jobs:
     name: ubuntu-20.04
     runs-on: ubuntu-20.04
     steps:
+    - name: install ninja
+      run: sudo apt install ninja-build
     - uses: actions/checkout@v2
     - name: cache-vcpkg
       id: cache-vcpkg
@@ -20,7 +22,7 @@ jobs:
         key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
     - name: configure
       run: >
-        cmake -S . -B ${{runner.workspace}}/build
+        cmake -S . -B ${{runner.workspace}}/build -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
     - name: build
