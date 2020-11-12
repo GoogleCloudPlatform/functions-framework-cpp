@@ -30,8 +30,11 @@ add_library(
     http_response.cc
     http_response.h
     internal/build_info.h
+    internal/call_user_function.cc
+    internal/call_user_function.h
     internal/compiler_info.cc
     internal/compiler_info.h
+    internal/http_message_types.h
     internal/parse_options.cc
     internal/parse_options.h
     internal/version_info.h
@@ -54,6 +57,7 @@ if (BUILD_TESTING)
     set(googleapis_functions_framework_unit_tests
         # cmake-format: sort
         http_response_test.cc
+        internal/call_user_function_test.cc
         internal/compiler_info_test.cc
         internal/parse_options_test.cc
         internal/wrap_request_test.cc

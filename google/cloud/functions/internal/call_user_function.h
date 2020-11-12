@@ -12,15 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/internal/wrap_response.h"
+#ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_CALL_USER_FUNCTION_H
+#define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_CALL_USER_FUNCTION_H
+
+#include "google/cloud/functions/internal/http_message_types.h"
+#include "google/cloud/functions/http_request.h"
+#include "google/cloud/functions/http_response.h"
+#include <functional>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
-/// Wrap a Boost.Beast request into a functions framework HTTP request.
-std::shared_ptr<functions::HttpResponse::Impl> MakeHttpResponse() {
-  return std::make_shared<WrapResponseImpl>();
-}
+using UserFunction =
+    std::function<functions::HttpResponse(functions::HttpRequest)>;
+
+BeastResponse CallUserFunction(UserFunction const& function,
+                               BeastRequest request);
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal
+
+#endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_CALL_USER_FUNCTION_H

@@ -16,14 +16,11 @@
 #define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_WRAP_REQUEST_H
 
 #include "google/cloud/functions/http_request.h"
+#include "google/cloud/functions/internal/http_message_types.h"
 #include "google/cloud/functions/version.h"
-#include <boost/beast/http.hpp>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
-
-using BeastRequest =
-    boost::beast::http::request<boost::beast::http::string_body>;
 
 /// Wrap a Boost.Beast request into a functions framework HTTP request.
 ::google::cloud::functions::HttpRequest MakeHttpRequest(BeastRequest request);
