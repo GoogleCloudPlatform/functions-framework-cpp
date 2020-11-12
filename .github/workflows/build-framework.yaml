@@ -19,7 +19,7 @@ jobs:
           ~/.cache/vcpkg
         key: ${{ runner.os }}-vcpkg
     - name: install-deps
-      run: vcpkg install gtest boost
+      run: vcpkg install gtest boost-beast boost-program-options
     - name: configure
       run: >
         cmake -S . -B ${{runner.workspace}}/build
