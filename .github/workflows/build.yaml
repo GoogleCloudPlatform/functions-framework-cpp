@@ -1,0 +1,30 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-ubuntu-focal:
+    name: main build
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: cache-vcpkg
+      id: cache-vcpkg
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/vcpkg
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+    - name: configure
+      run: >
+        cmake -S . -B ${{runner.workspace}}/build
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+    - name: build
+      run: cmake --build ${{runner.workspace}}/build
+    - name: test
+      working-directory: ${{runner.workspace}}/build
+      run: ctest
