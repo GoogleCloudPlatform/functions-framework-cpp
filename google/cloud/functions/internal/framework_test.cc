@@ -76,6 +76,12 @@ TEST(FrameworkTest, Basic) {
   auto actual = HttpGet("localhost", std::to_string(port), "/say/hello");
   EXPECT_EQ(actual, "Hello World from /say/hello");
   shutdown.store(true);
+  // Making a second request guarantees the change in `shutdown` is seen, but
+  // can fail.
+  try {
+    (void)HttpGet("localhost", std::to_string(port), "/quit/now");
+  } catch (...) {
+  }
   EXPECT_EQ(done.get(), 0);
 }
 
