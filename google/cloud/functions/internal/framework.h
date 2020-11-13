@@ -44,7 +44,7 @@ using HttpFunction =
  *
  * HttpFunction FindHttpHandler() { return some_user_function; }
  *
- * int main(int argc, char* char* argv[]) {
+ * int main(int argc, char* argv[]) {
  *   return Run(argc, argv, FindHttpHandler());
  * }
  * @endcode
