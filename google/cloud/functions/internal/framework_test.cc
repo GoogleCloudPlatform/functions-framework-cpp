@@ -17,9 +17,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast.hpp>
 #include <gmock/gmock.h>
-#include <cstdlib>
 #include <future>
-#include <iostream>
 #include <string>
 
 namespace google::cloud::functions_internal {
