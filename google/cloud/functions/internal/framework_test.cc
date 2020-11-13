@@ -61,7 +61,7 @@ TEST(FrameworkTest, Basic) {
   std::promise<int> port_p;
   auto port_f = port_p.get_future();
   std::atomic<bool> shutdown{false};
-  auto hello = [](functions::HttpRequest r) {
+  auto hello = [](functions::HttpRequest const& r) {
     functions::HttpResponse response;
     response.set_payload("Hello World from " + r.target());
     response.set_header("content-type", "text/plain");
