@@ -34,6 +34,8 @@ add_library(
     internal/call_user_function.h
     internal/compiler_info.cc
     internal/compiler_info.h
+    internal/framework.cc
+    internal/framework.h
     internal/http_message_types.h
     internal/parse_options.cc
     internal/parse_options.h
@@ -59,6 +61,7 @@ if (BUILD_TESTING)
         http_response_test.cc
         internal/call_user_function_test.cc
         internal/compiler_info_test.cc
+        internal/framework_test.cc
         internal/parse_options_test.cc
         internal/wrap_request_test.cc
         version_test.cc)
