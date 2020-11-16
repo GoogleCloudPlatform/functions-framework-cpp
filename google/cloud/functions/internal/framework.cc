@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/internal/framework_impl.h"
+#include "google/cloud/functions/internal/framework.h"
 #include "google/cloud/functions/internal/call_user_function.h"
 #include "google/cloud/functions/internal/parse_options.h"
 #include "google/cloud/functions/version.h"
@@ -34,8 +34,7 @@ namespace be = boost::beast;
 namespace asio = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
-void HandleSession(tcp::socket socket,
-                   functions::HttpFunction const& user_function) {
+void HandleSession(tcp::socket socket, HttpFunction const& user_function) {
   auto report_error = [](be::error_code ec, char const* what) {
     // TODO(#35) - maybe replace with Boost.Log
     std::cerr << what << ": " << ec.message() << "\n";
@@ -65,8 +64,19 @@ void HandleSession(tcp::socket socket,
 
 }  // namespace
 
-int RunForTest(int argc, char const* const argv[],
-               functions::HttpFunction handler,
+int Run(int argc, char const* const argv[], HttpFunction handler) noexcept try {
+  return functions_internal::RunForTest(
+      argc, argv, std::move(handler), [] { return false; },
+      [](int /*unused*/) {});
+} catch (std::exception const& ex) {
+  std::cerr << "Standard C++ exception thrown " << ex.what() << "\n";
+  return 1;
+} catch (...) {
+  std::cerr << "Unknown exception thrown\n";
+  return 1;
+}
+
+int RunForTest(int argc, char const* const argv[], HttpFunction handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port) {
   auto vm = ParseOptions(argc, argv);

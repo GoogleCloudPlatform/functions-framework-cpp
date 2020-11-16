@@ -26,8 +26,6 @@ find_package(Threads REQUIRED)
 add_library(
     googleapis_functions_framework # cmake-format: sort
     ${CMAKE_CURRENT_BINARY_DIR}/internal/build_info.cc
-    framework.cc
-    framework.h
     http_request.cc
     http_request.h
     http_response.cc
@@ -37,8 +35,8 @@ add_library(
     internal/call_user_function.h
     internal/compiler_info.cc
     internal/compiler_info.h
-    internal/framework_impl.cc
-    internal/framework_impl.h
+    internal/framework.cc
+    internal/framework.h
     internal/http_message_types.h
     internal/parse_options.cc
     internal/parse_options.h

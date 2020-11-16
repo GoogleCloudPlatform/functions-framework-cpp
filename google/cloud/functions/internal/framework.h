@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_FRAMEWORK_H
-#define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_FRAMEWORK_H
+#ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_FRAMEWORK_H
+#define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_FRAMEWORK_H
 
 #include "google/cloud/functions/http_request.h"
 #include "google/cloud/functions/http_response.h"
 #include "google/cloud/functions/version.h"
 #include <functional>
 
-namespace google::cloud::functions {
+namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
 using HttpFunction =
@@ -51,7 +51,12 @@ using HttpFunction =
  */
 int Run(int argc, char const* const argv[], HttpFunction handler) noexcept;
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
-}  // namespace google::cloud::functions
+/// Implement functions::Run(), with additional helpers for testing.
+int RunForTest(int argc, char const* const argv[], HttpFunction handler,
+               std::function<bool()> const& shutdown,
+               std::function<void(int)> const& actual_port);
 
-#endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_FRAMEWORK_H
+}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+}  // namespace google::cloud::functions_internal
+
+#endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_FRAMEWORK_H

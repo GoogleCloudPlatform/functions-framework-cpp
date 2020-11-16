@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/framework.h"
+#include "google/cloud/functions/internal/framework.h"
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
 
-namespace functions = google::cloud::functions;
-using functions::HttpResponse;
+namespace functions = google::cloud::functions_internal;
+using ::google::cloud::functions::HttpRequest;
+using ::google::cloud::functions::HttpResponse;
 
-HttpResponse EchoServer(functions::HttpRequest const& request) {
+HttpResponse EchoServer(HttpRequest const& request) {
   auto const& target = request.target();
   if (target == "/quit/program/0") std::exit(0);
   if (target.rfind("/exception/", 0) == 0) throw std::runtime_error(target);
@@ -49,7 +50,7 @@ HttpResponse EchoServer(functions::HttpRequest const& request) {
   }
   payload << "}\n";
 
-  functions::HttpResponse response;
+  HttpResponse response;
   response.set_header("Content-Type", "application/json");
   response.set_payload(std::move(payload).str());
   return response;
