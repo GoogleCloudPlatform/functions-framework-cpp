@@ -18,10 +18,7 @@
 #include "google/cloud/functions/http_request.h"
 #include "google/cloud/functions/http_response.h"
 #include "google/cloud/functions/version.h"
-#include <boost/program_options/variables_map.hpp>
 #include <functional>
-#include <thread>
-#include <vector>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
@@ -54,7 +51,7 @@ using HttpFunction =
  */
 int Run(int argc, char const* const argv[], HttpFunction handler) noexcept;
 
-/// Run the given function, returning after the first HTTP request.
+/// Implement functions::Run(), with additional helpers for testing.
 int RunForTest(int argc, char const* const argv[], HttpFunction handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port);

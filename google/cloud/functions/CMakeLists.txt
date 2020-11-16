@@ -21,6 +21,7 @@ configure_file(internal/version_info.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/internal/version_info.h)
 
 find_package(Boost REQUIRED COMPONENTS program_options)
+find_package(Threads REQUIRED)
 
 add_library(
     googleapis_functions_framework # cmake-format: sort
@@ -49,8 +50,9 @@ add_library(
     version.h)
 target_include_directories(googleapis_functions_framework
                            PUBLIC ${PROJECT_SOURCE_DIR})
-target_link_libraries(googleapis_functions_framework
-                      PUBLIC Boost::headers Boost::program_options)
+target_link_libraries(
+    googleapis_functions_framework PUBLIC Boost::headers Boost::program_options
+                                          Threads::Threads)
 target_compile_definitions(googleapis_functions_framework
                            PUBLIC BOOST_BEAST_USE_STD_STRING_VIEW)
 
@@ -76,4 +78,5 @@ if (BUILD_TESTING)
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 
+    add_subdirectory(integration_tests)
 endif ()

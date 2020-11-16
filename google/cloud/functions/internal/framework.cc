@@ -64,6 +64,18 @@ void HandleSession(tcp::socket socket, HttpFunction const& user_function) {
 
 }  // namespace
 
+int Run(int argc, char const* const argv[], HttpFunction handler) noexcept try {
+  return functions_internal::RunForTest(
+      argc, argv, std::move(handler), [] { return false; },
+      [](int /*unused*/) {});
+} catch (std::exception const& ex) {
+  std::cerr << "Standard C++ exception thrown " << ex.what() << "\n";
+  return 1;
+} catch (...) {
+  std::cerr << "Unknown exception thrown\n";
+  return 1;
+}
+
 int RunForTest(int argc, char const* const argv[], HttpFunction handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port) {
@@ -89,18 +101,6 @@ int RunForTest(int argc, char const* const argv[], HttpFunction handler,
     (void)std::async(std::launch::async, handle_session, std::move(socket));
   }
   return 0;
-}
-
-int Run(int argc, char const* const argv[], HttpFunction handler) noexcept try {
-  return RunForTest(
-      argc, argv, std::move(handler), [] { return false; },
-      [](int /*unused*/) {});
-} catch (std::exception const& ex) {
-  std::cerr << "Standard C++ exception thrown " << ex.what() << "\n";
-  return 1;
-} catch (...) {
-  std::cerr << "Unknown exception thrown\n";
-  return 1;
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
