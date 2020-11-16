@@ -31,4 +31,11 @@ jobs:
       - name: install
         working-directory: ${{runner.workspace}}/build
         run: cmake --build ${{runner.workspace}}/build --target install
-
+      - name: test-configure
+        run: >
+          cmake -S google/cloud/functions/quickstart -B ${{runner.workspace}}/build-quickstart -GNinja
+          -DCMAKE_PREFIX_PATH=${{runner.temp}}/staging
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+      - name: test-build
+        run: cmake --build ${{runner.workspace}}/build-quickstart
