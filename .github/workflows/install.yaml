@@ -23,6 +23,7 @@ jobs:
       - name: configure
         run: >
           cmake -S . -B ${{runner.workspace}}/build -GNinja -DBUILD_TESTING=OFF
+          -DCMAKE_INSTALL_PREFIX=${{runner.temp}}/staging
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
       - name: build
