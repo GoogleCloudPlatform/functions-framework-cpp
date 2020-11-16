@@ -43,4 +43,4 @@ jobs:
           LSAN_OPTIONS: report_objects=1
           TSAN_OPTIONS: halt_on_error=1:second_deadlock_stack=1
           UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
-        run: ctest --output-on-failure
+        run: ctest --output-on-failure --timeout=60s
