@@ -31,5 +31,5 @@ HttpResponse HelloWorld(HttpRequest const& request) {
 }  // namespace
 
 int main(int argc, char* argv[]) {
-  return ::google:cloud::functions_internal::Run(argc, argv, HelloWorld);
+  return ::google::cloud::functions_internal::Run(argc, argv, HelloWorld);
 }
