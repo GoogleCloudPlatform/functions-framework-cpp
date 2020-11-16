@@ -69,7 +69,9 @@ int WaitForServerReady(std::string const& host, std::string const& port) {
     try {
       (void)HttpGet(host, port, "/ok");
       return 0;
-    } catch (...) {
+    } catch (std::exception const& ex) {
+      std::cerr << "WaitForServerReady[" << i << "]: failed with " << ex.what()
+                << std::endl;
     }
     delay *= 2;
   }
