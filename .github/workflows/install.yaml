@@ -1,0 +1,33 @@
+name: install
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-ubuntu-focal:
+    name: ubuntu-20.04
+    runs-on: ubuntu-20.04
+    steps:
+      - name: install ninja
+        run: sudo apt install ninja-build
+      - uses: actions/checkout@v2
+      - name: cache-vcpkg
+        id: cache-vcpkg
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/vcpkg
+          key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+      - name: configure
+        run: >
+          cmake -S . -B ${{runner.workspace}}/build -GNinja -DBUILD_TESTING=OFF
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+      - name: build
+        run: cmake --build ${{runner.workspace}}/build
+      - name: install
+        working-directory: ${{runner.workspace}}/build
+        run: cmake --build ${{runner.workspace}}/build --target install
+

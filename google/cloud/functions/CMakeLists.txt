@@ -49,7 +49,10 @@ add_library(
     version.cc
     version.h)
 target_include_directories(googleapis_functions_framework
-                           PUBLIC ${PROJECT_SOURCE_DIR})
+                           PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+
+target_include_directories(googleapis_functions_framework SYSTEM
+                           PUBLIC $<INSTALL_INTERFACE:include>)
 target_link_libraries(
     googleapis_functions_framework PUBLIC Boost::headers Boost::program_options
                                           Threads::Threads)
@@ -80,3 +83,45 @@ if (BUILD_TESTING)
 
     add_subdirectory(integration_tests)
 endif ()
+
+include(InstallHeaders)
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
+# Install the libraries and headers in the locations determined by
+# GNUInstallDirs
+install(
+    TARGETS googleapis_functions_framework
+    EXPORT googleapis_functions_framework-targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            COMPONENT runtime
+            NAMELINK_SKIP
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            COMPONENT development
+            NAMELINK_COMPONENT development
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT development)
+
+google_cloud_cpp_install_headers(googleapis_functions_framework
+                                 include/google/cloud)
+
+# Create and install the CMake configuration files.
+install(
+    EXPORT googleapis_functions_framework-targets
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis_functions_framework")
+configure_file("config.cmake.in" "googleapis_functions_framework-config.cmake"
+               @ONLY)
+write_basic_package_version_file(
+    "googleapis_functions_framework-config-version.cmake"
+    VERSION ${FUNCTIONS_FRAMEWORK_CPP_VERSION}
+    COMPATIBILITY SameMinorVersion)
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/googleapis_functions_framework-config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/googleapis_functions_framework-config-version.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis_functions_framework")
+
+# Create and install the pkg-config configuration files.
+configure_file("config.pc.in" "googleapis_functions_framework.pc" @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/googleapis_functions_framework.pc"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
