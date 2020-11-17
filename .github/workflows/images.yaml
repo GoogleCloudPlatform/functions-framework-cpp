@@ -45,3 +45,15 @@ jobs:
           target: gcf-cpp-develop
           cache-from: type=local,src=/tmp/.buildx-cache/develop
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/develop
+
+      - name: test-gcf-cpp-develop
+        run: >
+          docker build
+          --pull=false
+          --build-arg=TARGET_SIGNATURE=http
+          --build-arg=TARGET_FUNCTION=google::cloud::functions_examples::HelloWorld
+          -f build_scripts/build-application.Dockerfile
+          google/cloud/functions/integration_tests/hello_world
+
+      - name: docker-image-ls
+        run: docker image ls
