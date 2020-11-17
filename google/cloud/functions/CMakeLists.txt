@@ -103,7 +103,7 @@ install(
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT development)
 
 google_cloud_cpp_install_headers(googleapis_functions_framework
-                                 include/google/cloud)
+                                 include/google/cloud/functions)
 
 # Create and install the CMake configuration files.
 install(
