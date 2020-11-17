@@ -43,7 +43,6 @@ add_library(
     internal/version_info.h
     internal/wrap_request.cc
     internal/wrap_request.h
-    internal/wrap_request_test.cc
     internal/wrap_response.cc
     internal/wrap_response.h
     version.cc
