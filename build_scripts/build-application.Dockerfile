@@ -16,7 +16,7 @@ FROM gcf-cpp-develop AS parent
 
 FROM parent AS application
 ARG TARGET_FUNCTION
-ARG FUNCTION_SIGNATURE_TYPE
+ARG FUNCTION_SIGNATURE_TYPE="http"
 COPY --chown=cnb --from=parent /layers/cpp/gcf/cmake /workspace
 COPY --chown=cnb . /workspace/application
 
@@ -30,4 +30,4 @@ RUN /layers/cpp/cmake/bin/cmake --build /var/tmp/build --target install
 FROM gcf-cpp-runtime AS runtime
 COPY --from=application /var/tmp/install/bin/application /r/application
 
-ENTRYPOINT /r/application
+ENTRYPOINT ["/r/application"]
