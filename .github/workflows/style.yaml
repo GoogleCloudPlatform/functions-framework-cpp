@@ -18,6 +18,8 @@ jobs:
           path: |
             ~/.cache/vcpkg
           key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-${{ github.job }}-
       - name: configure
         run: >
           cmake -S . -B ${{runner.workspace}}/build
