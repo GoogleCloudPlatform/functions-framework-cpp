@@ -1,9 +1,9 @@
 {
-  "name": "google-functions-framework-cpp",
+  "name": "functions-framework-cpp-dev",
   "version-string": "0.0.1-dev",
   "port-version": 1,
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
-  "description": "Functions Framework for C++.",
+  "description": "Functions Framework for C++ -- Development",
   "dependencies": [
     "boost",
     "gtest"

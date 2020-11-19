@@ -45,3 +45,19 @@ jobs:
           target: gcf-cpp-develop
           cache-from: type=local,src=/tmp/.buildx-cache/develop
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/develop
+
+      - name: create-test-image
+        run: >
+          docker build
+          --tag gcf-cpp-test-hello-world
+          --pull=false
+          --build-arg=FUNCTION_SIGNATURE_TYPE=http
+          --build-arg=TARGET_FUNCTION=google::cloud::functions_examples::HelloWorld
+          -f build_scripts/build-application.Dockerfile
+          google/cloud/functions/integration_tests/hello_world
+
+      - name: run-test-container
+        run: >
+          ID=$(docker run --detach --network host gcf-cpp-test-hello-world --port 8080) &&
+          curl -sS http://localhost:8080/say/hello &&
+          docker kill "${ID}"
