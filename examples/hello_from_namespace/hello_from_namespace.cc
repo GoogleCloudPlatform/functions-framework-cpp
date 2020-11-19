@@ -14,12 +14,16 @@
 
 #include <google/cloud/functions/internal/framework.h>
 
+namespace hello_from_namespace::nested {
+
 using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
 
-HttpResponse HelloWorld(HttpRequest) {  // NOLINT
+HttpResponse Example(HttpRequest) {  // NOLINT
   HttpResponse response;
   response.set_header("Content-Type", "text/plain");
-  response.set_payload("Hello World\n");
+  response.set_payload("Hello from a C++ namespace!\n");
   return response;
 }
+
+}  // namespace hello_from_namespace::nested
