@@ -19,7 +19,7 @@ namespace google::cloud::functions_examples {
 using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
 
-HttpResponse HelloWorld(HttpRequest) {
+HttpResponse HelloWorld(HttpRequest) {  // NOLINT
   HttpResponse response;
   response.set_header("Content-Type", "text/plain");
   response.set_payload("Hello World\n");
