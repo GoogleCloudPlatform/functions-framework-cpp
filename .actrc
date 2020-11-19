@@ -1,0 +1,3 @@
+# act is a tool to run GitHub actions locally. This
+# configuration file makes it easy to use with our code.
+-P ubuntu-latest=nektos/act-environments-ubuntu:18.04
