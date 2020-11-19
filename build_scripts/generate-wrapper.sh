@@ -16,36 +16,38 @@
 set -eu
 
 if [[ $# -ne 2 ]]; then
-  >&2 echo "Usage: $(basename "${0}") <TARGET_FUNCTION> <TARGET_SIGNATURE>"
+  >&2 echo "Usage: $(basename "${0}") <TARGET_FUNCTION> <FUNCTION_SIGNATURE_TYPE>"
   exit 1
 fi
 
 generate_main_no_namespace() {
+  local function="${1}"
   cat <<_EOF_
 #include <google/cloud/functions/internal/framework.h>
 
 namespace gcf = ::google::cloud::functions;
 namespace gcf_internal = ::google::cloud::functions_internal;
 
-extern gcf::HttpResponse ${TARGET_FUNCTION}(gcf::HttpRequest);
+extern gcf::HttpResponse ${function}(gcf::HttpRequest);
 
 int main(int argc, char* argv[]) {
-  return gcf_internal::Run(argc, argv, gcf_internal::HttpFunction(${TARGET_FUNCTION});
+  return gcf_internal::Run(argc, argv, gcf_internal::HttpFunction(${function});
 }
 _EOF_
 }
 
 generate_main() {
-  declare full
-  declare dir
-  declare namespace
-  declare function
-  full="$(sed -e 's;::;/;g' <<<"${1}")"
+  local full
+  full="${1//:://}"
+  full="${full#/}"
+  local dir
   dir="$(dirname "${full}")"
-  namespace="$(sed -e 's;/;::;g' <<<"${dir}")"
+  local namespace
+  namespace="${dir//\//::}"
+  local function
   function="$(basename "${full}")"
-  if [[ -z "${namespace}" ]]; then
-    generate_main_no_namespace
+  if [[ -z "${namespace}" || "${namespace}" == "." ]]; then
+    generate_main_no_namespace "${function}"
     return
   fi
 
