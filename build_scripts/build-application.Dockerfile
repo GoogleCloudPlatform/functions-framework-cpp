@@ -16,11 +16,11 @@ FROM gcf-cpp-develop AS parent
 
 FROM parent AS application
 ARG TARGET_FUNCTION
-ARG TARGET_SIGNATURE
+ARG FUNCTION_SIGNATURE_TYPE
 COPY --chown=cnb --from=parent /layers/cpp/gcf/cmake /workspace
 COPY --chown=cnb . /workspace/application
 
-RUN /layers/cpp/gcf/generate-wrapper.sh "${TARGET_FUNCTION}" "${TARGET_SIGNATURE}" >/workspace/main.cc
+RUN /layers/cpp/gcf/generate-wrapper.sh "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE}" >/workspace/main.cc
 
 RUN /layers/cpp/cmake/bin/cmake -S /workspace -B /var/tmp/build -GNinja \
     -DCMAKE_INSTALL_PREFIX=/var/tmp/install \

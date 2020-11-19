@@ -50,9 +50,10 @@ jobs:
         run: >
           docker build
           --pull=false
-          --build-arg=TARGET_SIGNATURE=http
+          --build-arg=FUNCTION_SIGNATURE_TYPE=http
           --build-arg=TARGET_FUNCTION=google::cloud::functions_examples::HelloWorld
           -f build_scripts/build-application.Dockerfile
+          -t gcf-cpp-test-hello-world
           google/cloud/functions/integration_tests/hello_world
 
       - name: docker-image-ls
