@@ -54,7 +54,7 @@ jobs:
           --build-arg=FUNCTION_SIGNATURE_TYPE=http
           --build-arg=TARGET_FUNCTION=google::cloud::functions_examples::HelloWorld
           -f build_scripts/build-application.Dockerfile
-          google/cloud/functions/integration_tests/hello_world
+          examples/hello_world
 
       - name: run-test-container
         run: >
