@@ -99,8 +99,9 @@ FROM gcf-cpp-incremental-8 AS gcf-cpp-develop
 
 # TODO(#41) - switch to the actual vcpkg package once created.
 RUN mkdir -p /layers/cpp/gcf/cmake /layers/cpp/gcf/vcpkg-overlays
-COPY --chown=cnb generate-wrapper.sh /layers/cpp/gcf
-COPY --chown=cnb cmake /layers/cpp/gcf/cmake
 COPY --chown=cnb vcpkg-overlays /layers/cpp/gcf/vcpkg-overlays
 RUN /layers/cpp/vcpkg/vcpkg install --clean-after-build \
     --overlay-ports=/layers/cpp/gcf/vcpkg-overlays functions-framework-cpp
+
+COPY --chown=cnb generate-wrapper.sh /layers/cpp/gcf
+COPY --chown=cnb cmake /layers/cpp/gcf/cmake
