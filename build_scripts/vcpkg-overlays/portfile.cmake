@@ -2,11 +2,11 @@ vcpkg_from_github(
     OUT_SOURCE_PATH
     SOURCE_PATH
     REPO
-    coryan/functions-framework-cpp
+    GoogleCloudPlatform/functions-framework-cpp
     REF
-    d31250bce4ae9d9b6e3a99fe5e794c5ca515e728
+    4a4a0a534b872b8ea09dd4f6f5d31afab9d02127
     SHA512
-    a90e3bcd5fa2d4c9eeaec58261de23a7da947fed87e9f0f73cc7378d09cbd3b43c1ce454bf69517b703c51e3af2c15cda0afe92c2ae4d0bac7c6d9749826ca19
+    eabb6f96912025ffca090ec8ec5cf7aaffc40bc3f327465dcaf9dd496f2157f32517055e48226917c23dcc0890ed2700dcf8c70822725dc198bca37bfe27dc14
     HEAD_REF
     main)
 

@@ -46,6 +46,15 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache/develop
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/develop
 
+      - name: build-examples-hello-gcs
+        run: >
+          docker build
+          --pull=false
+          --build-arg=FUNCTION_SIGNATURE_TYPE=http
+          --build-arg=TARGET_FUNCTION=HelloGcs
+          -f build_scripts/build-application.Dockerfile
+          examples/hello_gcs
+
       - name: build-examples-hello-world
         run: >
           docker build

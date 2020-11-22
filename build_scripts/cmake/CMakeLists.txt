@@ -23,9 +23,11 @@ function (functions_framework_cpp_define_target_with_glob directory)
     file(GLOB_RECURSE application_sources "${directory}/*.cc"
          "${directory}/*.cpp" "${directory}/*.cxx")
     add_library(functions_framework_cpp_function ${application_sources})
+    target_link_libraries(functions_framework_cpp_function
+                          PUBLIC googleapis-c++::functions_framework)
 endfunction ()
 
-if (EXISTS "application/CMakeLists.txt")
+if (EXISTS "${CMAKE_SOURCE_DIR}/application/CMakeLists.txt")
     add_subdirectory(application)
 else ()
     functions_framework_cpp_define_target_with_glob("application")
@@ -47,12 +49,9 @@ do include this file you must either:
             ]===])
 endif ()
 
-target_link_libraries(functions_framework_cpp_function
-                      PUBLIC googleapis-c++::functions_framework)
-
 add_executable(functions_framework_cpp_application main.cc)
 set_target_properties(functions_framework_cpp_application
-                      PROPERTIES OUTPUT_NAME application)
+                      PROPERTIES OUTPUT_NAME function)
 target_link_libraries(functions_framework_cpp_application
                       PRIVATE functions_framework_cpp_function)
 
