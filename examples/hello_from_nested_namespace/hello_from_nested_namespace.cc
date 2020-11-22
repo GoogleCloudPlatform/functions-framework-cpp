@@ -14,7 +14,7 @@
 
 #include <google/cloud/functions/internal/framework.h>
 
-namespace hello_from_namespace {
+namespace hello_from_nested_namespace::ns0::ns1 {
 
 using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
@@ -22,8 +22,8 @@ using ::google::cloud::functions::HttpResponse;
 HttpResponse HelloWorld(HttpRequest) {  // NOLINT
   HttpResponse response;
   response.set_header("Content-Type", "text/plain");
-  response.set_payload("Hello from a C++ namespace!\n");
+  response.set_payload("Hello from a nested C++ namespace!\n");
   return response;
 }
 
-}  // namespace hello_from_namespace
+}  // namespace hello_from_nested_namespace::ns0::ns1

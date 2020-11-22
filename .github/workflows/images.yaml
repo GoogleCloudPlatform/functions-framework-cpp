@@ -77,7 +77,7 @@ jobs:
           docker build
           --pull=false
           --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=hello_from_namespace::nested::Example
+          --build-arg=TARGET_FUNCTION=hello_from_namespace::HelloWorld
           -f build_scripts/build-application.Dockerfile
           examples/hello_from_namespace
 
@@ -86,6 +86,15 @@ jobs:
           docker build
           --pull=false
           --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=::hello_from_namespace::nested::Example
+          --build-arg=TARGET_FUNCTION=::hello_from_namespace::HelloWorld
           -f build_scripts/build-application.Dockerfile
           examples/hello_from_namespace
+
+      - name: build-examples-hello-from-nested-namespace
+        run: >
+          docker build
+          --pull=false
+          --build-arg=FUNCTION_SIGNATURE_TYPE=http
+          --build-arg=TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld
+          -f build_scripts/build-application.Dockerfile
+          examples/hello_from_nested_namespace
