@@ -28,6 +28,6 @@ RUN /layers/cpp/cmake/bin/cmake -S /workspace -B /var/tmp/build -GNinja \
 RUN /layers/cpp/cmake/bin/cmake --build /var/tmp/build --target install
 
 FROM gcf-cpp-runtime AS runtime
-COPY --from=application /var/tmp/install/bin/application /r/application
+COPY --from=application /var/tmp/install/bin/function /r/application
 
 ENTRYPOINT ["/r/application"]
