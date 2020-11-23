@@ -21,21 +21,26 @@ using ::google::cloud::functions::HttpResponse;
 namespace gcs = ::google::cloud::storage;
 
 HttpResponse HelloGcs(HttpRequest request) {  // NOLINT
+  auto error = [] {
+    auto constexpr kError = 400;
+    HttpResponse response;
+    response.set_result(kError);
+    return response;
+  };
+
   std::vector<std::string> components;
   std::istringstream split(request.target());
   for (std::string c; std::getline(split, c, '/'); components.push_back(c))
     ;
-  if (components.size() != 2) {
-    HttpResponse response;
-    response.set_result(400);
-    return response;
-  }
+
+  if (components.size() != 2) return error();
   auto const bucket = components[0];
   auto const object = components[1];
   auto client = gcs::Client::CreateDefaultClient().value();
   auto reader = client.ReadObject(bucket, object);
   std::string contents(std::istreambuf_iterator<char>{reader},
                        std::istreambuf_iterator<char>{});
+  if (!reader.status().ok()) return error();
 
   HttpResponse response;
   response.set_header("Content-Type", "application/octet-stream");

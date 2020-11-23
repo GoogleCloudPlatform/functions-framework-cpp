@@ -37,3 +37,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 include(CTest)
 add_subdirectory(google/cloud/functions)
+
+if (BUILD_TESTING)
+    add_subdirectory(examples)
+endif ()
