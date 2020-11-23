@@ -6,6 +6,7 @@
   "description": "Functions Framework for C++ -- Development",
   "dependencies": [
     "boost",
+    "fmt",
     "google-cloud-cpp",
     "gtest"
   ]
