@@ -57,6 +57,9 @@ target_link_libraries(
                                           Threads::Threads)
 target_compile_definitions(googleapis_functions_framework
                            PUBLIC BOOST_BEAST_USE_STD_STRING_VIEW)
+set_target_properties(
+    googleapis_functions_framework
+    PROPERTIES EXPORT_NAME googleapis-c++::functions_framework)
 add_library(googleapis-c++::functions_framework ALIAS
             googleapis_functions_framework)
 
