@@ -35,7 +35,7 @@ HttpResponse HelloGcs(HttpRequest request) {  // NOLINT
   auto client = gcs::Client::CreateDefaultClient().value();
   auto reader = client.ReadObject(bucket, object);
   std::string contents(std::istreambuf_iterator<char>{reader},
-                     std::istreambuf_iterator<char>{});
+                       std::istreambuf_iterator<char>{});
 
   HttpResponse response;
   response.set_header("Content-Type", "application/octet-stream");
