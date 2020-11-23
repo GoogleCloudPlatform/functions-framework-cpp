@@ -5,6 +5,15 @@ This directory contains a series of examples showing how to use the Functions Fr
 A good place to start is [hello_world](hello_world). It contains a simple example, with a simple function in a single
 `.cc` file.
 
+## Create the Development Image
+
+To compile the examples you will need a Docker image with the development tools and core dependencies pre-compiled.
+To create this image run this command:
+
+```sh
+docker build -t gcf-cpp-develop -f build_scripts/Dockerfile build_scripts
+```
+
 ## Creating a Docker image for the examples
 
 The examples can run in Docker containers. To compile them you first need to
@@ -82,13 +91,4 @@ Test by sending a request using `curl`:
 
 ```bash
 curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" "${SERVICE_URL}"
-```
-
-
-## Create the Development Image
-
-Create the development image using this command:
-
-```sh
-docker build -t gcf-cpp-develop -f build_scripts/Dockerfile build_scripts
 ```
