@@ -46,18 +46,55 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache/develop
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/develop
 
-      - name: create-test-image
+      - name: build-examples-hello-world
         run: >
           docker build
-          --tag gcf-cpp-test-hello-world
+          --tag gcf-cpp-examples-hello-world
           --pull=false
           --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=google::cloud::functions_examples::HelloWorld
+          --build-arg=TARGET_FUNCTION=HelloWorld
           -f build_scripts/build-application.Dockerfile
           examples/hello_world
 
-      - name: run-test-container
+      - name: test-examples-hello-world
         run: >
-          ID=$(docker run --detach --network host gcf-cpp-test-hello-world --port 8080) &&
+          ID=$(docker run --detach --network host gcf-cpp-examples-hello-world --port 8080) &&
           curl -sS http://localhost:8080/say/hello &&
           docker kill "${ID}"
+
+      - name: build-examples-hello-world-rooted
+        run: >
+          docker build
+          --tag gcf-cpp-examples-hello-world-rooted
+          --pull=false
+          --build-arg=FUNCTION_SIGNATURE_TYPE=http
+          --build-arg=TARGET_FUNCTION=::HelloWorld
+          -f build_scripts/build-application.Dockerfile
+          examples/hello_world
+
+      - name: build-examples-hello-from-namespace
+        run: >
+          docker build
+          --pull=false
+          --build-arg=FUNCTION_SIGNATURE_TYPE=http
+          --build-arg=TARGET_FUNCTION=hello_from_namespace::HelloWorld
+          -f build_scripts/build-application.Dockerfile
+          examples/hello_from_namespace
+
+      - name: build-examples-hello-from-namespace-rooted
+        run: >
+          docker build
+          --pull=false
+          --build-arg=FUNCTION_SIGNATURE_TYPE=http
+          --build-arg=TARGET_FUNCTION=::hello_from_namespace::HelloWorld
+          -f build_scripts/build-application.Dockerfile
+          examples/hello_from_namespace
+
+      - name: build-examples-hello-from-nested-namespace
+        run: >
+          docker build
+          --pull=false
+          --build-arg=FUNCTION_SIGNATURE_TYPE=http
+          --build-arg=TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld
+          -f build_scripts/build-application.Dockerfile
+          examples/hello_from_nested_namespace

@@ -31,7 +31,7 @@ namespace gcf_internal = ::google::cloud::functions_internal;
 extern gcf::HttpResponse ${function}(gcf::HttpRequest);
 
 int main(int argc, char* argv[]) {
-  return gcf_internal::Run(argc, argv, gcf_internal::HttpFunction(${function});
+  return gcf_internal::Run(argc, argv, gcf_internal::HttpFunction(${function}));
 }
 _EOF_
 }
