@@ -16,9 +16,8 @@ docker build -t gcf-cpp-develop -f build_scripts/Dockerfile build_scripts
 
 ## Creating a Docker image for the examples
 
-The examples can run in Docker containers. To compile them you first need to
-[create a development image](#create-the-development-image). Once that image is available with this image at hand you
-can create a docker image for any of the examples using:
+The examples can run in Docker containers. Using the development image from above you can create a docker image for any
+of the examples using:
 
 ```sh
 docker build  -t my-image -f build_scripts/build-application.Dockerfile \
