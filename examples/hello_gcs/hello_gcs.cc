@@ -30,8 +30,8 @@ HttpResponse HelloGcs(HttpRequest request) {  // NOLINT
 
   std::vector<std::string> components;
   std::istringstream split(request.target());
-  for (std::string c; std::getline(split, c, '/'); components.push_back(c))
-    ;
+  for (std::string c; std::getline(split, c, '/'); components.push_back(c)) {
+  }
 
   if (components.size() != 2) return error();
   auto const bucket = components[0];
