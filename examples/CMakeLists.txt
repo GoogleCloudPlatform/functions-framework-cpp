@@ -16,12 +16,10 @@
 
 find_package(storage_client REQUIRED)
 
-add_library(functions_framework_examples
-        # cmake-format: sort
-        hello_from_namespace/hello_from_namespace.cc
-        hello_from_nested_namespace/hello_from_nested_namespace.cc
-        hello_world/hello_world.cc
-        hello_gcs/hello_gcs.cc)
-target_link_libraries(functions_framework_examples
-        storage_client
-        googleapis-c++::functions_framework)
+add_library(
+    functions_framework_examples # cmake-format: sort
+    hello_from_namespace/hello_from_namespace.cc
+    hello_from_nested_namespace/hello_from_nested_namespace.cc
+    hello_gcs/hello_gcs.cc hello_world/hello_world.cc)
+target_link_libraries(functions_framework_examples storage_client
+                      googleapis-c++::functions_framework)
