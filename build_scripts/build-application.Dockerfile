@@ -20,7 +20,11 @@ ARG FUNCTION_SIGNATURE_TYPE="http"
 COPY --chown=cnb --from=parent /layers/cpp/gcf/cmake /workspace
 COPY --chown=cnb . /workspace/application
 
+RUN if [ -r /workspace/application/vcpkg.json ]; then cp /workspace/application/vcpkg.json /workspace; fi
 RUN /layers/cpp/gcf/generate-wrapper.sh "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE}" >/workspace/main.cc
+
+ENV VCPKG_DEFAULT_BINARY_CACHE=/layers/cpp/vcpkg-cache
+ENV VCPKG_OVERLAY_PORTS=/layers/cpp/gcf/vcpkg-overlays
 
 RUN /layers/cpp/cmake/bin/cmake -S /workspace -B /var/tmp/build -GNinja \
     -DCMAKE_INSTALL_PREFIX=/var/tmp/install \

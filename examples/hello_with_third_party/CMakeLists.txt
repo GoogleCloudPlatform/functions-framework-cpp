@@ -14,14 +14,9 @@
 # limitations under the License.
 # ~~~
 
-find_package(storage_client REQUIRED)
+find_package(fmt REQUIRED)
+find_package(googleapis_functions_framework)
 
-add_library(
-    functions_framework_examples # cmake-format: sort
-    hello_from_namespace/hello_from_namespace.cc
-    hello_from_nested_namespace/hello_from_nested_namespace.cc
-    hello_gcs/hello_gcs.cc
-    hello_with_third_party/hello_with_third_party.cc
-    hello_world/hello_world.cc)
-target_link_libraries(functions_framework_examples storage_client
+add_library(functions_framework_cpp_function hello_with_third_party.cc)
+target_link_libraries(functions_framework_cpp_function fmt::fmt
                       googleapis-c++::functions_framework)

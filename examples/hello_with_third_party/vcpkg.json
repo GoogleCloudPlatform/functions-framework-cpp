@@ -1,0 +1,8 @@
+{
+  "name": "hello-with-third-party",
+  "version-string": "unversioned",
+  "dependencies": [
+    "fmt",
+    "functions-framework-cpp"
+  ]
+}
