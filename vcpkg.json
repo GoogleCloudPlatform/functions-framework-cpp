@@ -5,7 +5,10 @@
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
   "description": "Functions Framework for C++ -- Development",
   "dependencies": [
-    "boost",
+    "boost-beast",
+    "boost-filesystem",
+    "boost-process",
+    "boost-program-options",
     "fmt",
     "google-cloud-cpp",
     "gtest"
