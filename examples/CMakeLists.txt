@@ -21,6 +21,9 @@ add_library(
     hello_from_namespace/hello_from_namespace.cc
     hello_from_nested_namespace/hello_from_nested_namespace.cc
     hello_gcs/hello_gcs.cc
+    hello_multiple_sources/greeting.cc
+    hello_multiple_sources/greeting.h
+    hello_multiple_sources/hello_multiple_sources.cc
     hello_with_third_party/hello_with_third_party.cc
     hello_world/hello_world.cc)
 target_link_libraries(functions_framework_examples storage_client
