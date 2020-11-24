@@ -19,9 +19,9 @@ jobs:
         with:
           path: |
             ~/.cache/vcpkg
-          key: vcpkg-${{ runner.os }}-r2-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+          key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ runner.os }}-r2-${{ github.job }}-
+            vcpkg-${{ runner.os }}-${{ github.job }}-
       - name: configure
         run: >
           cmake -S . -B ${{runner.workspace}}/build -GNinja -DBUILD_TESTING=OFF
