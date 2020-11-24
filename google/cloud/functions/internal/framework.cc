@@ -49,7 +49,7 @@ void HandleSession(tcp::socket socket, HttpFunction const& user_function) {
     if (ec) return report_error(ec, "read");
     auto const keep_alive = request.keep_alive();
     auto response = CallUserFunction(user_function, std::move(request));
-    // Flush any buffered output, as the application may be shutdown immediatel
+    // Flush any buffered output, as the application may be shutdown immediately
     // after the HTTP response is sent.
     std::cout << std::flush;
     std::clog << std::flush;
