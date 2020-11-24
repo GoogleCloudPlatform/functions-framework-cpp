@@ -43,7 +43,7 @@ HttpResponse EchoServer(HttpRequest const& request) {
 
   if (target.rfind("/buffered-stdout/", 0) == 0) {
     std::cout << "stdout: " << target << "\n";
- }
+  }
 
   if (target.rfind("/buffered-stderr/", 0) == 0) {
     std::clog << "stderr: " << target << "\n";
