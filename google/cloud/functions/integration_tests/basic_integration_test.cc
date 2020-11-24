@@ -108,6 +108,31 @@ TEST(RunIntegrationTest, Basic) {
   EXPECT_EQ(server.exit_code(), 0);
 }
 
+TEST(RunIntegrationTest, ExceptionLogsToStderr) {
+  auto constexpr kInternalError = 500;
+
+  auto const exe = bfs::path(argv0).parent_path() / "echo_server";
+  bp::ipstream child_stderr;
+  auto server = bp::child(exe, "--port=8080", bp::std_err > child_stderr);
+  auto result = WaitForServerReady("localhost", "8080");
+  ASSERT_EQ(result, 0);
+
+  auto actual = HttpGet("localhost", "8080", "/exception/test-string");
+  EXPECT_THAT(actual.result_int(), kInternalError);
+
+  std::string line;
+  std::getline(child_stderr, line);
+  EXPECT_THAT(line, HasSubstr("standard C++ exception"));
+  EXPECT_THAT(line, HasSubstr("/exception/test-string"));
+
+  try {
+    (void)HttpGet("localhost", "8080", "/quit/program/0");
+  } catch (...) {
+  }
+  server.wait();
+  EXPECT_EQ(server.exit_code(), 0);
+}
+
 }  // namespace
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal
