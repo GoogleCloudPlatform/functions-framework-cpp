@@ -46,6 +46,15 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache/develop
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/develop
 
+      - name: build-examples-multiple-sources
+        run: >
+          docker build
+          --pull=false
+          --build-arg=FUNCTION_SIGNATURE_TYPE=http
+          --build-arg=TARGET_FUNCTION=HelloMultipleSources
+          -f build_scripts/build-application.Dockerfile
+          examples/hello_multiple_sources
+
       - name: build-examples-hello-with-third-party
         run: >
           docker build
