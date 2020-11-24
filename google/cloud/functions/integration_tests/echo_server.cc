@@ -15,6 +15,7 @@
 #include "google/cloud/functions/internal/framework.h"
 #include <cstdlib>
 #include <cstring>
+#include <iostream>
 #include <sstream>
 
 namespace functions = google::cloud::functions_internal;
@@ -38,6 +39,14 @@ HttpResponse EchoServer(HttpRequest const& request) {
     HttpResponse response;
     response.set_result(code);
     return response;
+  }
+
+  if (target.rfind("/buffered-stdout/", 0) == 0) {
+    std::cout << "stdout: " << target << "\n";
+ }
+
+  if (target.rfind("/buffered-stderr/", 0) == 0) {
+    std::clog << "stderr: " << target << "\n";
   }
 
   std::ostringstream payload;

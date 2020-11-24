@@ -49,8 +49,10 @@ void HandleSession(tcp::socket socket, HttpFunction const& user_function) {
     if (ec) return report_error(ec, "read");
     auto const keep_alive = request.keep_alive();
     auto response = CallUserFunction(user_function, std::move(request));
-    // TODO(#23) - maybe this is enough to declare success.
+    // Flush any buffered output, as the application may be shutdown immediatel
+    // after the HTTP response is sent.
     std::cout << std::flush;
+    std::clog << std::flush;
     std::cerr << std::flush;
     // Send the response
     response.set(be::http::field::server, BOOST_BEAST_VERSION_STRING);

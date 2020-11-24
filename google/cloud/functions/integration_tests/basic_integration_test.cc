@@ -133,6 +133,39 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   EXPECT_EQ(server.exit_code(), 0);
 }
 
+TEST(RunIntegrationTest, OutputIsFlushed) {
+  auto constexpr kOkay = 200;
+
+  auto const exe = bfs::path(argv0).parent_path() / "echo_server";
+  bp::ipstream child_stderr;
+  bp::ipstream child_stdout;
+  auto server = bp::child(exe, "--port=8080", bp::std_err > child_stderr,
+                          bp::std_out > child_stdout);
+  auto result = WaitForServerReady("localhost", "8080");
+  ASSERT_EQ(result, 0);
+
+  std::string line;
+
+  auto actual = HttpGet("localhost", "8080", "/buffered-stdout/test-string");
+  EXPECT_THAT(actual.result_int(), kOkay);
+  EXPECT_TRUE(std::getline(child_stdout, line));
+  EXPECT_THAT(line, HasSubstr("stdout:"));
+  EXPECT_THAT(line, HasSubstr("/buffered-stdout/test-string"));
+
+  actual = HttpGet("localhost", "8080", "/buffered-stderr/test-string");
+  EXPECT_THAT(actual.result_int(), kOkay);
+  EXPECT_TRUE(std::getline(child_stderr, line));
+  EXPECT_THAT(line, HasSubstr("stderr:"));
+  EXPECT_THAT(line, HasSubstr("/buffered-stderr/test-string"));
+
+  try {
+    (void)HttpGet("localhost", "8080", "/quit/program/0");
+  } catch (...) {
+  }
+  server.wait();
+  EXPECT_EQ(server.exit_code(), 0);
+}
+
 }  // namespace
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal
