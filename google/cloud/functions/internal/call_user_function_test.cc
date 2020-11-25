@@ -69,6 +69,20 @@ TEST(CallUserFunctionTest, ReturnErrorOnException) {
   EXPECT_EQ(response.result(), http::status::internal_server_error);
 }
 
+TEST(CallUserFunctionTest, InterceptRobotsTxt) {
+  BeastRequest request;
+  request.target("/robots.txt");
+  auto response = CallUserFunction(AlwaysThrow, std::move(request));
+  EXPECT_EQ(response.result(), http::status::not_found);
+}
+
+TEST(CallUserFunctionTest, InterceptFaviconIco) {
+  BeastRequest request;
+  request.target("/favicon.ico");
+  auto response = CallUserFunction(AlwaysThrow, std::move(request));
+  EXPECT_EQ(response.result(), http::status::not_found);
+}
+
 }  // namespace
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal

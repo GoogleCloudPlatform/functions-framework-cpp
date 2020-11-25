@@ -33,6 +33,11 @@ struct UnwrapResponse {
 
 BeastResponse CallUserFunction(UserFunction const& function,
                                BeastRequest request) try {
+  if (request.target() == "/favicon.ico" || request.target() == "/robots.txt") {
+    BeastResponse response;
+    response.result(be::http::status::not_found);
+    return response;
+  }
   auto response = function(MakeHttpRequest(std::move(request)));
   return UnwrapResponse::unwrap(std::move(response));
 } catch (std::exception const& ex) {

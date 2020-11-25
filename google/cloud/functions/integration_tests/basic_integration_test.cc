@@ -100,6 +100,12 @@ TEST(RunIntegrationTest, Basic) {
   actual = HttpGet("localhost", "8080", "/exception/");
   EXPECT_THAT(actual.result_int(), kInternalError);
 
+  actual = HttpGet("localhost", "8080", "/favicon.ico");
+  EXPECT_THAT(actual.result_int(), kNotFound);
+
+  actual = HttpGet("localhost", "8080", "/robots.txt");
+  EXPECT_THAT(actual.result_int(), kNotFound);
+
   try {
     (void)HttpGet("localhost", "8080", "/quit/program/0");
   } catch (...) {
