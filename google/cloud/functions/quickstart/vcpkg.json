@@ -6,7 +6,6 @@
   "description": "Functions Framework for C++.",
   "dependencies": [
     "boost-beast",
-    "boost-program-options",
-    "gtest"
+    "boost-program-options"
   ]
 }
