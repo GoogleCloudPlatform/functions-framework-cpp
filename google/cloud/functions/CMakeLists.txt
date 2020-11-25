@@ -26,6 +26,7 @@ find_package(Threads REQUIRED)
 add_library(
     googleapis_functions_framework # cmake-format: sort
     ${CMAKE_CURRENT_BINARY_DIR}/internal/build_info.cc
+    cloud_event.h
     http_request.cc
     http_request.h
     http_response.cc
@@ -67,6 +68,7 @@ if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
     set(googleapis_functions_framework_unit_tests
         # cmake-format: sort
+        cloud_event_test.cc
         http_response_test.cc
         internal/call_user_function_test.cc
         internal/compiler_info_test.cc
