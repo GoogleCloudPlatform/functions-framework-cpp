@@ -37,7 +37,7 @@ class CloudEvent {
  public:
   inline static auto constexpr kDefaultSpecVersion = "1.0";
   using ClockType = std::chrono::system_clock;
-  using time_point = ClockType ::time_point;
+  using time_point = ClockType::time_point;
 
   CloudEvent(std::string id, std::string source, std::string type,
              std::string spec_version = kDefaultSpecVersion)
