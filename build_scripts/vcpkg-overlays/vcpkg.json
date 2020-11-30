@@ -5,7 +5,8 @@
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
   "description": "Functions Framework for C++.",
   "dependencies": [
-    "boost-program-options",
-    "boost-beast"
+    "abseil",
+    "boost-beast",
+    "boost-program-options"
   ]
 }

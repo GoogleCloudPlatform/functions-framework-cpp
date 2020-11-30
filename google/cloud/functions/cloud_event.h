@@ -76,6 +76,7 @@ class CloudEvent {
   void reset_subject() { subject_.reset(); }
 
   void set_time(time_point tp) { time_ = tp; }
+  void set_time(std::string const& timestamp);
   void reset_time() { time_.reset(); }
 
   void set_data(std::string v) { data_ = std::move(v); }

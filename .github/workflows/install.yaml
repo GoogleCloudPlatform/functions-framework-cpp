@@ -48,6 +48,15 @@ jobs:
     steps:
       - name: install-dependencies
         run: sudo apt install ninja-build libboost-dev libboost-program-options-dev
+      - name: install-abseil
+        run: >
+          curl -sSL https://github.com/abseil/abseil-cpp/archive/20200225.2.tar.gz |
+          tar -xzf - --strip-components=1 &&
+          sed -i 's/^#define ABSL_OPTION_USE_\(.*\) 1/#define ABSL_OPTION_USE_\1 0/' "absl/base/options.h" &&
+          cmake -GNinja -DCMAKE_BUILD_TYPE="Release" -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=yes -H. -Bcmake-out/abseil &&
+          cmake --build cmake-out/abseil &&
+          sudo cmake --build cmake-out/abseil --target install &&
+          sudo ldconfig
       - uses: actions/checkout@v2
       - name: configure
         run: >
