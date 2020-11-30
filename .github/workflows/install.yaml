@@ -56,7 +56,7 @@ jobs:
           cmake -GNinja -DCMAKE_BUILD_TYPE="Release" -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=yes -H. -Bcmake-out/abseil &&
           cmake --build cmake-out/abseil &&
           sudo cmake --build cmake-out/abseil --target install &&
-          ldconfig
+          sudo ldconfig
       - uses: actions/checkout@v2
       - name: configure
         run: >
