@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "google/cloud/functions/cloud_event.h"
+#include <absl/time/time.h>
 #include <gmock/gmock.h>
 
 namespace google::cloud::functions {
@@ -74,6 +75,27 @@ TEST(CloudEventTest, Time) {
   EXPECT_EQ(*actual.time(), tp);
   actual.reset_time();
   EXPECT_FALSE(actual.time().has_value());
+}
+
+TEST(CloudEventTest, TimeString) {
+  auto actual = CloudEvent("test-id", "test-source", "test-type");
+  std::string valid[] = {"2020-11-30T12:34:45Z", "2020-11-30T12:34:45.678Z",
+                         "2020-11-30T12:34:45.678-05:00",
+                         "2020-11-30T12:34:45.678+05:00"};
+  auto to_system_clock_tp = [](std::string const& s) {
+    std::string err;
+    absl::Time t;
+    EXPECT_TRUE(absl::ParseTime(absl::RFC3339_full, s, &t, &err)) << s;
+    return absl::ToChronoTime(t);
+  };
+  for (auto const& s : valid) {
+    auto const tp = to_system_clock_tp(s);
+    actual.set_time(s);
+    ASSERT_TRUE(actual.time().has_value());
+    EXPECT_EQ(*actual.time(), tp);
+  }
+  EXPECT_THROW(actual.set_time(""), std::exception);
+  EXPECT_THROW(actual.set_time("2020-15"), std::exception);
 }
 
 TEST(CloudEventTest, Data) {

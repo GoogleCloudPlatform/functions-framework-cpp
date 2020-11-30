@@ -5,6 +5,7 @@
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
   "description": "Functions Framework for C++ -- Development",
   "dependencies": [
+    "abseil",
     "boost-beast",
     "boost-filesystem",
     "boost-process",

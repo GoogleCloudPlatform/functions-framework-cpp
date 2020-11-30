@@ -20,12 +20,14 @@ configure_file(internal/build_info.cc.in internal/build_info.cc)
 configure_file(internal/version_info.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/internal/version_info.h)
 
+find_package(absl REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Threads REQUIRED)
 
 add_library(
     googleapis_functions_framework # cmake-format: sort
     ${CMAKE_CURRENT_BINARY_DIR}/internal/build_info.cc
+    cloud_event.cc
     cloud_event.h
     http_request.cc
     http_request.h
@@ -54,8 +56,8 @@ target_include_directories(googleapis_functions_framework
 target_include_directories(googleapis_functions_framework SYSTEM
                            PUBLIC $<INSTALL_INTERFACE:include>)
 target_link_libraries(
-    googleapis_functions_framework PUBLIC Boost::headers Boost::program_options
-                                          Threads::Threads)
+    googleapis_functions_framework
+    PUBLIC absl::time Boost::headers Boost::program_options Threads::Threads)
 target_compile_definitions(googleapis_functions_framework
                            PUBLIC BOOST_BEAST_USE_STD_STRING_VIEW)
 set_target_properties(
