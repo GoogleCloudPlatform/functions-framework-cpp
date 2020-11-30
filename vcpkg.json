@@ -10,8 +10,10 @@
     "boost-filesystem",
     "boost-process",
     "boost-program-options",
+    "boost-serialization",
     "fmt",
     "google-cloud-cpp",
-    "gtest"
+    "gtest",
+    "nlohmann-json"
   ]
 }
