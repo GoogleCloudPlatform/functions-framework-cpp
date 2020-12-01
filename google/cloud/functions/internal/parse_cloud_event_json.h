@@ -15,8 +15,8 @@
 #ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_PARSE_CLOUD_EVENT_JSON_H
 #define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_PARSE_CLOUD_EVENT_JSON_H
 
-#include "google/cloud/functions/version.h"
 #include "google/cloud/functions/cloud_event.h"
+#include "google/cloud/functions/version.h"
 #include <string_view>
 
 namespace google::cloud::functions_internal {
