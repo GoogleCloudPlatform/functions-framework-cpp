@@ -16,19 +16,17 @@
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
 #include <nlohmann/json.hpp>
+#include <algorithm>
+#include <iterator>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
-
-/// Parse @p json_string as a Cloud Event
-functions::CloudEvent ParseCloudEventJson(std::string_view json_string) {
-  auto json = nlohmann::json::parse(json_string);
-
+namespace {
+functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
   auto event = functions::CloudEvent(
       json.at("id").get<std::string>(), json.at("source").get<std::string>(),
       json.at("type").get<std::string>(),
       json.value("specversion", functions::CloudEvent::kDefaultSpecVersion));
-
   if (json.count("datacontenttype") != 0) {
     event.set_data_content_type(json.at("datacontenttype").get<std::string>());
   }
@@ -73,6 +71,29 @@ functions::CloudEvent ParseCloudEventJson(std::string_view json_string) {
   }
 
   return event;
+}
+
+}  // namespace
+
+/// Parse @p json_string as a Cloud Event
+functions::CloudEvent ParseCloudEventJson(std::string_view json_string) {
+  auto json = nlohmann::json::parse(json_string);
+  return ParseCloudEventJson(json);
+}
+
+std::vector<functions::CloudEvent> ParseCloudEventJsonBatch(
+    std::string_view json_string) {
+  auto const json = nlohmann::json::parse(json_string);
+  if (!json.is_array()) {
+    throw std::invalid_argument(
+        "ParseCloudEventJsonBatch - the input string must be a JSON array");
+  }
+  std::vector<functions::CloudEvent> events;
+  events.reserve(json.size());
+  std::transform(
+      json.begin(), json.end(), std::back_inserter(events),
+      [](nlohmann::json const& j) { return ParseCloudEventJson(j); });
+  return events;
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS

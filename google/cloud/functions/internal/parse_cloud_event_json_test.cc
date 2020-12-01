@@ -14,10 +14,15 @@
 
 #include "google/cloud/functions/internal/parse_cloud_event_json.h"
 #include <gmock/gmock.h>
+#include <algorithm>
+#include <iterator>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
+
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 TEST(ParseCloudEventJson, Basic) {
   auto constexpr kText = R"js({
@@ -217,6 +222,44 @@ TEST(ParseCloudEventJson, WithDataBase64Padding) {
     auto const ce = ParseCloudEventJson(c.json);
     EXPECT_EQ(ce.data().value_or(""), c.expected_data);
   }
+}
+
+TEST(ParseCloudEventJson, Batch) {
+  auto constexpr kText = R"js([
+  {
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234-0"
+  },
+  {
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234-1"
+  },
+  {
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234-2"
+  }
+  ])js";
+  auto const events = ParseCloudEventJsonBatch(kText);
+  std::vector<std::string> ids;
+  std::transform(events.begin(), events.end(), std::back_inserter(ids),
+                 [](auto ce) { return ce.id(); });
+  EXPECT_THAT(ids, ElementsAre("A234-1234-1234-0", "A234-1234-1234-1",
+                               "A234-1234-1234-2"));
+}
+
+TEST(ParseCloudEventJson, BatchEmpty) {
+  auto constexpr kText = R"js([])js";
+  auto const events = ParseCloudEventJsonBatch(kText);
+  EXPECT_THAT(events, IsEmpty());
+}
+
+TEST(ParseCloudEventJson, BatchInvalid) {
+  EXPECT_THROW(ParseCloudEventJsonBatch("{"), std::exception);
+  EXPECT_THROW(ParseCloudEventJsonBatch(R"js({ "foo" : " bar" })js"),
+               std::exception);
 }
 
 }  // namespace

@@ -18,12 +18,17 @@
 #include "google/cloud/functions/cloud_event.h"
 #include "google/cloud/functions/version.h"
 #include <string_view>
+#include <vector>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
 /// Parse @p json_string as a Cloud Event
 functions::CloudEvent ParseCloudEventJson(std::string_view json_string);
+
+/// Parse @p json_string as a batch of Cloud Events
+std::vector<functions::CloudEvent> ParseCloudEventJsonBatch(
+    std::string_view json_string);
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal
