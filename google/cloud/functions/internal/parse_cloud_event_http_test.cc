@@ -14,10 +14,14 @@
 
 #include "google/cloud/functions/internal/parse_cloud_event_http.h"
 #include <gmock/gmock.h>
+#include <algorithm>
+#include <iterator>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
+
+using ::testing::ElementsAre;
 
 auto TestBeastRequest() {
   BeastRequest request;
@@ -116,6 +120,79 @@ TEST(ParseCloudEventHttp, WithoutData) {
   request.prepare_payload();
   auto ce = ParseCloudEventHttpBinary(request);
   EXPECT_FALSE(ce.data().has_value());
+}
+
+TEST(ParseCloudEventHttp, Json) {
+  auto constexpr kText = R"js({
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234"})js";
+  BeastRequest request;
+  request.insert("content-type", "application/cloudevents+json; charset=utf-8");
+  request.body() = kText;
+  request.prepare_payload();
+  auto events = ParseCloudEventHttp(request);
+  ASSERT_THAT(events.size(), 1);
+  auto const& ce = events[0];
+  EXPECT_EQ(ce.id(), "A234-1234-1234");
+  EXPECT_EQ(ce.source(), "/mycontext");
+  EXPECT_EQ(ce.type(), "com.example.someevent");
+  EXPECT_EQ(ce.spec_version(), functions::CloudEvent::kDefaultSpecVersion);
+}
+
+TEST(ParseCloudEventHttp, JsonBatch) {
+  auto constexpr kText = R"js([
+  {
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234-0"
+  },
+  {
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234-1"
+  },
+  {
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234-2"
+  }
+  ])js";
+  BeastRequest request;
+  request.insert("content-type",
+                 "application/cloudevents-batch+json; charset=utf-8");
+  request.body() = kText;
+  auto const events = ParseCloudEventHttp(request);
+  std::vector<std::string> ids;
+  std::transform(events.begin(), events.end(), std::back_inserter(ids),
+                 [](auto ce) { return ce.id(); });
+  EXPECT_THAT(ids, ElementsAre("A234-1234-1234-0", "A234-1234-1234-1",
+                               "A234-1234-1234-2"));
+}
+
+TEST(ParseCloudEventHttp, Binary) {
+  auto request = TestBeastRequest();
+  request.prepare_payload();
+  auto events = ParseCloudEventHttp(request);
+  ASSERT_THAT(events.size(), 1);
+  auto const& ce = events[0];
+  EXPECT_EQ(ce.id(), "A234-1234-1234");
+  EXPECT_EQ(ce.source(), "/mycontext");
+  EXPECT_EQ(ce.type(), "com.example.someevent");
+  EXPECT_EQ(ce.spec_version(), functions::CloudEvent::kDefaultSpecVersion);
+}
+
+TEST(ParseCloudEventHttp, BinaryWithUnknownContentType) {
+  auto request = TestBeastRequest();
+  request.insert("content-type", "application/cloudevents+avro");
+  request.prepare_payload();
+  auto events = ParseCloudEventHttp(request);
+  ASSERT_THAT(events.size(), 1);
+  auto const& ce = events[0];
+  EXPECT_EQ(ce.id(), "A234-1234-1234");
+  EXPECT_EQ(ce.source(), "/mycontext");
+  EXPECT_EQ(ce.type(), "com.example.someevent");
+  EXPECT_EQ(ce.spec_version(), functions::CloudEvent::kDefaultSpecVersion);
 }
 
 }  // namespace

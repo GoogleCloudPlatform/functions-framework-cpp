@@ -18,12 +18,17 @@
 #include "google/cloud/functions/internal/http_message_types.h"
 #include "google/cloud/functions/cloud_event.h"
 #include "google/cloud/functions/version.h"
+#include <vector>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
-/// Parse @p request as a Cloud Event
+/// Parse @p request as a Cloud Event, assuming the content type is binary.
 functions::CloudEvent ParseCloudEventHttpBinary(BeastRequest const& request);
+
+/// Parse @p request as a Cloud Event, using the request content type.
+std::vector<functions::CloudEvent> ParseCloudEventHttp(
+    BeastRequest const& request);
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal
