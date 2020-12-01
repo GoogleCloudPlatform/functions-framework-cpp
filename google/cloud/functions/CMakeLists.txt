@@ -41,6 +41,8 @@ add_library(
     internal/framework.cc
     internal/framework.h
     internal/http_message_types.h
+    internal/parse_cloud_event_http.cc
+    internal/parse_cloud_event_http.h
     internal/parse_cloud_event_json.cc
     internal/parse_cloud_event_json.h
     internal/parse_options.cc
@@ -77,6 +79,7 @@ if (BUILD_TESTING)
         internal/call_user_function_test.cc
         internal/compiler_info_test.cc
         internal/framework_test.cc
+        internal/parse_cloud_event_http_test.cc
         internal/parse_cloud_event_json_test.cc
         internal/parse_options_test.cc
         internal/wrap_request_test.cc
