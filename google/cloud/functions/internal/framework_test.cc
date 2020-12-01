@@ -127,7 +127,7 @@ TEST(FrameworkTest, CloudEvent) {
   std::promise<int> port_p;
   auto port_f = port_p.get_future();
   std::atomic<bool> shutdown{false};
-  auto hello = [](functions::CloudEvent const&/*event*/) {};
+  auto hello = [](functions::CloudEvent const& /*event*/) {};
   auto run = [&](int argc, char const* const argv[], UserCloudEventFunction f) {
     return RunForTest(
         argc, argv, std::move(f), [&shutdown]() { return shutdown.load(); },
