@@ -63,7 +63,7 @@ void HandleSession(tcp::socket socket, UserFunction const& user_function) {
     if (ec) return report_error(ec, "write");
   }
   socket.shutdown(tcp::socket::shutdown_send, ec);
-};
+}
 
 template <typename UserFunction>
 int RunForTestImpl(int argc, char const* const argv[], UserFunction&& function,
@@ -118,17 +118,17 @@ int Run(int argc, char const* const argv[],
   return RunImpl(argc, argv, std::move(handler));
 }
 
-int RunForTest(int argc, char const* const argv[], UserHttpFunction function,
+int RunForTest(int argc, char const* const argv[], UserHttpFunction handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port) {
-  return RunForTestImpl(argc, argv, std::move(function), shutdown, actual_port);
+  return RunForTestImpl(argc, argv, std::move(handler), shutdown, actual_port);
 }
 
 int RunForTest(int argc, char const* const argv[],
-               UserCloudEventFunction function,
+               UserCloudEventFunction handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port) {
-  return RunForTestImpl(argc, argv, std::move(function), shutdown, actual_port);
+  return RunForTestImpl(argc, argv, std::move(handler), shutdown, actual_port);
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS

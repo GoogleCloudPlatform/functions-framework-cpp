@@ -75,10 +75,10 @@ int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept;
  * https://github.com/cloudevents/spec/blob/v1.0/http-protocol-binding.md
  */
 int Run(int argc, char const* const argv[],
-        UserCloudEventFunction function) noexcept;
+        UserCloudEventFunction handler) noexcept;
 
 /// Implement functions::Run(), with additional helpers for testing.
-int RunForTest(int argc, char const* const argv[], UserHttpFunction function,
+int RunForTest(int argc, char const* const argv[], UserHttpFunction handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port);
 
