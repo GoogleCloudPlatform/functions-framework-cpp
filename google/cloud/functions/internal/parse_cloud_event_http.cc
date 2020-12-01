@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/parse_cloud_event_http.h"
+#include "google/cloud/functions/internal/parse_cloud_event_json.h"
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
@@ -54,6 +55,21 @@ functions::CloudEvent ParseCloudEventHttpBinary(BeastRequest const& request) {
   }
 
   return event;
+}
+
+std::vector<functions::CloudEvent> ParseCloudEventHttp(
+    BeastRequest const& request) {
+  if (request.count("content-type") == 0) {
+    return {ParseCloudEventHttpBinary(request)};
+  }
+  auto content_type = request["content-type"];
+  if (content_type.rfind("application/cloudevents-batch+json", 0) == 0) {
+    return ParseCloudEventJsonBatch(request.body());
+  }
+  if (content_type.rfind("application/cloudevents+json", 0) == 0) {
+    return {ParseCloudEventJson(request.body())};
+  }
+  return {ParseCloudEventHttpBinary(request)};
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
