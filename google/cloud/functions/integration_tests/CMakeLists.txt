@@ -17,8 +17,9 @@
 find_package(GTest CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-set(googleapis_functions_framework_integration_tests # cmake-format: sort
-                                                     basic_integration_test.cc)
+set(googleapis_functions_framework_integration_tests
+    # cmake-format: sort
+    basic_integration_test.cc cloud_event_integration_test.cc)
 
 foreach (fname ${googleapis_functions_framework_integration_tests})
     string(REPLACE "/" "_" target "${fname}")
@@ -30,8 +31,9 @@ foreach (fname ${googleapis_functions_framework_integration_tests})
     add_test(NAME ${target} COMMAND ${target})
 endforeach ()
 
-set(googleapis_functions_framework_integration_programs # cmake-format: sort
-                                                        echo_server.cc)
+set(googleapis_functions_framework_integration_programs
+    # cmake-format: sort
+    cloud_event_handler.cc echo_server.cc)
 
 foreach (fname ${googleapis_functions_framework_integration_programs})
     string(REPLACE "/" "_" target "${fname}")
