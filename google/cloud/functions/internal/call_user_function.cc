@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/call_user_function.h"
+#include "google/cloud/functions/internal/parse_cloud_event_http.h"
 #include "google/cloud/functions/internal/wrap_request.h"
 #include "google/cloud/functions/internal/wrap_response.h"
 #include <iostream>
@@ -31,7 +32,7 @@ struct UnwrapResponse {
   }
 };
 
-BeastResponse CallUserFunction(UserFunction const& function,
+BeastResponse CallUserFunction(UserHttpFunction const& function,
                                BeastRequest request) try {
   if (request.target() == "/favicon.ico" || request.target() == "/robots.txt") {
     BeastResponse response;
@@ -40,6 +41,30 @@ BeastResponse CallUserFunction(UserFunction const& function,
   }
   auto response = function(MakeHttpRequest(std::move(request)));
   return UnwrapResponse::unwrap(std::move(response));
+} catch (std::exception const& ex) {
+  std::cerr << "standard C++ exception thrown: " << ex.what() << std::endl;
+  BeastResponse response;
+  response.result(be::http::status::internal_server_error);
+  return response;
+} catch (...) {
+  std::cerr << "unknown c++ exception thrown" << std::endl;
+  BeastResponse response;
+  response.result(be::http::status::internal_server_error);
+  return response;
+}
+
+BeastResponse CallUserFunction(UserCloudEventFunction const& function,
+                               BeastRequest const& request) try {
+  if (request.target() == "/favicon.ico" || request.target() == "/robots.txt") {
+    BeastResponse response;
+    response.result(be::http::status::not_found);
+    return response;
+  }
+  auto const events = ParseCloudEventHttp(request);
+  for (auto const& ce : events) {
+    function(ce);
+  }
+  return BeastResponse{};
 } catch (std::exception const& ex) {
   std::cerr << "standard C++ exception thrown: " << ex.what() << std::endl;
   BeastResponse response;
