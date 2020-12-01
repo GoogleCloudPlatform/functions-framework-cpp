@@ -34,7 +34,8 @@ namespace be = boost::beast;
 namespace asio = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
-void HandleSession(tcp::socket socket, HttpFunction const& user_function) {
+template <typename UserFunction>
+void HandleSession(tcp::socket socket, UserFunction const& user_function) {
   auto report_error = [](be::error_code ec, char const* what) {
     // TODO(#35) - maybe replace with Boost.Log
     std::cerr << what << ": " << ec.message() << "\n";
@@ -64,23 +65,10 @@ void HandleSession(tcp::socket socket, HttpFunction const& user_function) {
   socket.shutdown(tcp::socket::shutdown_send, ec);
 };
 
-}  // namespace
-
-int Run(int argc, char const* const argv[], HttpFunction handler) noexcept try {
-  return functions_internal::RunForTest(
-      argc, argv, std::move(handler), [] { return false; },
-      [](int /*unused*/) {});
-} catch (std::exception const& ex) {
-  std::cerr << "Standard C++ exception thrown " << ex.what() << "\n";
-  return 1;
-} catch (...) {
-  std::cerr << "Unknown exception thrown\n";
-  return 1;
-}
-
-int RunForTest(int argc, char const* const argv[], HttpFunction handler,
-               std::function<bool()> const& shutdown,
-               std::function<void(int)> const& actual_port) {
+template <typename UserFunction>
+int RunForTestImpl(int argc, char const* const argv[], UserFunction&& function,
+                   std::function<bool()> const& shutdown,
+                   std::function<void(int)> const& actual_port) {
   auto vm = ParseOptions(argc, argv);
   if (vm.count("help") != 0) return 0;
 
@@ -92,9 +80,10 @@ int RunForTest(int argc, char const* const argv[], HttpFunction handler,
   tcp::acceptor acceptor{ioc, {address, static_cast<std::uint16_t>(port)}};
   actual_port(acceptor.local_endpoint().port());
 
-  auto handle_session = [h = std::move(handler)](tcp::socket socket) {
-    HandleSession(std::move(socket), h);
-  };
+  auto handle_session =
+      [h = std::forward<UserFunction>(function)](tcp::socket socket) {
+        HandleSession(std::move(socket), h);
+      };
 
   while (!shutdown()) {
     auto socket = acceptor.accept(ioc);
@@ -103,6 +92,43 @@ int RunForTest(int argc, char const* const argv[], HttpFunction handler,
     (void)std::async(std::launch::async, handle_session, std::move(socket));
   }
   return 0;
+}
+
+template <typename UserFunction>
+int RunImpl(int argc, char const* const argv[], UserFunction&& f) noexcept try {
+  return RunForTestImpl(
+      argc, argv, std::forward<UserFunction>(f), [] { return false; },
+      [](int /*unused*/) {});
+} catch (std::exception const& ex) {
+  std::cerr << "Standard C++ exception thrown " << ex.what() << "\n";
+  return 1;
+} catch (...) {
+  std::cerr << "Unknown exception thrown\n";
+  return 1;
+}
+
+}  // namespace
+
+int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept {
+  return RunImpl(argc, argv, std::move(handler));
+}
+
+int Run(int argc, char const* const argv[],
+        UserCloudEventFunction handler) noexcept {
+  return RunImpl(argc, argv, std::move(handler));
+}
+
+int RunForTest(int argc, char const* const argv[], UserHttpFunction function,
+               std::function<bool()> const& shutdown,
+               std::function<void(int)> const& actual_port) {
+  return RunForTestImpl(argc, argv, std::move(function), shutdown, actual_port);
+}
+
+int RunForTest(int argc, char const* const argv[],
+               UserCloudEventFunction function,
+               std::function<bool()> const& shutdown,
+               std::function<void(int)> const& actual_port) {
+  return RunForTestImpl(argc, argv, std::move(function), shutdown, actual_port);
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS

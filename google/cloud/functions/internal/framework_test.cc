@@ -24,6 +24,8 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
+using ::testing::IsEmpty;
+
 char const* const kTestArgv[] = {"unused", "--port=0"};
 auto constexpr kTestArgc = sizeof(kTestArgv) / sizeof(kTestArgv[0]);
 
@@ -45,6 +47,7 @@ std::string HttpGet(std::string const& host, std::string const& port,
   http::request<http::string_body> req{http::verb::get, target, kHttpVersion};
   req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
   req.set(http::field::host, host);
+  req.prepare_payload();
   http::write(stream, req);
   beast::flat_buffer buffer;
   http::response<http::string_body> res;
@@ -55,7 +58,42 @@ std::string HttpGet(std::string const& host, std::string const& port,
   return std::move(res.body());
 }
 
-TEST(FrameworkTest, Basic) {
+std::string CloudEventGet(std::string const& host, std::string const& port,
+                          std::string const& target) {
+  namespace beast = boost::beast;
+  namespace http = beast::http;
+  using tcp = boost::asio::ip::tcp;
+
+  // Create a socket to make the HTTP request over
+  boost::asio::io_context ioc;
+  tcp::resolver resolver(ioc);
+  beast::tcp_stream stream(ioc);
+  auto const results = resolver.resolve(host, port);
+  stream.connect(results);
+
+  // Use Boost.Beast to make the HTTP request
+  auto constexpr kHttpVersion = 10;  // 1.0 as Boost.Beast spells it
+  http::request<http::string_body> req{http::verb::get, target, kHttpVersion};
+  req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+  req.set(http::field::host, host);
+  auto constexpr kText = R"js({
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234"})js";
+  req.set(http::field::content_type, "application/cloudevents+json");
+  req.body() = kText;
+  req.prepare_payload();
+  http::write(stream, req);
+  beast::flat_buffer buffer;
+  http::response<http::string_body> res;
+  http::read(stream, buffer, res);
+  stream.socket().shutdown(tcp::socket::shutdown_both);
+
+  // Return the body.
+  return std::move(res.body());
+}
+
+TEST(FrameworkTest, Http) {
   std::promise<int> port_p;
   auto port_f = port_p.get_future();
   std::atomic<bool> shutdown{false};
@@ -65,14 +103,41 @@ TEST(FrameworkTest, Basic) {
     response.set_header("content-type", "text/plain");
     return response;
   };
-  auto done = std::async(
-      std::launch::async, RunForTest, kTestArgc, kTestArgv, hello,
-      [&shutdown]() { return shutdown.load(); },
-      [&port_p](int port) mutable { port_p.set_value(port); });
+  auto run = [&](int argc, char const* const argv[], UserHttpFunction f) {
+    return RunForTest(
+        argc, argv, std::move(f), [&shutdown]() { return shutdown.load(); },
+        [&port_p](int port) mutable { port_p.set_value(port); });
+  };
+  auto done = std::async(std::launch::async, run, kTestArgc, kTestArgv, hello);
 
   auto port = port_f.get();
   auto actual = HttpGet("localhost", std::to_string(port), "/say/hello");
   EXPECT_EQ(actual, "Hello World from /say/hello");
+  shutdown.store(true);
+  // Making a second request guarantees the change in `shutdown` is seen, but
+  // can fail.
+  try {
+    (void)HttpGet("localhost", std::to_string(port), "/quit/now");
+  } catch (...) {
+  }
+  EXPECT_EQ(done.get(), 0);
+}
+
+TEST(FrameworkTest, CloudEvent) {
+  std::promise<int> port_p;
+  auto port_f = port_p.get_future();
+  std::atomic<bool> shutdown{false};
+  auto hello = [](functions::CloudEvent const&/*event*/) {};
+  auto run = [&](int argc, char const* const argv[], UserCloudEventFunction f) {
+    return RunForTest(
+        argc, argv, std::move(f), [&shutdown]() { return shutdown.load(); },
+        [&port_p](int port) mutable { port_p.set_value(port); });
+  };
+  auto done = std::async(std::launch::async, run, kTestArgc, kTestArgv, hello);
+
+  auto port = port_f.get();
+  auto actual = CloudEventGet("localhost", std::to_string(port), "/");
+  EXPECT_THAT(actual, IsEmpty());
   shutdown.store(true);
   // Making a second request guarantees the change in `shutdown` is seen, but
   // can fail.

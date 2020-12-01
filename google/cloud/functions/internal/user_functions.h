@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_CALL_USER_FUNCTION_H
-#define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_CALL_USER_FUNCTION_H
+#ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_USER_FUNCTIONS_H
+#define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_USER_FUNCTIONS_H
 
-#include "google/cloud/functions/internal/http_message_types.h"
-#include "google/cloud/functions/internal/user_functions.h"
+#include "google/cloud/functions/cloud_event.h"
+#include "google/cloud/functions/http_request.h"
+#include "google/cloud/functions/http_response.h"
+#include "google/cloud/functions/version.h"
+#include <functional>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
-BeastResponse CallUserFunction(UserHttpFunction const& function,
-                               BeastRequest request);
+using UserHttpFunction =
+    std::function<functions::HttpResponse(functions::HttpRequest)>;
 
-BeastResponse CallUserFunction(UserCloudEventFunction const& function,
-                               BeastRequest const& request);
+using UserCloudEventFunction = std::function<void(functions::CloudEvent)>;
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal
 
-#endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_CALL_USER_FUNCTION_H
+#endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_USER_FUNCTIONS_H
