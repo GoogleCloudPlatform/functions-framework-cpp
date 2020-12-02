@@ -13,7 +13,8 @@
 // limitations under the License.
 
 #include "greeting.h"
-#include <google/cloud/functions/internal/framework.h>
+#include <google/cloud/functions/http_request.h>
+#include <google/cloud/functions/http_response.h>
 
 using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
