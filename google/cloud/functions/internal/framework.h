@@ -34,11 +34,12 @@ inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
  * @par Example
  * @code
  * using ::google::cloud::functions_internal::Run;
+ * namespace gcf = ::google::cloud::functions;
  *
- * HttpFunction FindHttpHandler() { return some_user_function; }
+ * extern gcf::HttpResponse MyHandler(gcf::HttpRequest);
  *
  * int main(int argc, char* argv[]) {
- *   return Run(argc, argv, FindHttpHandler());
+ *   return Run(argc, argv, MyHandler);
  * }
  * @endcode
  *
@@ -60,11 +61,12 @@ int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept;
  * @par Example
  * @code
  * using ::google::cloud::functions_internal::Run;
+ * namespace gcf = ::google::cloud::functions;
  *
- * CloudEventFunction FindCloudEventHandler() { return some_user_function; }
+ * extern void MyHandler(gcf::CloudEvent);
  *
  * int main(int argc, char* argv[]) {
- *   return Run(argc, argv, FindHttpHandler());
+ *   return Run(argc, argv, MyHandler);
  * }
  * @endcode
  *
