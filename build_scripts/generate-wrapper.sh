@@ -20,7 +20,7 @@ if [[ $# -ne 2 ]]; then
   exit 1
 fi
 
-generate_main_no_namespace() {
+generate_http_main_no_namespace() {
   local function="${1}"
   cat <<_EOF_
 #include <google/cloud/functions/internal/framework.h>
@@ -31,25 +31,14 @@ namespace gcf_internal = ::google::cloud::functions_internal;
 extern gcf::HttpResponse ${function}(gcf::HttpRequest);
 
 int main(int argc, char* argv[]) {
-  return gcf_internal::Run(argc, argv, gcf_internal::HttpFunction(${function}));
+  return gcf_internal::Run(argc, argv, gcf_internal::UserHttpFunction(${function}));
 }
 _EOF_
 }
 
-generate_main() {
-  local full
-  full="${1//:://}"
-  full="${full#/}"
-  local dir
-  dir="$(dirname "${full}")"
-  local namespace
-  namespace="${dir//\//::}"
-  local function
-  function="$(basename "${full}")"
-  if [[ -z "${namespace}" || "${namespace}" == "." ]]; then
-    generate_main_no_namespace "${function}"
-    return
-  fi
+generate_http_main_with_namespace() {
+  local function="${1}"
+  local namespace="${2}"
 
   cat <<_EOF_
 #include <google/cloud/functions/internal/framework.h>
@@ -62,9 +51,79 @@ namespace ${namespace} {
 } // namespace
 
 int main(int argc, char* argv[]) {
-  return gcf_internal::Run(argc, argv, gcf_internal::HttpFunction(${1}));
+  return gcf_internal::Run(argc, argv, gcf_internal::UserHttpFunction(::${namespace}::${function}));
 }
 _EOF_
+}
+
+generate_cloud_event_main_no_namespace() {
+  local function="${1}"
+  cat <<_EOF_
+#include <google/cloud/functions/internal/framework.h>
+
+namespace gcf = ::google::cloud::functions;
+namespace gcf_internal = ::google::cloud::functions_internal;
+
+extern void ${function}(gcf::CloudEvent);
+
+int main(int argc, char* argv[]) {
+  return gcf_internal::Run(argc, argv, gcf_internal::UserCloudEventFunction(${function}));
+}
+_EOF_
+}
+
+generate_cloud_event_main_with_namespace() {
+  local function="${1}"
+  local namespace="${2}"
+
+  cat <<_EOF_
+#include <google/cloud/functions/internal/framework.h>
+
+namespace gcf = ::google::cloud::functions;
+namespace gcf_internal = ::google::cloud::functions_internal;
+
+namespace ${namespace} {
+  extern void ${function}(gcf::CloudEvent);
+} // namespace
+
+int main(int argc, char* argv[]) {
+  return gcf_internal::Run(argc, argv, gcf_internal::UserCloudEventFunction(::${namespace}::${function}));
+}
+_EOF_
+}
+
+generate_main() {
+  local signature="${2}"
+  local full
+  full="${1//:://}"
+  full="${full#/}"
+  local dir
+  dir="$(dirname "${full}")"
+  local namespace
+  namespace="${dir//\//::}"
+  local function
+  function="$(basename "${full}")"
+
+  if [[ "${signature}" == "http" ]]; then
+    if [[ -z "${namespace}" || "${namespace}" == "." ]]; then
+      generate_http_main_no_namespace "${function}"
+      return
+    fi
+    generate_http_main_with_namespace "${function}" "${namespace}"
+    return
+  fi
+
+  if [[ "${signature}" == "cloudevent" ]]; then
+    if [[ -z "${namespace}" || "${namespace}" == "." ]]; then
+      generate_cloud_event_main_no_namespace "${function}"
+      return
+    fi
+    generate_cloud_event_main_with_namespace "${function}" "${namespace}"
+    return
+  fi
+
+  >&2 echo "Unknown function signature type: ${signature}"
+  exit 1
 }
 
 generate_main "${1}" "${2}"

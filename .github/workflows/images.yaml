@@ -46,6 +46,15 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache/develop
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/develop
 
+      - name: build-examples-hello-cloud-event
+        run: >
+          docker build
+          --pull=false
+          --build-arg=FUNCTION_SIGNATURE_TYPE=cloudevent
+          --build-arg=TARGET_FUNCTION=HelloCloudEvent
+          -f build_scripts/build-application.Dockerfile
+          examples/hello_cloud_event
+
       - name: build-examples-multiple-sources
         run: >
           docker build
