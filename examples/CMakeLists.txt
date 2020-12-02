@@ -18,6 +18,7 @@ find_package(storage_client REQUIRED)
 
 add_library(
     functions_framework_examples # cmake-format: sort
+    hello_cloud_event/hello_cloud_event.cc
     hello_from_namespace/hello_from_namespace.cc
     hello_from_nested_namespace/hello_from_nested_namespace.cc
     hello_gcs/hello_gcs.cc
