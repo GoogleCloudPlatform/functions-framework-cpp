@@ -15,16 +15,12 @@
 #ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_FRAMEWORK_H
 #define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_FRAMEWORK_H
 
-#include "google/cloud/functions/http_request.h"
-#include "google/cloud/functions/http_response.h"
+#include "google/cloud/functions/internal/user_functions.h"
 #include "google/cloud/functions/version.h"
 #include <functional>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
-
-using HttpFunction =
-    std::function<functions::HttpResponse(functions::HttpRequest)>;
 
 /**
  * Run the given function, invoking it to handle HTTP requests.
@@ -37,22 +33,60 @@ using HttpFunction =
  *
  * @par Example
  * @code
- * using ::google::cloud::functions::internal::Run;
+ * using ::google::cloud::functions_internal::Run;
+ * namespace gcf = ::google::cloud::functions;
  *
- * HttpFunction FindHttpHandler() { return some_user_function; }
+ * extern gcf::HttpResponse MyHandler(gcf::HttpRequest);
  *
  * int main(int argc, char* argv[]) {
- *   return Run(argc, argv, FindHttpHandler());
+ *   return Run(argc, argv, MyHandler);
  * }
  * @endcode
  *
  * @see ParseOptions for more details of the command-line arguments used by this
  *     function.
  */
-int Run(int argc, char const* const argv[], HttpFunction handler) noexcept;
+int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept;
+
+/**
+ * Run the given function, invoking it to handle Cloud Events.
+ *
+ * Starts a HTTP server at the address and listening endpoint described by
+ * @p argv, invoking @p handler to handle any HTTP request which *MUST* conform
+ * to the Cloud Events [HTTP protocol binding][cloud-events-spec]. Note that we
+ * do not expect the application to use this function directly (it is in
+ * `functions_internal` after all), instead, our build scripts should create a
+ * `main()` function that calls this, as shown in the example:
+ *
+ * @par Example
+ * @code
+ * using ::google::cloud::functions_internal::Run;
+ * namespace gcf = ::google::cloud::functions;
+ *
+ * extern void MyHandler(gcf::CloudEvent);
+ *
+ * int main(int argc, char* argv[]) {
+ *   return Run(argc, argv, MyHandler);
+ * }
+ * @endcode
+ *
+ * @see ParseOptions for more details of the command-line arguments used by this
+ *     function.
+ *
+ * [cloud-events-spec]:
+ * https://github.com/cloudevents/spec/blob/v1.0/http-protocol-binding.md
+ */
+int Run(int argc, char const* const argv[],
+        UserCloudEventFunction handler) noexcept;
 
 /// Implement functions::Run(), with additional helpers for testing.
-int RunForTest(int argc, char const* const argv[], HttpFunction handler,
+int RunForTest(int argc, char const* const argv[], UserHttpFunction handler,
+               std::function<bool()> const& shutdown,
+               std::function<void(int)> const& actual_port);
+
+/// Implement functions::Run(), with additional helpers for testing.
+int RunForTest(int argc, char const* const argv[],
+               UserCloudEventFunction handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port);
 

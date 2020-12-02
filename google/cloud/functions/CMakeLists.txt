@@ -47,6 +47,7 @@ add_library(
     internal/parse_cloud_event_json.h
     internal/parse_options.cc
     internal/parse_options.h
+    internal/user_functions.h
     internal/version_info.h
     internal/wrap_request.cc
     internal/wrap_request.h
