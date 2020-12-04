@@ -21,7 +21,7 @@ using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
 namespace gcs = ::google::cloud::storage;
 
-HttpResponse HelloGcs(HttpRequest request) {  // NOLINT
+HttpResponse HelloGcs(HttpRequest request) {
   auto error = [] {
     auto constexpr kError = 400;
     HttpResponse response;

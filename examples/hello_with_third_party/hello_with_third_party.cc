@@ -19,7 +19,7 @@
 using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
 
-HttpResponse HelloWithThirdParty(HttpRequest request) {  // NOLINT
+HttpResponse HelloWithThirdParty(HttpRequest request) {
   HttpResponse response;
   response.set_header("Content-Type", "text/plain");
   response.set_payload(fmt::format("Hello at {}\n", request.target()));

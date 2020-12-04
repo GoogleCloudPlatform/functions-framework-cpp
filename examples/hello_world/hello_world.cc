@@ -18,7 +18,7 @@
 using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
 
-HttpResponse HelloWorld(HttpRequest) {  // NOLINT
+HttpResponse HelloWorld(HttpRequest) {
   HttpResponse response;
   response.set_header("Content-Type", "text/plain");
   response.set_payload("Hello World\n");

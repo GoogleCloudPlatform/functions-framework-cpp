@@ -28,10 +28,22 @@ jobs:
       - name: install clang-tidy
         run: sudo apt install clang-tidy-10
       - name: tidy
+        # We want to disable some warnings for the examples, so first run everything
+        # that is *not* in the examples directory:
         run: >
-          git ls-files -z |
+          git ls-files '-ix*' -x'!examples/*' -z |
           grep -zE '\.cc$' |
           xargs --verbose -P 2 -n 1 -0 clang-tidy-10 -p=${{runner.workspace}}/build
+      - name: tidy-examples
+        # -performance-unnecessary-value-param: the signature for the sample functions
+        #  is fixed and must receive HttpRequest and CloudEvent objects by value. The
+        #  examples often use them as a const-reference only. We want to avoid using
+        #  NOLINT comments because they distract from the sample code.
+        run: >
+          git ls-files -z -- examples |
+          grep -zE '\.cc$' |
+          xargs --verbose -P 2 -n 1 -0 clang-tidy-10 --checks=-performance-unnecessary-value-param \
+          -p=${{runner.workspace}}/build
 
   clang-format:
     name: clang-format

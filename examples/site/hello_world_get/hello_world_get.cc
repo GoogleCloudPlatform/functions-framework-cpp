@@ -19,10 +19,10 @@
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse hello_world_get(gcf::HttpRequest request) {  // NOLINT
+gcf::HttpResponse hello_world_get(gcf::HttpRequest request) {
   std::string greeting = "Hello World";
-  auto request_json = nlohmann::json::parse(
-      std::move(request).payload(), /*cb=*/nullptr, /*allow_exceptions=*/false);
+  auto request_json = nlohmann::json::parse(request.payload(), /*cb=*/nullptr,
+                                            /*allow_exceptions=*/false);
   if (request_json.count("name") && request_json["name"].is_string()) {
     greeting = "Hello " + request_json.value("name", "");
   }

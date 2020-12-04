@@ -17,7 +17,7 @@
 
 using ::google::cloud::functions::CloudEvent;
 
-void HelloCloudEvent(CloudEvent event) {  // NOLINT
+void HelloCloudEvent(CloudEvent event) {
   std::cout << "Received event"
             << "\n id: " << event.id()
             << "\n subject: " << event.subject().value_or("") << std::endl;

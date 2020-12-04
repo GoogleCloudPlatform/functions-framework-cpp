@@ -19,7 +19,7 @@
 using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
 
-HttpResponse HelloMultipleSources(HttpRequest) {  // NOLINT
+HttpResponse HelloMultipleSources(HttpRequest) {
   HttpResponse response;
   response.set_header("Content-Type", "text/plain");
   response.set_payload(Greeting());
