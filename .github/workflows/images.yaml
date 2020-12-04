@@ -46,6 +46,16 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache/develop
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/develop
 
+      - name: build-examples-site
+        run: >
+          for example in examples/site/*; do
+            function="$(basename "${example}")";
+            echo === ${example} ${function} ====;
+            docker build --pull=false \
+                --file="build_scripts/build-application.Dockerfile" \
+                --build-arg="TARGET_FUNCTION=${function}" "${example}";
+          done
+
       - name: build-examples-hello-cloud-event
         run: >
           docker build
