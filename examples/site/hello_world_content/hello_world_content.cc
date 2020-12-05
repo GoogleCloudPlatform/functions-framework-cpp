@@ -24,17 +24,15 @@ namespace gcf = ::google::cloud::functions;
 std::map<std::string, std::string> parse_www_form_urlencoded(
     std::string const& text);
 
-gcf::HttpResponse hello_world_content_type(
-    gcf::HttpRequest request) {  // NOLINT
+gcf::HttpResponse hello_world_content(gcf::HttpRequest request) {  // NOLINT
   std::string name;
   auto const& headers = request.headers();
   if (auto f = headers.find("content-type"); f != headers.end()) {
     if (f->second == "application/json") {
       name = nlohmann::json(request.payload()).value("name", "");
-    } else if (f->second == "application/octet-stream") {
+    } else if (f->second == "application/octet-stream" ||
+               f->second == "text/plain") {
       name = request.payload();  // treat contents as a string
-    } else if (f->second == "text/plain") {
-      name = request.payload();
     } else if (f->second == "application/x-www-form-urlencoded'") {
       // Use your preferred parser, here we use some custom code.
       auto form = parse_www_form_urlencoded(request.payload());
