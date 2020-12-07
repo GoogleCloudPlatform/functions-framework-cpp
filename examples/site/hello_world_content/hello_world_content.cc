@@ -29,7 +29,7 @@ namespace gcf = ::google::cloud::functions;
 namespace {
 std::map<std::string, std::string> parse_www_form_urlencoded(
     std::string const& text);
-} // namespace
+}  // namespace
 
 gcf::HttpResponse hello_world_content(gcf::HttpRequest request) {  // NOLINT
   std::string name;
