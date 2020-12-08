@@ -90,11 +90,14 @@ TEST(RunIntegrationTest, Basic) {
   EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
   EXPECT_THAT(actual.body(), HasSubstr(R"js("target": "/say/hello")js"));
 
-  actual = HttpGet("localhost", "8080", "/error/" + std::to_string(functions::HttpResponse::kNotFound));
+  actual =
+      HttpGet("localhost", "8080",
+              "/error/" + std::to_string(functions::HttpResponse::kNotFound));
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
 
   actual = HttpGet("localhost", "8080", "/exception/");
-  EXPECT_THAT(actual.result_int(), functions::HttpResponse::kInternalServerError);
+  EXPECT_THAT(actual.result_int(),
+              functions::HttpResponse::kInternalServerError);
 
   actual = HttpGet("localhost", "8080", "/favicon.ico");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
@@ -118,7 +121,8 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   ASSERT_EQ(result, 0);
 
   auto actual = HttpGet("localhost", "8080", "/exception/test-string");
-  EXPECT_THAT(actual.result_int(), functions::HttpResponse::kInternalServerError);
+  EXPECT_THAT(actual.result_int(),
+              functions::HttpResponse::kInternalServerError);
 
   std::string line;
   std::getline(child_stderr, line);
