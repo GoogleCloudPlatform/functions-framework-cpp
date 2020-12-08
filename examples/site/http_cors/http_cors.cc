@@ -24,7 +24,8 @@ gcf::HttpResponse http_cors(gcf::HttpRequest request) {  // NOLINT
     // Allows GET requests from any origin with the Content-Type header and
     // caches preflight response for an 3600s
     gcf::HttpResponse response;
-    response.set_result(gcf::HttpResponse::kNoContent);
+    auto constexpr kNoContent = 204;
+    response.set_result(kNoContent);
     response.set_header("Access-Control-Allow-Origin", "*");
     response.set_header("Access-Control-Allow-Methods", "GET");
     response.set_header("Access-Control-Allow-Headers", "Content-Type");

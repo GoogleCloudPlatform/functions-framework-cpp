@@ -23,8 +23,9 @@ namespace gcs = ::google::cloud::storage;
 
 HttpResponse HelloGcs(HttpRequest request) {  // NOLINT
   auto error = [] {
+    auto constexpr kError = 400;
     HttpResponse response;
-    response.set_result(HttpResponse::kBadRequest);
+    response.set_result(kError);
     return response;
   };
 
