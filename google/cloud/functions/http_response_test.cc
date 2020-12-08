@@ -33,11 +33,9 @@ TEST(WrapResponseTest, Payload) {
 
 TEST(WrapResponseTest, Result) {
   functions::HttpResponse response;
-  auto constexpr kOk = 200;
-  EXPECT_EQ(response.result(), kOk);
-  auto constexpr kNotFound = 404;
-  response.set_result(kNotFound);
-  EXPECT_EQ(response.result(), kNotFound);
+  EXPECT_EQ(response.result(), functions::HttpResponse::kOkay);
+  response.set_result(functions::HttpResponse::kNotFound);
+  EXPECT_EQ(response.result(), functions::HttpResponse::kNotFound);
 }
 
 TEST(WrapResponseTest, Headers) {

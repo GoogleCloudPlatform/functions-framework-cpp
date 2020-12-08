@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/framework.h"
+#include "google/cloud/functions/http_response.h"
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast.hpp>
@@ -166,26 +167,23 @@ char const* argv0 = nullptr;
 auto constexpr kServer = "cloud_event_handler";
 
 TEST(RunIntegrationTest, Basic) {
-  auto constexpr kOkay = 200;
-  auto constexpr kNotFound = 404;
-  auto constexpr kInternalError = 500;
-
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   auto server = bp::child(exe, "--port=8080");
   auto result = WaitForServerReady("localhost", "8080");
   ASSERT_EQ(result, 0);
 
   auto actual = HttpPost("localhost", "8080", "hello");
-  EXPECT_EQ(actual.result_int(), kOkay);
+  EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
 
   actual = HttpPost("localhost", "8080", "/exception/");
-  EXPECT_THAT(actual.result_int(), kInternalError);
+  EXPECT_THAT(actual.result_int(),
+              functions::HttpResponse::kInternalServerError);
 
   actual = HttpPost("localhost", "8080", "none", "/favicon.ico");
-  EXPECT_THAT(actual.result_int(), kNotFound);
+  EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
 
   actual = HttpPost("localhost", "8080", "none", "/robots.txt");
-  EXPECT_THAT(actual.result_int(), kNotFound);
+  EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
 
   try {
     (void)HttpPost("localhost", "8080", "/quit/program/0");
@@ -196,15 +194,13 @@ TEST(RunIntegrationTest, Basic) {
 }
 
 TEST(RunIntegrationTest, Batch) {
-  auto constexpr kOkay = 200;
-
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   auto server = bp::child(exe, "--port=8080");
   auto result = WaitForServerReady("localhost", "8080");
   ASSERT_EQ(result, 0);
 
   auto actual = HttpPutBatch("localhost", "8080", "hello");
-  EXPECT_EQ(actual.result_int(), kOkay);
+  EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
   try {
     (void)HttpPost("localhost", "8080", "/quit/program/0");
   } catch (...) {
@@ -214,15 +210,13 @@ TEST(RunIntegrationTest, Batch) {
 }
 
 TEST(RunIntegrationTest, Binary) {
-  auto constexpr kOkay = 200;
-
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   auto server = bp::child(exe, "--port=8080");
   auto result = WaitForServerReady("localhost", "8080");
   ASSERT_EQ(result, 0);
 
   auto actual = HttpGetBinary("localhost", "8080");
-  EXPECT_EQ(actual.result_int(), kOkay);
+  EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
   try {
     (void)HttpPost("localhost", "8080", "/quit/program/0");
   } catch (...) {
@@ -232,8 +226,6 @@ TEST(RunIntegrationTest, Binary) {
 }
 
 TEST(RunIntegrationTest, ExceptionLogsToStderr) {
-  auto constexpr kInternalError = 500;
-
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
   auto server = bp::child(exe, "--port=8080", bp::std_err > child_stderr);
@@ -241,7 +233,8 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   ASSERT_EQ(result, 0);
 
   auto actual = HttpPost("localhost", "8080", "/exception/test-string");
-  EXPECT_THAT(actual.result_int(), kInternalError);
+  EXPECT_THAT(actual.result_int(),
+              functions::HttpResponse::kInternalServerError);
 
   std::string line;
   std::getline(child_stderr, line);
@@ -257,8 +250,6 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
 }
 
 TEST(RunIntegrationTest, OutputIsFlushed) {
-  auto constexpr kOkay = 200;
-
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
   bp::ipstream child_stdout;
@@ -270,13 +261,13 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
   std::string line;
 
   auto actual = HttpPost("localhost", "8080", "/buffered-stdout/test-string");
-  EXPECT_THAT(actual.result_int(), kOkay);
+  EXPECT_THAT(actual.result_int(), functions::HttpResponse::kOkay);
   EXPECT_TRUE(std::getline(child_stdout, line));
   EXPECT_THAT(line, HasSubstr("stdout:"));
   EXPECT_THAT(line, HasSubstr("/buffered-stdout/test-string"));
 
   actual = HttpPost("localhost", "8080", "/buffered-stderr/test-string");
-  EXPECT_THAT(actual.result_int(), kOkay);
+  EXPECT_THAT(actual.result_int(), functions::HttpResponse::kOkay);
   EXPECT_TRUE(std::getline(child_stderr, line));
   EXPECT_THAT(line, HasSubstr("stderr:"));
   EXPECT_THAT(line, HasSubstr("/buffered-stderr/test-string"));

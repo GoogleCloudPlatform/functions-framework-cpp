@@ -40,22 +40,21 @@ TEST(CallUserFunctionHttpTest, Basic) {
   request.body() = "Hello, is there anybody out there?";
   request.set("x-goog-test", "test-value");
   auto response = CallUserFunction(func, std::move(request));
-  EXPECT_EQ(response.result_int(), 200);
+  EXPECT_EQ(response.result_int(), functions::HttpResponse::kOkay);
   EXPECT_EQ(response.body(), "just nod if you can hear me");
   EXPECT_EQ(response["x-goog-test"], "response-header");
 }
 
 TEST(CallUserFunctionHttpTest, ReturnError) {
-  auto constexpr kNotFound = 404;
   auto func = [&](functions::HttpRequest const& /*request*/) {
     functions::HttpResponse response{};
-    response.set_result(kNotFound);
+    response.set_result(functions::HttpResponse::kNotFound);
     return response;
   };
   BeastRequest request;
   request.target("/foo/bar/not-there");
   auto response = CallUserFunction(func, std::move(request));
-  EXPECT_EQ(response.result_int(), kNotFound);
+  EXPECT_EQ(response.result_int(), functions::HttpResponse::kNotFound);
 }
 
 functions::HttpResponse AlwaysThrow(functions::HttpRequest const& /*request*/) {
