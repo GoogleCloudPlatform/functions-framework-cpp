@@ -28,6 +28,8 @@ add_library(
     hello_with_third_party/hello_with_third_party.cc
     hello_world/hello_world.cc
     site/hello_world_content/hello_world_content.cc
-    site/hello_world_get/hello_world_get.cc)
+    site/hello_world_get/hello_world_get.cc
+    site/http_cors/http_cors.cc
+    site/http_cors_auth/http_cors_auth.cc)
 target_link_libraries(functions_framework_examples storage_client
                       googleapis-c++::functions_framework)
