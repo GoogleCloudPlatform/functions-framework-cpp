@@ -45,12 +45,12 @@ class HttpResponse {
    * @name Common HTTP status codes.
    */
   //@{
-  // Start of Information responses (1XX)
+  // Information responses (1XX)
   inline static auto constexpr kContinue = 100;
   inline static auto constexpr kSwitchingProtocol = 101;
   inline static auto constexpr kProcessing = 102;
   inline static auto constexpr kEarlyHints = 103;
-  // Start of Successful responses (2XX)
+  // Successful responses (2XX)
   inline static auto constexpr kOkay = 200;
   inline static auto constexpr kCreated = 201;
   inline static auto constexpr kAccepted = 202;
@@ -61,7 +61,7 @@ class HttpResponse {
   inline static auto constexpr kMultiStatus = 207;
   inline static auto constexpr kAlreadyReported = 208;
   inline static auto constexpr kIMUsed = 226;
-  // Start of Redirection messages (3XX)
+  // Redirection messages (3XX)
   inline static auto constexpr kMultipleChoice = 300;
   inline static auto constexpr kMovedPermanently = 301;
   inline static auto constexpr kFound = 302;
@@ -71,7 +71,7 @@ class HttpResponse {
   // inline static auto constexpr kReserved = 306;
   inline static auto constexpr kTemporaryRedirect = 307;
   inline static auto constexpr kPermanentRedirect = 308;
-  // Start of Client Error Responses (4XX)
+  // Client error responses (4XX)
   inline static auto constexpr kBadRequest = 400;
   inline static auto constexpr kUnauthorized = 401;
   inline static auto constexpr kPaymentRequired = 402;
@@ -101,7 +101,7 @@ class HttpResponse {
   inline static auto constexpr kTooManyRequests = 429;
   inline static auto constexpr kRequestHeaderFieldsTooLarge = 431;
   inline static auto constexpr kUnavailableForLegalReasons = 451;
-  // Start of Server Error Responses (5XX)
+  // Server error responses (5XX)
   inline static auto constexpr kInternalServerError = 500;
   inline static auto constexpr kNotImplemented = 501;
   inline static auto constexpr kBadGateway = 502;
