@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: install ninja
-      run: sudo apt install ninja-build
+      run: sudo apt install ninja-build gcov lcov
     - uses: actions/checkout@v2
     - name: cache-vcpkg
       id: cache-vcpkg
@@ -35,14 +35,6 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: ctest --output-on-failure --timeout=60s
     - name: coverage-generate
+      working-directory: ${{runner.workspace}}/build
       run: >
-        /bin/bash <(curl -s https://codecov.io/bash)
-    - name: coverage-upload
-      uses: codecov/codecov-action@v1
-      with:
-        directory: ${{runner.workspace}}/build
-        flags: unittests
-#        path_to_write_report: ${{runner.workspace}}/build/codecov_report.txt
-    - name: coverage-debug
-      run: >
-        cat ${{runner.workspace}}/build/codecov_report.txt
+        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -X search
