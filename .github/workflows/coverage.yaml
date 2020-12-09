@@ -35,11 +35,15 @@ jobs:
     - name: test
       working-directory: ${{runner.workspace}}/build
       run: ctest --output-on-failure --timeout=60s
+    - name: coverage-generate
+      working-directory: ${{runner.workspace}}/build
+      run: >
+        find . -name '*.gcno'
+    # /bin/bash <(curl -s https://codecov.io/bash)
+    # -q "${{runner.workspace}}/build/coverage/codecov_report.txt"
     - name: coverage-upload
       uses: codecov/codecov-action@v1
       with:
         directory: ${{runner.workspace}}/build
-        env_vars: OS
-        name: codecov
+        flags: unittests
         path_to_write_report: ${{runner.workspace}}/build/coverage/codecov_report.txt
-        verbose: false
