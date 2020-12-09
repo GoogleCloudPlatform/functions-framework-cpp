@@ -34,11 +34,7 @@ jobs:
     - name: test
       working-directory: ${{runner.workspace}}/build
       run: ctest --output-on-failure --timeout=60s
-    - name: coverage-generate
+    - name: coverage-upload
       working-directory: ${{runner.workspace}}
       run: >
-        echo "==== gcda";
-        find . -name '*.gcda';
-        echo "==== gcno";
-        find . -name '*.gcno';
         /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
