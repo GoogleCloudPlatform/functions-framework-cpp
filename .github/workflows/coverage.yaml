@@ -40,6 +40,6 @@ jobs:
       with:
         directory: ${{runner.workspace}}/build
         env_vars: OS
-        name: codecov-umbrella
+        name: codecov
         path_to_write_report: ${{runner.workspace}}/build/coverage/codecov_report.txt
-        verbose: true
+        verbose: false
