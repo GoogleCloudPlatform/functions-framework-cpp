@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: install ninja
-      run: sudo apt install ninja-build gcov lcov
+      run: sudo apt install ninja-build lcov
     - uses: actions/checkout@v2
     - name: cache-vcpkg
       id: cache-vcpkg
@@ -37,4 +37,8 @@ jobs:
     - name: coverage-generate
       working-directory: ${{runner.workspace}}/build
       run: >
+        echo "==== gcda";
+        find . -name '*.gcda';
+        echo "==== gcno";
+        find . -name '*.gcno';
         /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -X search
