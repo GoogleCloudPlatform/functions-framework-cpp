@@ -8,7 +8,7 @@ on:
 jobs:
   coverage:
     name: coverage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: install ninja
       run: sudo apt install ninja-build
@@ -22,6 +22,7 @@ jobs:
         key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
         restore-keys: |
           vcpkg-${{ runner.os }}-${{ github.job }}-
+          vcpkg-Linux-build-
     - name: configure
       run: >
         cmake -S . -B ${{runner.workspace}}/build -GNinja
@@ -34,3 +35,11 @@ jobs:
     - name: test
       working-directory: ${{runner.workspace}}/build
       run: ctest --output-on-failure --timeout=60s
+    - name: coverage-upload
+      uses: codecov/codecov-action@v1
+      with:
+        directory: ${{runner.workspace}}/build
+        env_vars: OS
+        name: codecov-umbrella
+        path_to_write_report: ${{runner.workspace}}/build/coverage/codecov_report.txt
+        verbose: true
