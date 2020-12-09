@@ -1,0 +1,8 @@
+{
+  "name": "http-xml",
+  "version-string": "unversioned",
+  "dependencies": [
+    "boost-property-tree",
+    "functions-framework-cpp"
+  ]
+}

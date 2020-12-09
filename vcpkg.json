@@ -10,6 +10,7 @@
     "boost-filesystem",
     "boost-process",
     "boost-program-options",
+    "boost-property-tree",
     "boost-serialization",
     "boost-uuid",
     "fmt",

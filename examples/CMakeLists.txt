@@ -31,6 +31,7 @@ add_library(
     site/hello_world_get/hello_world_get.cc
     site/http_cors/http_cors.cc
     site/http_cors_auth/http_cors_auth.cc
-    site/http_method/http_method.cc)
+    site/http_method/http_method.cc
+    site/http_xml/http_xml.cc)
 target_link_libraries(functions_framework_examples storage_client
                       googleapis-c++::functions_framework)
