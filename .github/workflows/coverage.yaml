@@ -10,7 +10,7 @@ jobs:
     name: coverage
     runs-on: ubuntu-20.04
     steps:
-    - name: install ninja
+    - name: install tools
       run: sudo apt install ninja-build lcov
     - uses: actions/checkout@v2
     - name: cache-vcpkg
@@ -35,10 +35,10 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: ctest --output-on-failure --timeout=60s
     - name: coverage-generate
-      working-directory: ${{runner.workspace}}/build
+      working-directory: ${{runner.workspace}}
       run: >
         echo "==== gcda";
         find . -name '*.gcda';
         echo "==== gcno";
         find . -name '*.gcno';
-        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -X search
+        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
