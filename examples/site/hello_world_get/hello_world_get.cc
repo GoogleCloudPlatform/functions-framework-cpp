@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START functions_hello_world_get]
+// [START functions_helloworld_get]
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
 #include <nlohmann/json.hpp>
@@ -32,4 +32,4 @@ gcf::HttpResponse hello_world_get(gcf::HttpRequest request) {  // NOLINT
   response.set_header("content-type", "text/plain");
   return response;
 }
-// [END functions_hello_world_get]
+// [END functions_helloworld_get]

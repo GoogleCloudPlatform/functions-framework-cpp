@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START functions_hello_world_content]
+// [START functions_helloworld_content]
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
 #include <nlohmann/json.hpp>
@@ -52,7 +52,7 @@ gcf::HttpResponse hello_world_content(gcf::HttpRequest request) {  // NOLINT
   response.set_header("content-type", "text/plain");
   return response;
 }
-// [END functions_hello_world_content]
+// [END functions_helloworld_content]
 
 namespace {
 std::string urldecode(std::string const& encoded) {
