@@ -16,10 +16,7 @@
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
 #include <nlohmann/json.hpp>
-#include <algorithm>
 #include <charconv>
-#include <iostream>
-#include <iterator>
 #include <map>
 #include <sstream>
 #include <string>
