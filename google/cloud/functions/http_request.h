@@ -32,37 +32,86 @@ class HttpRequest {
  public:
   using HeadersType = std::multimap<std::string, std::string>;
 
+  HttpRequest() = default;
+
   /// The HTTP verb (GET, PUT, POST, etc) in the request
-  [[nodiscard]] std::string const& verb() const { return impl_->verb(); }
+  [[nodiscard]] std::string const& verb() const { return verb_; }
 
   /// The target object for the request, e.g, `/index.html`.
-  [[nodiscard]] std::string const& target() const { return impl_->target(); }
+  [[nodiscard]] std::string const& target() const { return target_; }
 
   /// The request payload
-  [[nodiscard]] std::string const& payload() const { return impl_->payload(); }
+  [[nodiscard]] std::string const& payload() const { return payload_; }
 
   /// The request HTTP headers
-  [[nodiscard]] HeadersType const& headers() const { return impl_->headers(); }
+  [[nodiscard]] HeadersType const& headers() const { return headers_; }
 
   /// The HTTP version for the request
-  [[nodiscard]] int version_major() const { return impl_->version_major(); }
-  [[nodiscard]] int version_minor() const { return impl_->version_minor(); }
+  [[nodiscard]] int version_major() const { return version_major_; }
+  [[nodiscard]] int version_minor() const { return version_minor_; }
 
-  class Impl {
-   public:
-    virtual ~Impl() = 0;
-    [[nodiscard]] virtual std::string const& verb() const = 0;
-    [[nodiscard]] virtual std::string const& target() const = 0;
-    [[nodiscard]] virtual std::string const& payload() const = 0;
-    [[nodiscard]] virtual HeadersType const& headers() const = 0;
-    [[nodiscard]] virtual int version_major() const = 0;
-    [[nodiscard]] virtual int version_minor() const = 0;
-  };
+  HttpRequest& set_verb(std::string v) & {
+    verb_ = std::move(v);
+    return *this;
+  }
+  HttpRequest&& set_verb(std::string v) && {
+    return std::move(set_verb(std::move(v)));
+  }
 
-  explicit HttpRequest(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
+  HttpRequest& set_target(std::string v) & {
+    target_ = std::move(v);
+    return *this;
+  }
+  HttpRequest&& set_target(std::string v) && {
+    return std::move(set_target(std::move(v)));
+  }
+
+  HttpRequest& set_payload(std::string v) & {
+    payload_ = std::move(v);
+    return *this;
+  }
+  HttpRequest&& set_payload(std::string v) && {
+    return std::move(set_payload(std::move(v)));
+  }
+
+  HttpRequest& clear_headers() & {
+    headers_.clear();
+    return *this;
+  }
+  HttpRequest&& clear_headers() && { return std::move(clear_headers()); }
+
+  HttpRequest& add_header(std::string k, std::string v) & {
+    headers_.emplace(std::move(k), std::move(v));
+    return *this;
+  }
+  HttpRequest&& add_header(std::string k, std::string v) && {
+    return std::move(add_header(std::move(k), std::move(v)));
+  }
+
+  HttpRequest& remove_header(std::string const& k) & {
+    headers_.erase(k);
+    return *this;
+  }
+  HttpRequest&& remove_header(std::string const& k) && {
+    return std::move(remove_header(k));
+  }
+
+  HttpRequest& set_version(int major, int minor) & {
+    version_major_ = major;
+    version_minor_ = minor;
+    return *this;
+  }
+  HttpRequest&& set_version(int major, int minor) && {
+    return std::move(set_version(major, minor));
+  }
 
  private:
-  std::shared_ptr<Impl> impl_;
+  std::string verb_;
+  std::string target_;
+  std::string payload_;
+  HeadersType headers_;
+  int version_major_ = 1;
+  int version_minor_ = 1;
 };
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS

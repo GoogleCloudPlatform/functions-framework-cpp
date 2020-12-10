@@ -13,52 +13,24 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/wrap_request.h"
+#include "google/cloud/functions/http_request.h"
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
-namespace {
-class WrapBeastImpl : public google::cloud::functions::HttpRequest::Impl {
- public:
-  using Headers = google::cloud::functions::HttpRequest::HeadersType;
-
-  explicit WrapBeastImpl(BeastRequest request)
-      : verb_(request.method_string()), target_(request.target()) {
-    for (auto const& h : request.base()) {
-      headers_.emplace(h.name_string(), h.value());
-    }
-    version_ = static_cast<int>(request.version());
-    // We copy all the other values before moving `body()`.
-    body_ = std::move(request).body();
-  }
-  ~WrapBeastImpl() override = default;
-
-  [[nodiscard]] std::string const& verb() const override { return verb_; }
-  [[nodiscard]] std::string const& target() const override { return target_; }
-  [[nodiscard]] std::string const& payload() const override { return body_; }
-  [[nodiscard]] Headers const& headers() const override { return headers_; }
-  static inline auto constexpr kBeastHttpVersionFactor = 10;
-  [[nodiscard]] int version_major() const override {
-    return version_ / kBeastHttpVersionFactor;
-  }
-  [[nodiscard]] int version_minor() const override {
-    return version_ % kBeastHttpVersionFactor;
-  }
-
- private:
-  // Hold the components of the original `BeastRequest` object. We cannot hold
-  // the object directly and use its accessors because they return
-  // `std::string_view`, and we want to return `std::string const&`.
-  std::string verb_;
-  std::string target_;
-  std::string body_;
-  Headers headers_;
-  int version_;
-};
-}  // namespace
 
 ::google::cloud::functions::HttpRequest MakeHttpRequest(BeastRequest request) {
-  return functions::HttpRequest(
-      std::make_unique<WrapBeastImpl>(std::move(request)));
+  auto constexpr kBeastHttpVersionFactor = 10;
+  auto const version = static_cast<int>(request.version());
+  auto r = ::google::cloud::functions::HttpRequest{}
+               .set_verb(std::string(request.method_string()))
+               .set_target(std::string(request.target()))
+               .set_version(version / kBeastHttpVersionFactor,
+                            version % kBeastHttpVersionFactor);
+  for (auto const& h : request.base()) {
+    r.add_header(std::string(h.name_string()), std::string(h.value()));
+  }
+  r.set_payload(std::move(request).body());
+  return r;
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
