@@ -24,12 +24,23 @@ inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
 class MockHttpRequest : public google::cloud::functions::HttpRequest::Impl {
  public:
+  // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
   MOCK_METHOD(std::string const&, verb, (), (const override));
+
+  // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
   MOCK_METHOD(std::string const&, target, (), (const override));
+
+  // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
   MOCK_METHOD(std::string const&, payload, (), (const override));
+
+  // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
   MOCK_METHOD(google::cloud::functions::HttpRequest::HeadersType const&,
               headers, (), (const override));
+
+  // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
   MOCK_METHOD(int, version_major, (), (const override));
+
+  // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
   MOCK_METHOD(int, version_minor, (), (const override));
 };
 
