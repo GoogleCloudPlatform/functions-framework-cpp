@@ -23,6 +23,7 @@ void CloudEventHandler(CloudEvent const& event) {
   auto const& subject = event.subject().value_or("");
   if (subject == "/quit/program/0") std::exit(0);
   if (subject.rfind("/exception/", 0) == 0) throw std::runtime_error(subject);
+  if (subject.rfind("/unknown-exception/", 0) == 0) throw "uh-oh";
   if (subject.rfind("/buffered-stdout/", 0) == 0) {
     std::cout << "stdout: " << subject << "\n";
   }

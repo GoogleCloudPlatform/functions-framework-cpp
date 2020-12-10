@@ -26,6 +26,7 @@ HttpResponse EchoServer(HttpRequest const& request) {
   auto const& target = request.target();
   if (target == "/quit/program/0") std::exit(0);
   if (target.rfind("/exception/", 0) == 0) throw std::runtime_error(target);
+  if (target.rfind("/unknown-exception/", 0) == 0) throw "uh-oh";
 
   if (target == "/ok") {
     HttpResponse response;
