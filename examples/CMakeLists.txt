@@ -29,6 +29,7 @@ add_library(
     hello_world/hello_world.cc
     site/hello_world_content/hello_world_content.cc
     site/hello_world_get/hello_world_get.cc
+    site/hello_world_http/hello_world_http.cc
     site/http_cors/http_cors.cc
     site/http_cors_auth/http_cors_auth.cc
     site/http_method/http_method.cc
