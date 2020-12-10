@@ -35,3 +35,20 @@ add_library(
     site/http_xml/http_xml.cc)
 target_link_libraries(functions_framework_examples storage_client
                       googleapis-c++::functions_framework)
+
+if (BUILD_TESTING)
+    find_package(GTest CONFIG REQUIRED)
+    set(googleapis_functions_framework_examples_unit_tests # cmake-format: sort
+                                                           site_test.cc)
+
+    foreach (fname ${googleapis_functions_framework_examples_unit_tests})
+        string(REPLACE "/" "_" target "${fname}")
+        string(REPLACE ".cc" "" target "${target}")
+        add_executable("${target}" ${fname})
+        target_link_libraries(
+            ${target}
+            PRIVATE functions_framework_examples googleapis_functions_framework
+                    GTest::gmock_main GTest::gmock GTest::gtest)
+        add_test(NAME ${target} COMMAND ${target})
+    endforeach ()
+endif ()

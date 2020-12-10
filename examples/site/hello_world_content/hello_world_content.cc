@@ -18,6 +18,7 @@
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <charconv>
+#include <iostream>
 #include <iterator>
 #include <map>
 #include <sstream>
@@ -36,11 +37,11 @@ gcf::HttpResponse hello_world_content(gcf::HttpRequest request) {  // NOLINT
   auto const& headers = request.headers();
   if (auto f = headers.find("content-type"); f != headers.end()) {
     if (f->second == "application/json") {
-      name = nlohmann::json(request.payload()).value("name", "");
+      name = nlohmann::json::parse(request.payload()).value("name", "");
     } else if (f->second == "application/octet-stream" ||
                f->second == "text/plain") {
       name = request.payload();  // treat contents as a string
-    } else if (f->second == "application/x-www-form-urlencoded'") {
+    } else if (f->second == "application/x-www-form-urlencoded") {
       // Use your preferred parser, here we use some custom code.
       auto form = parse_www_form_urlencoded(request.payload());
       name = form["name"];

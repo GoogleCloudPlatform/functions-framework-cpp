@@ -73,6 +73,22 @@ add_library(googleapis-c++::functions_framework ALIAS
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
+
+    add_library(googleapis_functions_framework_mocks INTERFACE)
+    target_sources(
+        googleapis_functions_framework_mocks
+        INTERFACE # cmake-format: sort
+                  ${CMAKE_CURRENT_SOURCE_DIR}/mocks/mock_http_request.h)
+    target_link_libraries(
+        googleapis_functions_framework_mocks
+        INTERFACE googleapis-c++::functions_framework GTest::gmock_main
+                  GTest::gmock GTest::gtest)
+    target_include_directories(
+        googleapis_functions_framework_mocks
+        INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+                  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+                  $<INSTALL_INTERFACE:include>)
+
     set(googleapis_functions_framework_unit_tests
         # cmake-format: sort
         cloud_event_test.cc
@@ -118,6 +134,8 @@ install(
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT development)
 
 google_cloud_cpp_install_headers(googleapis_functions_framework
+                                 include/google/cloud/functions)
+google_cloud_cpp_install_headers(googleapis_functions_framework_mocks
                                  include/google/cloud/functions)
 
 # Create and install the CMake configuration files.
