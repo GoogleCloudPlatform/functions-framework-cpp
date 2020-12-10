@@ -1,0 +1,40 @@
+name: coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  coverage:
+    name: coverage
+    runs-on: ubuntu-20.04
+    steps:
+    - name: install tools
+      run: sudo apt install ninja-build lcov
+    - uses: actions/checkout@v2
+    - name: cache-vcpkg
+      id: cache-vcpkg
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/vcpkg
+        key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          vcpkg-${{ runner.os }}-${{ github.job }}-
+    - name: configure
+      run: >
+        cmake -S . -B ${{runner.workspace}}/build -GNinja
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_CXX_FLAGS=--coverage
+        -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+    - name: build
+      run: cmake --build ${{runner.workspace}}/build
+    - name: test
+      working-directory: ${{runner.workspace}}/build
+      run: ctest --output-on-failure --timeout=60s
+    - name: coverage-upload
+      working-directory: ${{runner.workspace}}
+      run: >
+        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
