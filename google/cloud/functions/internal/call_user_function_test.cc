@@ -57,28 +57,41 @@ TEST(CallUserFunctionHttpTest, ReturnError) {
   EXPECT_EQ(response.result_int(), functions::HttpResponse::kNotFound);
 }
 
-functions::HttpResponse AlwaysThrow(functions::HttpRequest const& /*request*/) {
+functions::HttpResponse HttpAlwaysThrow(
+    functions::HttpRequest const& /*request*/) {
   throw std::runtime_error("uh-oh");
 }
 
-TEST(CallUserFunctionHttpTest, ReturnErrorOnException) {
+functions::HttpResponse HttpAlwaysThrowUnknown(
+    functions::HttpRequest const& /*request*/) {
+  throw "uh-oh";
+}
+
+TEST(CallUserFunctionHttpTest, ReturnErrorOnStandardException) {
   BeastRequest request;
   request.target("/foo/bar/bad");
-  auto response = CallUserFunction(AlwaysThrow, std::move(request));
+  auto response = CallUserFunction(HttpAlwaysThrow, std::move(request));
+  EXPECT_EQ(response.result(), http::status::internal_server_error);
+}
+
+TEST(CallUserFunctionHttpTest, ReturnErrorOnUnknownException) {
+  BeastRequest request;
+  request.target("/foo/bar/bad");
+  auto response = CallUserFunction(HttpAlwaysThrowUnknown, std::move(request));
   EXPECT_EQ(response.result(), http::status::internal_server_error);
 }
 
 TEST(CallUserFunctionHttpTest, InterceptRobotsTxt) {
   BeastRequest request;
   request.target("/robots.txt");
-  auto response = CallUserFunction(AlwaysThrow, std::move(request));
+  auto response = CallUserFunction(HttpAlwaysThrow, std::move(request));
   EXPECT_EQ(response.result(), http::status::not_found);
 }
 
 TEST(CallUserFunctionHttpTest, InterceptFaviconIco) {
   BeastRequest request;
   request.target("/favicon.ico");
-  auto response = CallUserFunction(AlwaysThrow, std::move(request));
+  auto response = CallUserFunction(HttpAlwaysThrow, std::move(request));
   EXPECT_EQ(response.result(), http::status::not_found);
 }
 
@@ -106,27 +119,37 @@ TEST(CallUserFunctionCloudEventTest, Basic) {
   EXPECT_EQ(response.result_int(), 200);
 }
 
-void AlwaysThrowCloudEvent(functions::CloudEvent const& /*event*/) {
+void CloudEventAlwaysThrow(functions::CloudEvent const& /*event*/) {
   throw std::runtime_error("uh-oh");
 }
 
-TEST(CallUserFunctionCloudEventTest, ReturnErrorOnException) {
+void CloudEventAlwaysThrowUnknown(functions::CloudEvent const& /*event*/) {
+  throw "uh-oh";
+}
+
+TEST(CallUserFunctionCloudEventTest, ReturnErrorOnStandardException) {
   auto const request = TestCloudEventRequest();
-  auto response = CallUserFunction(AlwaysThrowCloudEvent, request);
+  auto response = CallUserFunction(CloudEventAlwaysThrow, request);
+  EXPECT_EQ(response.result(), http::status::internal_server_error);
+}
+
+TEST(CallUserFunctionCloudEventTest, ReturnErrorOnUnknownException) {
+  auto const request = TestCloudEventRequest();
+  auto response = CallUserFunction(CloudEventAlwaysThrowUnknown, request);
   EXPECT_EQ(response.result(), http::status::internal_server_error);
 }
 
 TEST(CallUserFunctionCloudEventTest, InterceptRobotsTxt) {
   BeastRequest request;
   request.target("/robots.txt");
-  auto response = CallUserFunction(AlwaysThrowCloudEvent, request);
+  auto response = CallUserFunction(CloudEventAlwaysThrow, request);
   EXPECT_EQ(response.result(), http::status::not_found);
 }
 
 TEST(CallUserFunctionCloudEventTest, InterceptFaviconIco) {
   BeastRequest request;
   request.target("/favicon.ico");
-  auto response = CallUserFunction(AlwaysThrowCloudEvent, request);
+  auto response = CallUserFunction(CloudEventAlwaysThrow, request);
   EXPECT_EQ(response.result(), http::status::not_found);
 }
 

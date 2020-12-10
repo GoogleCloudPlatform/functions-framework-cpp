@@ -179,6 +179,10 @@ TEST(RunIntegrationTest, Basic) {
   EXPECT_THAT(actual.result_int(),
               functions::HttpResponse::kInternalServerError);
 
+  actual = HttpPost("localhost", "8080", "/unknown-exception/");
+  EXPECT_THAT(actual.result_int(),
+              functions::HttpResponse::kInternalServerError);
+
   actual = HttpPost("localhost", "8080", "none", "/favicon.ico");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
 
