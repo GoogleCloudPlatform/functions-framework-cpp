@@ -29,6 +29,10 @@ using ::testing::IsEmpty;
 char const* const kTestArgv[] = {"unused", "--port=0"};
 auto constexpr kTestArgc = sizeof(kTestArgv) / sizeof(kTestArgv[0]);
 
+char const* const kTestInvalidArgv[] = {"unused", "--port=12345467"};
+auto constexpr kTestInvalidArgc =
+    sizeof(kTestInvalidArgv) / sizeof(kTestInvalidArgv[0]);
+
 std::string HttpGet(std::string const& host, std::string const& port,
                     std::string const& target) {
   namespace beast = boost::beast;
@@ -123,6 +127,18 @@ TEST(FrameworkTest, Http) {
   EXPECT_EQ(done.get(), 0);
 }
 
+TEST(FrameworkTest, HttpInvalidPort) {
+  auto hello = [](functions::HttpRequest const&) {
+    return functions::HttpResponse{};
+  };
+  auto run = [](int argc, char const* const argv[], UserHttpFunction f) {
+    return;
+  };
+  auto const exit_code = ::google::cloud::functions_internal::Run(
+      kTestInvalidArgc, kTestInvalidArgv, hello);
+  EXPECT_NE(exit_code, 0);
+}
+
 TEST(FrameworkTest, CloudEvent) {
   std::promise<int> port_p;
   auto port_f = port_p.get_future();
@@ -146,6 +162,16 @@ TEST(FrameworkTest, CloudEvent) {
   } catch (...) {
   }
   EXPECT_EQ(done.get(), 0);
+}
+
+TEST(FrameworkTest, CloudEventInvalidPort) {
+  auto hello = [](functions::CloudEvent const&) {};
+  auto run = [](int argc, char const* const argv[], UserHttpFunction f) {
+    return;
+  };
+  auto const exit_code = ::google::cloud::functions_internal::Run(
+      kTestInvalidArgc, kTestInvalidArgv, hello);
+  EXPECT_NE(exit_code, 0);
 }
 
 }  // namespace
