@@ -29,7 +29,6 @@ add_library(
     ${CMAKE_CURRENT_BINARY_DIR}/internal/build_info.cc
     cloud_event.cc
     cloud_event.h
-    http_request.cc
     http_request.h
     http_response.cc
     http_response.h
@@ -76,6 +75,7 @@ if (BUILD_TESTING)
     set(googleapis_functions_framework_unit_tests
         # cmake-format: sort
         cloud_event_test.cc
+        http_request_test.cc
         http_response_test.cc
         internal/call_user_function_test.cc
         internal/compiler_info_test.cc
