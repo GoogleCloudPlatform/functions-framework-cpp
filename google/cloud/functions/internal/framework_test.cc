@@ -128,14 +128,8 @@ TEST(FrameworkTest, Http) {
 }
 
 TEST(FrameworkTest, HttpInvalidPort) {
-  auto hello = [](functions::HttpRequest const&) {
-    return functions::HttpResponse{};
-  };
-  auto run = [](int argc, char const* const argv[], UserHttpFunction f) {
-    return;
-  };
   auto const exit_code = ::google::cloud::functions_internal::Run(
-      kTestInvalidArgc, kTestInvalidArgv, hello);
+      kTestInvalidArgc, kTestInvalidArgv, UserHttpFunction{});
   EXPECT_NE(exit_code, 0);
 }
 
@@ -165,12 +159,8 @@ TEST(FrameworkTest, CloudEvent) {
 }
 
 TEST(FrameworkTest, CloudEventInvalidPort) {
-  auto hello = [](functions::CloudEvent const&) {};
-  auto run = [](int argc, char const* const argv[], UserHttpFunction f) {
-    return;
-  };
   auto const exit_code = ::google::cloud::functions_internal::Run(
-      kTestInvalidArgc, kTestInvalidArgv, hello);
+      kTestInvalidArgc, kTestInvalidArgv, UserCloudEventFunction{});
   EXPECT_NE(exit_code, 0);
 }
 
