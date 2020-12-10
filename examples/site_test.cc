@@ -56,6 +56,10 @@ TEST(ExamplesSiteTest, HelloWorldContent) {
   actual = hello_world_content(make_request("application/x-www-form-urlencoded",
                                             "id=1&name=Baz%20Qux&value=x"));
   EXPECT_THAT(actual.payload(), "Hello Baz Qux");
+
+  actual = hello_world_content(make_request("application/x-www-form-urlencoded",
+                                            "id=1&name=Baz%Qux&value=x"));
+  EXPECT_THAT(actual.payload(), "Hello Baz%Qux");
 }
 
 TEST(ExamplesSiteTest, HelloWorldGet) {
