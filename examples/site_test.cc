@@ -19,6 +19,7 @@
 namespace gcf = ::google::cloud::functions;
 extern gcf::HttpResponse hello_world_content(gcf::HttpRequest request);
 extern gcf::HttpResponse hello_world_get(gcf::HttpRequest request);
+extern gcf::HttpResponse hello_world_http(gcf::HttpRequest request);
 extern gcf::HttpResponse http_cors(gcf::HttpRequest request);
 extern gcf::HttpResponse http_cors_auth(gcf::HttpRequest request);
 extern gcf::HttpResponse http_method(gcf::HttpRequest request);
@@ -50,16 +51,21 @@ TEST(ExamplesSiteTest, HelloWorldContent) {
 }
 
 TEST(ExamplesSiteTest, HelloWorldGet) {
-  auto actual = hello_world_get(
+  auto actual = hello_world_get(gcf::HttpRequest{});
+  EXPECT_EQ(actual.payload(), "Hello World!");
+}
+
+TEST(ExamplesSiteTest, HelloWorlHttp) {
+  auto actual = hello_world_http(
       gcf::HttpRequest{}.set_payload(R"js({ "name": "Foo" })js"));
-  EXPECT_EQ(actual.payload(), "Hello Foo");
+  EXPECT_EQ(actual.payload(), "Hello Foo!");
 
-  actual =
-      hello_world_get(gcf::HttpRequest{}.set_payload(R"js({ "unused": 7 })js"));
-  EXPECT_EQ(actual.payload(), "Hello World");
+  actual = hello_world_http(
+      gcf::HttpRequest{}.set_payload(R"js({ "unused": 7 })js"));
+  EXPECT_EQ(actual.payload(), "Hello World!");
 
-  actual = hello_world_get(gcf::HttpRequest{}.set_payload("Bar"));
-  EXPECT_EQ(actual.payload(), "Hello World");
+  actual = hello_world_http(gcf::HttpRequest{}.set_payload("Bar"));
+  EXPECT_EQ(actual.payload(), "Hello World!");
 }
 
 TEST(ExamplesSiteTest, HttpCors) {
