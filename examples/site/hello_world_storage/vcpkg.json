@@ -1,0 +1,9 @@
+{
+  "name": "hello-world-storage",
+  "version-string": "unversioned",
+  "dependencies": [
+    "boost-serialization",
+    "functions-framework-cpp",
+    "nlohmann-json"
+  ]
+}

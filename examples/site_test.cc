@@ -28,6 +28,7 @@ extern gcf::HttpResponse http_cors_auth(gcf::HttpRequest request);
 extern gcf::HttpResponse http_method(gcf::HttpRequest request);
 extern gcf::HttpResponse http_xml(gcf::HttpRequest request);
 extern void hello_world_pubsub(gcf::CloudEvent event);
+extern void hello_world_storage(gcf::CloudEvent event);
 
 namespace {
 
@@ -184,6 +185,63 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
     }
   })js")),
                std::exception);
+}
+
+TEST(ExamplesSiteTest, HelloWorldStorage) {
+  // We need some input data, and this was available from:
+  //   https://github.com/GoogleCloudPlatform/functions-framework-conformance
+  auto const base = nlohmann::json::parse(R"js({
+    "specversion": "1.0",
+    "type": "google.cloud.storage.object.v1.finalized",
+    "source": "//storage.googleapis.com/projects/_/buckets/some-bucket",
+    "subject": "objects/folder/Test.cs",
+    "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+    "time": "2020-09-29T11:32:00.000Z",
+    "datacontenttype": "application/json",
+    "data": {
+      "bucket": "some-bucket",
+      "contentType": "text/plain",
+      "crc32c": "rTVTeQ==",
+      "etag": "CNHZkbuF/ugCEAE=",
+      "generation": "1587627537231057",
+      "id": "some-bucket/folder/Test.cs/1587627537231057",
+      "kind": "storage#object",
+      "md5Hash": "kF8MuJ5+CTJxvyhHS1xzRg==",
+      "mediaLink": "https://www.googleapis.com/download/storage/v1/b/some-bucket/o/folder%2FTest.cs?generation=1587627537231057\u0026alt=media",
+      "metageneration": "1",
+      "name": "folder/Test.cs",
+      "selfLink": "https://www.googleapis.com/storage/v1/b/some-bucket/o/folder/Test.cs",
+      "size": "352",
+      "storageClass": "MULTI_REGIONAL",
+      "timeCreated": "2020-04-23T07:38:57.230Z",
+      "timeStorageClassUpdated": "2020-04-23T07:38:57.230Z",
+      "updated": "2020-04-23T07:38:57.230Z"
+    }
+  })js");
+
+  EXPECT_NO_THROW(hello_world_storage(
+      google::cloud::functions_internal::ParseCloudEventJson(base.dump())));
+
+  EXPECT_NO_THROW(hello_world_storage(
+      google::cloud::functions_internal::ParseCloudEventJson(R"js({
+    "specversion": "1.0",
+    "type": "test.invalid.invalid",
+    "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+    "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+    "time": "2020-09-29T11:32:00.000Z",
+    "datacontenttype": "text/plain",
+    "data": "some data"
+  })js")));
+
+  EXPECT_NO_THROW(hello_world_storage(
+      google::cloud::functions_internal::ParseCloudEventJson(R"js({
+    "specversion": "1.0",
+    "type": "test.invalid.invalid",
+    "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+    "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+    "time": "2020-09-29T11:32:00.000Z",
+    "datacontenttype": "application/json"
+  })js")));
 }
 
 }  // namespace
