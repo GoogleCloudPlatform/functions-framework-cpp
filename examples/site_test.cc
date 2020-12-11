@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "google/cloud/functions/internal/parse_cloud_event_json.h"
+#include "google/cloud/functions/cloud_event.h"
 #include "google/cloud/functions/http_request.h"
 #include "google/cloud/functions/http_response.h"
 #include <gmock/gmock.h>
@@ -24,6 +26,7 @@ extern gcf::HttpResponse http_cors(gcf::HttpRequest request);
 extern gcf::HttpResponse http_cors_auth(gcf::HttpRequest request);
 extern gcf::HttpResponse http_method(gcf::HttpRequest request);
 extern gcf::HttpResponse http_xml(gcf::HttpRequest request);
+extern void hello_world_pubsub(gcf::CloudEvent event);
 
 namespace {
 
@@ -123,6 +126,41 @@ TEST(ExamplesSiteTest, HelloWorldXml) {
 <unused2>Baz</unused2>
 )xml"));
   EXPECT_EQ(actual.payload(), "Hello World");
+}
+
+TEST(ExamplesSiteTest, HelloWorldPubSub) {
+  // We need some input data, and this was available from:
+  //   https://github.com/GoogleCloudPlatform/functions-framework-conformance
+  EXPECT_NO_THROW(hello_world_pubsub(
+      google::cloud::functions_internal::ParseCloudEventJson(R"js({
+  "specversion": "1.0",
+  "type": "google.cloud.pubsub.topic.v1.messagePublished",
+  "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+  "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+  "time": "2020-09-29T11:32:00.000Z",
+  "datacontenttype": "application/json",
+  "data": {
+    "subscription": "projects/sample-project/subscriptions/sample-subscription",
+    "message": {
+      "@type": "type.googleapis.com/google.pubsub.v1.PubsubMessage",
+      "attributes": {
+         "attr1":"attr1-value"
+      },
+      "data": "dGVzdCBtZXNzYWdlIDM="
+    }
+  }
+})js")));
+
+  EXPECT_NO_THROW(hello_world_pubsub(
+      google::cloud::functions_internal::ParseCloudEventJson(R"js({
+  "specversion": "1.0",
+  "type": "test.invalid.invalid",
+  "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+  "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+  "time": "2020-09-29T11:32:00.000Z",
+  "datacontenttype": "text/plain",
+  "data": "some data"
+})js")));
 }
 
 }  // namespace
