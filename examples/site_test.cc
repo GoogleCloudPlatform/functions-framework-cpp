@@ -133,23 +133,23 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
   // We need some input data, and this was available from:
   //   https://github.com/GoogleCloudPlatform/functions-framework-conformance
   auto const base = nlohmann::json::parse(R"js({
-  "specversion": "1.0",
-  "type": "google.cloud.pubsub.topic.v1.messagePublished",
-  "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
-  "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
-  "time": "2020-09-29T11:32:00.000Z",
-  "datacontenttype": "application/json",
-  "data": {
-    "subscription": "projects/sample-project/subscriptions/sample-subscription",
-    "message": {
-      "@type": "type.googleapis.com/google.pubsub.v1.PubsubMessage",
-      "attributes": {
-         "attr1":"attr1-value"
-      },
-      "data": ""
+    "specversion": "1.0",
+    "type": "google.cloud.pubsub.topic.v1.messagePublished",
+    "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+    "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+    "time": "2020-09-29T11:32:00.000Z",
+    "datacontenttype": "application/json",
+    "data": {
+      "subscription": "projects/sample-project/subscriptions/sample-subscription",
+      "message": {
+        "@type": "type.googleapis.com/google.pubsub.v1.PubsubMessage",
+        "attributes": {
+           "attr1":"attr1-value"
+        },
+        "data": ""
+      }
     }
-  }
-})js");
+  })js");
 
   // Test with different values for data.message.data
   for (auto const* data : {"dGVzdCBtZXNzYWdlIDM=", "YWJjZA==", ""}) {
@@ -161,28 +161,28 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
 
   EXPECT_NO_THROW(hello_world_pubsub(
       google::cloud::functions_internal::ParseCloudEventJson(R"js({
-  "specversion": "1.0",
-  "type": "test.invalid.invalid",
-  "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
-  "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
-  "time": "2020-09-29T11:32:00.000Z",
-  "datacontenttype": "text/plain",
-  "data": "some data"
-})js")));
+    "specversion": "1.0",
+    "type": "test.invalid.invalid",
+    "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+    "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+    "time": "2020-09-29T11:32:00.000Z",
+    "datacontenttype": "text/plain",
+    "data": "some data"
+  })js")));
 
   EXPECT_THROW(hello_world_pubsub(
                    google::cloud::functions_internal::ParseCloudEventJson(R"js({
-  "specversion": "1.0",
-  "type": "google.cloud.pubsub.topic.v1.messagePublished",
-  "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
-  "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
-  "time": "2020-09-29T11:32:00.000Z",
-  "datacontenttype": "application/json",
-  "data": {
-    "subscription": "projects/sample-project/subscriptions/sample-subscription"
+    "specversion": "1.0",
+    "type": "google.cloud.pubsub.topic.v1.messagePublished",
+    "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+    "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+    "time": "2020-09-29T11:32:00.000Z",
+    "datacontenttype": "application/json",
+    "data": {
+      "subscription": "projects/sample-project/subscriptions/sample-subscription"
+      }
     }
-  }
-})js")),
+  })js")),
                std::exception);
 }
 

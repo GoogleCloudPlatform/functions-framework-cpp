@@ -46,8 +46,7 @@ if (BUILD_TESTING)
     foreach (fname ${googleapis_functions_framework_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
-        add_executable("${target}"
-                       ${fname} site/hello_world_pubsub/hello_world_pubsub.cc)
+        add_executable("${target}" ${fname})
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples googleapis_functions_framework
