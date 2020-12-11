@@ -51,8 +51,13 @@ jobs:
           for example in examples/site/*; do
             function="$(basename "${example}")";
             echo === ${example} ${function} ====;
+            signature="http";
+            if grep -q gcf::CloudEvent ${example}/*; then
+              signature="cloudevent";
+            fi;
             docker build --pull=false \
                 --file="build_scripts/build-application.Dockerfile" \
+                --build-arg="FUNCTION_SIGNATURE_TYPE=${signature}" \
                 --build-arg="TARGET_FUNCTION=${function}" "${example}";
           done
 
