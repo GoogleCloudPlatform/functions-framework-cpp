@@ -33,7 +33,7 @@ void hello_world_pubsub(gcf::CloudEvent event) {  // NOLINT
   auto name = decode_base64(payload["message"]["data"].get<std::string>());
   std::cerr << "Hello " << (name.empty() ? "World" : name) << "\n";
 }
-// [END functions_helloworld_http]
+// [END functions_helloworld_pubsub]
 
 std::string decode_base64(std::string const& base64) {
   namespace bai = boost::archive::iterators;

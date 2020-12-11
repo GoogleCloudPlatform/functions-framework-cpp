@@ -151,6 +151,27 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
   }
 })js")));
 
+  // Change the message to have different padding
+  EXPECT_NO_THROW(hello_world_pubsub(
+      google::cloud::functions_internal::ParseCloudEventJson(R"js({
+  "specversion": "1.0",
+  "type": "google.cloud.pubsub.topic.v1.messagePublished",
+  "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+  "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+  "time": "2020-09-29T11:32:00.000Z",
+  "datacontenttype": "application/json",
+  "data": {
+    "subscription": "projects/sample-project/subscriptions/sample-subscription",
+    "message": {
+      "@type": "type.googleapis.com/google.pubsub.v1.PubsubMessage",
+      "attributes": {
+         "attr1":"attr1-value"
+      },
+      "data": "YWJjZA=="
+    }
+  }
+})js")));
+
   EXPECT_NO_THROW(hello_world_pubsub(
       google::cloud::functions_internal::ParseCloudEventJson(R"js({
   "specversion": "1.0",
@@ -161,6 +182,21 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
   "datacontenttype": "text/plain",
   "data": "some data"
 })js")));
+
+  EXPECT_THROW(hello_world_pubsub(
+                   google::cloud::functions_internal::ParseCloudEventJson(R"js({
+  "specversion": "1.0",
+  "type": "google.cloud.pubsub.topic.v1.messagePublished",
+  "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+  "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+  "time": "2020-09-29T11:32:00.000Z",
+  "datacontenttype": "application/json",
+  "data": {
+    "subscription": "projects/sample-project/subscriptions/sample-subscription"
+    }
+  }
+})js")),
+               std::exception);
 }
 
 }  // namespace
