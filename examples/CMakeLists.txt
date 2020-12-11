@@ -15,6 +15,7 @@
 # ~~~
 
 find_package(storage_client REQUIRED)
+find_package(fmt REQUIRED)
 
 add_library(
     functions_framework_examples # cmake-format: sort
@@ -34,13 +35,14 @@ add_library(
     site/http_cors_auth/http_cors_auth.cc
     site/http_method/http_method.cc
     site/http_xml/http_xml.cc)
-target_link_libraries(functions_framework_examples storage_client
+target_link_libraries(functions_framework_examples storage_client fmt::fmt
                       googleapis-c++::functions_framework)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
-    set(googleapis_functions_framework_examples_unit_tests # cmake-format: sort
-                                                           site_test.cc)
+    set(googleapis_functions_framework_examples_unit_tests
+        # cmake-format: sort
+        cloud_event_examples_test.cc http_examples_test.cc site_test.cc)
 
     foreach (fname ${googleapis_functions_framework_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
