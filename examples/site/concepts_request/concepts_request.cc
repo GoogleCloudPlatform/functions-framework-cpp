@@ -26,7 +26,7 @@ unsigned int make_http_request(std::string const& host);
 
 gcf::HttpResponse concepts_request(gcf::HttpRequest /*request*/) {  // NOLINT
   std::string const host = "example.com";
-  int code = make_http_request(host);
+  auto const code = make_http_request(host);
   gcf::HttpResponse response;
   response.set_payload("Received code " + std::to_string(code) + " from " +
                        host);
