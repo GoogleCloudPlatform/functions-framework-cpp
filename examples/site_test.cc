@@ -27,10 +27,19 @@ extern gcf::HttpResponse http_cors(gcf::HttpRequest request);
 extern gcf::HttpResponse http_cors_auth(gcf::HttpRequest request);
 extern gcf::HttpResponse http_method(gcf::HttpRequest request);
 extern gcf::HttpResponse http_xml(gcf::HttpRequest request);
+extern gcf::HttpResponse concepts_after_response(gcf::HttpRequest request);
+extern gcf::HttpResponse concepts_after_timeout(gcf::HttpRequest request);
+extern gcf::HttpResponse concepts_filesystem(gcf::HttpRequest request);
+extern gcf::HttpResponse concepts_request(gcf::HttpRequest request);
+extern gcf::HttpResponse concepts_stateless(gcf::HttpRequest request);
+extern gcf::HttpResponse tips_scopes(gcf::HttpRequest request);
 extern void hello_world_pubsub(gcf::CloudEvent event);
 extern void hello_world_storage(gcf::CloudEvent event);
 
 namespace {
+
+using ::testing::HasSubstr;
+using ::testing::IsEmpty;
 
 TEST(ExamplesSiteTest, HelloWorldContent) {
   auto make_request = [](std::string content_type, std::string payload) {
@@ -242,6 +251,37 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
     "time": "2020-09-29T11:32:00.000Z",
     "datacontenttype": "application/json"
   })js")));
+}
+
+TEST(ExamplesSiteTest, ConceptsAfterResponse) {
+  auto actual = concepts_after_response(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("Hello World!"));
+}
+
+TEST(ExamplesSiteTest, ConceptsAfterTimeout) {
+  auto actual = concepts_after_timeout(gcf::HttpRequest{}.set_verb("PUT"));
+  EXPECT_THAT(actual.payload(), HasSubstr("Function completed!"));
+}
+
+TEST(ExamplesSiteTest, ConceptsFilesystem) {
+  auto actual = concepts_filesystem(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), Not(IsEmpty()));
+}
+
+TEST(ExamplesSiteTest, ConceptsRequest) {
+  auto actual = concepts_request(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("Received code"));
+}
+
+TEST(ExamplesSiteTest, ConceptsStateless) {
+  auto actual = concepts_stateless(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("Instance execution count: "));
+}
+
+TEST(ExamplesSiteTest, TipsScopes) {
+  auto actual = tips_scopes(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("Global: "));
+  EXPECT_THAT(actual.payload(), HasSubstr("Local: "));
 }
 
 }  // namespace

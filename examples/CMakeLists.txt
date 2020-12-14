@@ -28,6 +28,10 @@ add_library(
     hello_multiple_sources/hello_multiple_sources.cc
     hello_with_third_party/hello_with_third_party.cc
     hello_world/hello_world.cc
+    site/concepts_after_response/concepts_after_response.cc
+    site/concepts_after_timeout/concepts_after_timeout.cc
+    site/concepts_request/concepts_request.cc
+    site/concepts_stateless/concepts_stateless.cc
     site/hello_world_content/hello_world_content.cc
     site/hello_world_get/hello_world_get.cc
     site/hello_world_http/hello_world_http.cc
@@ -36,7 +40,8 @@ add_library(
     site/http_cors/http_cors.cc
     site/http_cors_auth/http_cors_auth.cc
     site/http_method/http_method.cc
-    site/http_xml/http_xml.cc)
+    site/http_xml/http_xml.cc
+    site/tips_scopes/tips_scopes.cc)
 target_link_libraries(functions_framework_examples storage_client fmt::fmt
                       googleapis-c++::functions_framework)
 
@@ -49,7 +54,8 @@ if (BUILD_TESTING)
     foreach (fname ${googleapis_functions_framework_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
-        add_executable("${target}" ${fname})
+        add_executable("${target}"
+                       ${fname} site/concepts_filesystem/concepts_filesystem.cc)
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples googleapis_functions_framework
