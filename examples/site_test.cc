@@ -40,6 +40,7 @@ extern void hello_world_storage(gcf::CloudEvent event);
 
 namespace {
 
+using ::testing::AllOf;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 
@@ -283,8 +284,7 @@ TEST(ExamplesSiteTest, ConceptsStateless) {
 TEST(ExamplesSiteTest, EnvVars) {
   unsetenv("FOO");
   auto actual = env_vars(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("FOO"));
-  EXPECT_THAT(actual.payload(), HasSubstr("not set"));
+  EXPECT_THAT(actual.payload(), AllOf(HasSubstr("FOO"), HasSubstr("not set")));
 
   setenv("FOO", "test-value", 1);
   actual = env_vars(gcf::HttpRequest{});
