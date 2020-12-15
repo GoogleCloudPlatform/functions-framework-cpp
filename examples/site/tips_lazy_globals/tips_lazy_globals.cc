@@ -24,9 +24,7 @@ namespace {
 // Placeholders to illustrate lazy global initialization.
 std::once_flag h_init_flag;
 std::string h;
-void h_init() {
-  h = "heavy computation";
-}
+void h_init() { h = "heavy computation"; }
 }  // namespace
 
 gcf::HttpResponse tips_lazy_globals(gcf::HttpRequest /*request*/) {  // NOLINT
