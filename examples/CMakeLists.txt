@@ -42,6 +42,9 @@ add_library(
     site/http_cors_auth/http_cors_auth.cc
     site/http_method/http_method.cc
     site/http_xml/http_xml.cc
+    site/tips_infinite_retries/tips_infinite_retries.cc
+    site/tips_lazy_globals/tips_lazy_globals.cc
+    site/tips_retry/tips_retry.cc
     site/tips_scopes/tips_scopes.cc)
 target_link_libraries(functions_framework_examples storage_client fmt::fmt
                       googleapis-c++::functions_framework)

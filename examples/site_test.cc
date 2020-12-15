@@ -34,7 +34,10 @@ extern gcf::HttpResponse concepts_filesystem(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_request(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_stateless(gcf::HttpRequest request);
 extern gcf::HttpResponse env_vars(gcf::HttpRequest request);
+extern void tips_infinite_retries(gcf::CloudEvent event);
+extern gcf::HttpResponse tips_lazy_globals(gcf::HttpRequest request);
 extern gcf::HttpResponse tips_scopes(gcf::HttpRequest request);
+extern void tips_retry(gcf::CloudEvent event);
 extern void hello_world_pubsub(gcf::CloudEvent event);
 extern void hello_world_storage(gcf::CloudEvent event);
 
@@ -291,10 +294,35 @@ TEST(ExamplesSiteTest, EnvVars) {
   EXPECT_THAT(actual.payload(), HasSubstr("test-value"));
 }
 
+TEST(ExamplesSiteTest, TipsLazyGlobals) {
+  auto actual = tips_lazy_globals(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("heavy computation"));
+  actual = tips_lazy_globals(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("heavy computation"));
+}
+
+TEST(ExamplesSiteTest, TipsInfiniteRetries) {
+  gcf::CloudEvent event("test-id", "test-source", "test-type");
+  EXPECT_NO_THROW(tips_infinite_retries(event));
+  event.set_time(std::chrono::system_clock::now());
+  EXPECT_NO_THROW(tips_infinite_retries(event));
+}
+
 TEST(ExamplesSiteTest, TipsScopes) {
   auto actual = tips_scopes(gcf::HttpRequest{});
   EXPECT_THAT(actual.payload(), HasSubstr("Global: "));
   EXPECT_THAT(actual.payload(), HasSubstr("Local: "));
+}
+
+TEST(ExamplesSiteTest, TipsRetry) {
+  gcf::CloudEvent event("test-id", "test-source", "test-type");
+  EXPECT_NO_THROW(tips_retry(event));
+  event.set_data_content_type("application/json");
+  EXPECT_NO_THROW(tips_retry(event));
+  event.set_data(nlohmann::json({{"retry", false}}).dump());
+  EXPECT_NO_THROW(tips_retry(event));
+  event.set_data(nlohmann::json({{"retry", true}}).dump());
+  EXPECT_THROW(tips_retry(event), std::exception);
 }
 
 }  // namespace
