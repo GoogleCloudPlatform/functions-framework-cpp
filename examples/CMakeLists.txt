@@ -32,6 +32,7 @@ add_library(
     site/concepts_after_timeout/concepts_after_timeout.cc
     site/concepts_request/concepts_request.cc
     site/concepts_stateless/concepts_stateless.cc
+    site/env_vars/env_vars.cc
     site/hello_world_content/hello_world_content.cc
     site/hello_world_get/hello_world_get.cc
     site/hello_world_http/hello_world_http.cc
