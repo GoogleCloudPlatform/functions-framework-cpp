@@ -18,7 +18,7 @@
 #include "google/cloud/functions/http_response.h"
 #include <gmock/gmock.h>
 #include <nlohmann/json.hpp>
-#include <stdlib.h>
+#include <stdlib.h>  // NOLINT - we need the POSIX header, for setenv.
 
 namespace gcf = ::google::cloud::functions;
 extern gcf::HttpResponse hello_world_content(gcf::HttpRequest request);
