@@ -18,6 +18,7 @@
 #include "google/cloud/functions/http_response.h"
 #include <gmock/gmock.h>
 #include <nlohmann/json.hpp>
+#include <stdlib.h>
 
 namespace gcf = ::google::cloud::functions;
 extern gcf::HttpResponse hello_world_content(gcf::HttpRequest request);
@@ -32,6 +33,7 @@ extern gcf::HttpResponse concepts_after_timeout(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_filesystem(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_request(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_stateless(gcf::HttpRequest request);
+extern gcf::HttpResponse env_vars(gcf::HttpRequest request);
 extern gcf::HttpResponse tips_scopes(gcf::HttpRequest request);
 extern void hello_world_pubsub(gcf::CloudEvent event);
 extern void hello_world_storage(gcf::CloudEvent event);
@@ -276,6 +278,17 @@ TEST(ExamplesSiteTest, ConceptsRequest) {
 TEST(ExamplesSiteTest, ConceptsStateless) {
   auto actual = concepts_stateless(gcf::HttpRequest{});
   EXPECT_THAT(actual.payload(), HasSubstr("Instance execution count: "));
+}
+
+TEST(ExamplesSiteTest, EnvVars) {
+  unsetenv("FOO");
+  auto actual = env_vars(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("FOO"));
+  EXPECT_THAT(actual.payload(), HasSubstr("not set"));
+
+  setenv("FOO", "test-value", 1);
+  actual = env_vars(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("test-value"));
 }
 
 TEST(ExamplesSiteTest, TipsScopes) {
