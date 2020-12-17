@@ -14,6 +14,7 @@
 
 // [START functions_tips_infinite_retries]
 #include <google/cloud/functions/cloud_event.h>
+#include <chrono>
 #include <iostream>
 
 namespace gcf = ::google::cloud::functions;

@@ -19,10 +19,6 @@
 
 namespace gcf = ::google::cloud::functions;
 
-namespace {
-auto constexpr kMaxAge = std::chrono::seconds(10);
-}  // namespace
-
 void tips_retry(gcf::CloudEvent event) {  // NOLINT
   if (event.data_content_type().value_or("") != "application/json") {
     std::cerr << "Error: expected application/json data\n";
