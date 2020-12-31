@@ -101,7 +101,7 @@ jobs:
 
       - name: test-examples-hello-world
         run: >
-          ID=$(docker run --detach --network host gcf-cpp-examples-hello-world --port 8080) &&
+          ID=$(docker run --detach --network host examples-hello-world --port 8080) &&
           curl -sS http://localhost:8080/say/hello &&
           docker kill "${ID}"
 
