@@ -5,7 +5,7 @@ This directory contains a series of examples showing how to use the Functions Fr
 A good place to start is [hello_world](hello_world). It contains a simple example, with a simple function in a single
 `.cc` file.
 
-## Create the Development Image
+## Create the Development and Runtime Docker Images
 
 To compile the examples you will need a Docker image with the development tools and core dependencies pre-compiled.
 To create this image run this command:
@@ -14,23 +14,45 @@ To create this image run this command:
 docker build -t gcf-cpp-develop -f build_scripts/Dockerfile build_scripts
 ```
 
-## Creating a Docker image for the examples
-
-The examples can run in Docker containers. Using the development image from above you can create a docker image for any
-of the examples using:
+The runtime image is contains just the minimal components to execute a program using the framework:
 
 ```sh
-docker build  -t my-image -f build_scripts/build-application.Dockerfile \
-  --build-arg=TARGET_FUNCTION=$EXAMPLE_FUNCTION_NAME \
-  examples/$EXAMPLE_DIRECTORY
+docker build -t gcf-cpp-runtime --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
+```
+
+## Create the buildpack builder
+
+We use [buildpacks](https://buildpacks.io) to compile the functions into runnable Docker images. First create a builder:
+
+```sh
+pack create-builder gcf-cpp-builder:bionic --config pack/builder.toml
+pack trust-builder gcf-cpp-builder:bionic
+```
+
+To avoid using the `--builder gcf-cpp-builder:bionic` option in each command we make this builder the default:
+
+```sh
+pack set-default-builder gcf-cpp-builder:bionic
+```
+
+## Creating a Docker image for the examples
+
+Compile any HTTP example using:
+
+```sh
+pack build "my-image" \
+  --env TARGET_FUNCTION=$EXAMPLE_FUNCTION_NAME \
+  --env FUNCTION_SIGNATURE_TYPE=http \
+  --path examples/$EXAMPLE_DIRECTORY
 ```
 
 for example:
 
 ```sh
-docker build -t hello-world -f build_scripts/build-application.Dockerfile \
-  --build-arg=TARGET_FUNCTION=HelloWorld \
-  examples/hello_world
+pack build "hello-world" \
+  --env TARGET_FUNCTION=HelloWorld \
+  --env FUNCTION_SIGNATURE_TYPE=http \
+  --path examples/hello_world
 ```
 
 and then run the image as usual:
@@ -53,10 +75,10 @@ GOOGLE_CLOUD_REGION=us-central1   # use a different region if desired
 Create the Docker image, with a tag suitable for deployment to Cloud Run:
 
 ```sh
-docker build -t gcr.io/${GOOGLE_CLOUD_PROJECT}/hello-world:latest \
-  -f build_scripts/build-application.Dockerfile \
-  --build-arg=TARGET_FUNCTION=HelloWorld \
-  examples/hello_world
+pack build "gcr.io/${GOOGLE_CLOUD_PROJECT}/hello-world" \
+  --env TARGET_FUNCTION=HelloWorld \
+  --env FUNCTION_SIGNATURE_TYPE=http \
+  --path examples/hello_world
 ```
 
 Push this image to Google Container Registry:
