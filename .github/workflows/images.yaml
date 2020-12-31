@@ -10,7 +10,14 @@ jobs:
     name: images
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup-pack
+        run: >
+          curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.15.1/pack-v0.15.1-linux.tgz" |
+          sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack
+
       - name: setup-buildx
         uses: docker/setup-buildx-action@v1
 
@@ -46,66 +53,51 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache/develop
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/develop
 
-      - name: build-examples-site
+      - name: setup-pack-builder
         run: >
-          for example in examples/site/*; do
-            function="$(basename "${example}")";
-            echo === ${example} ${function} ====;
-            signature="http";
-            if grep -q gcf::CloudEvent ${example}/*; then
-              signature="cloudevent";
-            fi;
-            docker build --pull=false \
-                --file="build_scripts/build-application.Dockerfile" \
-                --build-arg="FUNCTION_SIGNATURE_TYPE=${signature}" \
-                --build-arg="TARGET_FUNCTION=${function}" "${example}";
-          done
+          pack create-builder gcf-cpp-builder:bionic --config pack/builder.toml
+          && pack trust-builder gcf-cpp-builder:bionic
+          && pack set-default-builder gcf-cpp-builder:bionic
 
       - name: build-examples-hello-cloud-event
         run: >
-          docker build
-          --pull=false
-          --build-arg=FUNCTION_SIGNATURE_TYPE=cloudevent
-          --build-arg=TARGET_FUNCTION=HelloCloudEvent
-          -f build_scripts/build-application.Dockerfile
-          examples/hello_cloud_event
+          pack build
+          --env FUNCTION_SIGNATURE_TYPE=cloudevent
+          --env TARGET_FUNCTION=HelloCloudEvent
+          --path examples/hello_cloud_event
+          examples-hello-cloud-event
 
       - name: build-examples-multiple-sources
         run: >
-          docker build
-          --pull=false
-          --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=HelloMultipleSources
-          -f build_scripts/build-application.Dockerfile
-          examples/hello_multiple_sources
+          pack build
+          --env FUNCTION_SIGNATURE_TYPE=http
+          --env TARGET_FUNCTION=HelloMultipleSources
+          --path examples/hello_multiple_sources
+          examples-hello-multiple-sources
 
       - name: build-examples-hello-with-third-party
         run: >
-          docker build
-          --pull=false
-          --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=HelloWithThirdParty
-          -f build_scripts/build-application.Dockerfile
-          examples/hello_with_third_party
+          pack build
+          --env FUNCTION_SIGNATURE_TYPE=http
+          --env TARGET_FUNCTION=HelloWithThirdParty
+          --path examples/hello_with_third_party
+          examples-hello-with-third-party
 
       - name: build-examples-hello-gcs
         run: >
-          docker build
-          --pull=false
-          --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=HelloGcs
-          -f build_scripts/build-application.Dockerfile
-          examples/hello_gcs
+          pack build
+          --env FUNCTION_SIGNATURE_TYPE=http
+          --env TARGET_FUNCTION=HelloGcs
+          --path examples/hello_gcs
+          examples-hello-gcs
 
       - name: build-examples-hello-world
         run: >
-          docker build
-          --tag gcf-cpp-examples-hello-world
-          --pull=false
-          --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=HelloWorld
-          -f build_scripts/build-application.Dockerfile
-          examples/hello_world
+          pack build
+          --env FUNCTION_SIGNATURE_TYPE=http
+          --env TARGET_FUNCTION=HelloWorld
+          --path examples/hello_world
+          examples-hello-world
 
       - name: test-examples-hello-world
         run: >
@@ -115,37 +107,47 @@ jobs:
 
       - name: build-examples-hello-world-rooted
         run: >
-          docker build
-          --tag gcf-cpp-examples-hello-world-rooted
-          --pull=false
-          --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=::HelloWorld
-          -f build_scripts/build-application.Dockerfile
-          examples/hello_world
+          pack build
+          --env FUNCTION_SIGNATURE_TYPE=http
+          --env TARGET_FUNCTION=::HelloWorld
+          --path examples/hello_world
+          examples-hello-world-rooted
 
       - name: build-examples-hello-from-namespace
         run: >
-          docker build
-          --pull=false
-          --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=hello_from_namespace::HelloWorld
-          -f build_scripts/build-application.Dockerfile
-          examples/hello_from_namespace
+          pack build
+          --env FUNCTION_SIGNATURE_TYPE=http
+          --env TARGET_FUNCTION=hello_from_namespace::HelloWorld
+          --path examples/hello_from_namespace
+          examples-hello-from-namespace
 
       - name: build-examples-hello-from-namespace-rooted
         run: >
-          docker build
-          --pull=false
-          --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=::hello_from_namespace::HelloWorld
-          -f build_scripts/build-application.Dockerfile
-          examples/hello_from_namespace
+          pack build
+          --env FUNCTION_SIGNATURE_TYPE=http
+          --env TARGET_FUNCTION=::hello_from_namespace::HelloWorld
+          --path examples/hello_from_namespace
+          examples-hello-from-namespace-rooted
 
       - name: build-examples-hello-from-nested-namespace
         run: >
-          docker build
-          --pull=false
-          --build-arg=FUNCTION_SIGNATURE_TYPE=http
-          --build-arg=TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld
-          -f build_scripts/build-application.Dockerfile
-          examples/hello_from_nested_namespace
+          pack build
+          --path examples/hello_from_nested_namespace
+          --env FUNCTION_SIGNATURE_TYPE=http
+          --env TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld
+          examples-hello-from-nested-namespace
+
+      - name: build-examples-site
+        run: >
+          for example in examples/site/*; do
+            function="$(basename "${example}")";
+            signature="http";
+            if grep -q gcf::CloudEvent ${example}/*; then
+              signature="cloudevent";
+            fi;
+            pack build \
+                --env "TARGET_FUNCTION=${function}" \
+                --env "FUNCTION_SIGNATURE_TYPE=${signature}" \
+                --path "${example}" \
+                "examples-site-${function}";
+          done
