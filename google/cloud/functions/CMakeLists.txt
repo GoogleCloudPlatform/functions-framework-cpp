@@ -66,7 +66,9 @@ target_compile_definitions(googleapis_functions_framework
                            PUBLIC BOOST_BEAST_USE_STD_STRING_VIEW)
 set_target_properties(
     googleapis_functions_framework
-    PROPERTIES EXPORT_NAME googleapis-c++::functions_framework)
+    PROPERTIES EXPORT_NAME googleapis-c++::functions_framework
+               VERSION "${PROJECT_VERSION}"
+               SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 add_library(googleapis-c++::functions_framework ALIAS
             googleapis_functions_framework)
 
@@ -128,7 +130,7 @@ configure_file("config.cmake.in" "googleapis_functions_framework-config.cmake"
                @ONLY)
 write_basic_package_version_file(
     "googleapis_functions_framework-config-version.cmake"
-    VERSION ${FUNCTIONS_FRAMEWORK_CPP_VERSION}
+    VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMinorVersion)
 install(
     FILES
