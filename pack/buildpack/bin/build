@@ -1,0 +1,56 @@
+#!/bin/bash
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -eu
+
+echo "---> Functions Framework C++ Buildpack"
+
+layers="$1"
+
+echo "-----> Setup vcpkg cache"
+export VCPKG_DEFAULT_BINARY_CACHE=${layers}/vcpkg
+export VCPKG_OVERLAY_PORTS=/layers/cpp/gcf/vcpkg-overlays
+if [[ ! -d "${layers}/vcpkg" ]]; then
+  echo "-----> Restore cache from build image"
+  cp -r /layers/cpp/vcpkg-cache "${layers}/vcpkg"
+fi
+cat > "${layers}/vcpkg.toml" <<EOL
+build = true
+cache = true
+launch = false
+EOL
+
+echo "-----> Setup build directory"
+cp -r /layers/cpp/gcf/cmake /var/tmp/source
+cp -r /workspace /var/tmp/source/application
+test -r /workspace/vcpkg.json && cp /workspace/vcpkg.json /var/tmp/source
+/layers/cpp/gcf/generate-wrapper.sh "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE:-http}" >/var/tmp/source/main.cc
+echo "-----> Configure Function"
+/layers/cpp/cmake/bin/cmake -S /var/tmp/source -B /var/tmp/build -GNinja \
+           -DCMAKE_BUILD_TYPE=Release \
+           -DCMAKE_INSTALL_PREFIX="${layers}/local" \
+           -DCMAKE_TOOLCHAIN_FILE="/layers/cpp/vcpkg/scripts/buildsystems/vcpkg.cmake"
+echo "-----> Compile and Install Function``"
+/layers/cpp/cmake/bin/cmake --build /var/tmp/build --target install
+
+cat > "${layers}/local.toml" <<EOL
+launch = true
+EOL
+
+cat > "${layers}/launch.toml" <<EOL
+[[processes]]
+type = "web"
+command = "${layers}/local/bin/function"
+EOL
