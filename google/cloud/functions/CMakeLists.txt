@@ -126,8 +126,9 @@ google_cloud_cpp_install_headers(googleapis_functions_framework
 install(
     EXPORT googleapis_functions_framework-targets
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis_functions_framework")
-configure_file("config.cmake.in" "googleapis_functions_framework-config.cmake"
-               @ONLY)
+configure_package_config_file("config.cmake.in" "googleapis_functions_framework-config.cmake"
+        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis_functions_framework"
+        NO_SET_AND_CHECK_MACRO)
 write_basic_package_version_file(
     "googleapis_functions_framework-config-version.cmake"
     VERSION ${PROJECT_VERSION}
