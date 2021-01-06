@@ -140,6 +140,7 @@ jobs:
       - name: build-examples-site
         run: >
           for example in examples/site/*; do
+            docker image prune -f;
             function="$(basename "${example}")";
             signature="http";
             if grep -q gcf::CloudEvent ${example}/*; then
