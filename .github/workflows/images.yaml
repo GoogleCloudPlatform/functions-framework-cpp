@@ -108,7 +108,7 @@ jobs:
           ID=$(docker run --detach --network host examples-hello-world --port 8080) &&
           curl -sS --retry 3 --retry-delay 2 http://localhost:8080/say/hello &&
           docker kill "${ID}" &&
-          docker rm examples-hello-world:latest
+          docker image rm examples-hello-world:latest
 
       - name: build-examples-hello-world-rooted
         run: >
