@@ -97,10 +97,10 @@ jobs:
 
       - name: build-examples-hello-world
         run: >
-          pack build
-            --env FUNCTION_SIGNATURE_TYPE=http
-            --env TARGET_FUNCTION=HelloWorld
-            --path examples/hello_world
+          pack build \
+            --env FUNCTION_SIGNATURE_TYPE=http \
+            --env TARGET_FUNCTION=HelloWorld \
+            --path examples/hello_world \
             examples-hello-world
 
       - name: test-examples-hello-world
@@ -112,19 +112,19 @@ jobs:
 
       - name: build-examples-hello-world-rooted
         run: >
-          pack build
-            --env FUNCTION_SIGNATURE_TYPE=http
-            --env TARGET_FUNCTION=::HelloWorld
-            --path examples/hello_world
+          pack build \
+            --env FUNCTION_SIGNATURE_TYPE=http \
+            --env TARGET_FUNCTION=::HelloWorld \
+            --path examples/hello_world \
             examples-hello-world-rooted;
           docker image rm examples-hello-world-rooted:latest
 
       - name: build-examples-hello-from-namespace
         run: >
-          pack build
-            --env FUNCTION_SIGNATURE_TYPE=http
-            --env TARGET_FUNCTION=hello_from_namespace::HelloWorld
-            --path examples/hello_from_namespace
+          pack build \
+            --env FUNCTION_SIGNATURE_TYPE=http \
+            --env TARGET_FUNCTION=hello_from_nanespace::HelloWorld \
+            --path examples/hello_from_namespace \
             examples-hello-from-namespace;
           docker image rm examples-hello-from-namespace:latest
 
