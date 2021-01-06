@@ -61,6 +61,9 @@ jobs:
 
       - name: build-examples-hello-cloud-event
         run: >
+          echo DEBUG DEBUG DEBUG;
+          docker image ls;
+          echo DEBUG DEBUG DEBUG;
           pack build
           --env FUNCTION_SIGNATURE_TYPE=cloudevent
           --env TARGET_FUNCTION=HelloCloudEvent
@@ -69,6 +72,9 @@ jobs:
 
       - name: build-examples-multiple-sources
         run: >
+          echo DEBUG DEBUG DEBUG;
+          docker image ls;
+          echo DEBUG DEBUG DEBUG;
           pack build
           --env FUNCTION_SIGNATURE_TYPE=http
           --env TARGET_FUNCTION=HelloMultipleSources
@@ -77,6 +83,9 @@ jobs:
 
       - name: build-examples-hello-with-third-party
         run: >
+          echo DEBUG DEBUG DEBUG;
+          docker image ls;
+          echo DEBUG DEBUG DEBUG;
           pack build
           --env FUNCTION_SIGNATURE_TYPE=http
           --env TARGET_FUNCTION=HelloWithThirdParty
@@ -151,4 +160,7 @@ jobs:
                 --env "FUNCTION_SIGNATURE_TYPE=${signature}" \
                 --path "${example}" \
                 "examples-site-${function}";
+            echo DEBUG DEBUG DEBUG;
+            docker image ls;
+            echo DEBUG DEBUG DEBUG;
           done
