@@ -6,17 +6,12 @@ on:
   pull_request:
 
 jobs:
-  images:
-    name: images
+  base-images:
+    name: base-images
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
-
-      - name: setup-pack
-        run: >
-          curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.15.1/pack-v0.15.1-linux.tgz" |
-          sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack
 
       - name: setup-buildx
         uses: docker/setup-buildx-action@v1
@@ -33,7 +28,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: false
-          load: true
+          outputs: type=docker,dest=/tmp/gcf-cpp-runtime.tar
           tags: gcf-cpp-runtime
           context: build_scripts
           file: build_scripts/Dockerfile
@@ -45,13 +40,45 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: false
-          load: true
+          outputs: type=docker,dest=/tmp/gcf-cpp-develop.tar
           tags: gcf-cpp-develop
           context: build_scripts
           file: build_scripts/Dockerfile
           target: gcf-cpp-develop
           cache-from: type=local,src=/tmp/.buildx-cache/develop
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/develop
+
+      - name: upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: gcf-base-images
+          path: |
+            /tmp/gcf-cpp-runtime.tar
+            /tmp/gcf-cpp-develop.tar
+
+  hello-word-examples:
+    name: hello-world-examples
+    runs-on: ubuntu-latest
+    needs: ["base-images"]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: download
+        uses: actions/download-artifact@v2
+
+      - name: docker-load-runtime
+        run: |
+          docker load --input gcf-base-images/gcf-cpp-runtime.tar
+
+      - name: docker-load-develop
+        run: |
+          docker load --input gcf-base-images/gcf-cpp-develop.tar
+
+      - name: setup-pack
+        run: >
+          curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.15.1/pack-v0.15.1-linux.tgz" |
+          sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack
 
       - name: setup-pack-builder
         run: >
@@ -144,6 +171,36 @@ jobs:
             --env TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld \
             examples-hello-from-nested-namespace;
           docker image rm examples-hello-from-nested-namespace:latest
+
+  site-examples:
+    name: site-examples
+    runs-on: ubuntu-latest
+    needs: ["base-images"]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: download
+        uses: actions/download-artifact@v2
+
+      - name: docker-load-runtime
+        run: |
+          docker load --input gcf-base-images/gcf-cpp-runtime.tar
+
+      - name: docker-load-develop
+        run: |
+          docker load --input gcf-base-images/gcf-cpp-develop.tar
+
+      - name: setup-pack
+        run: >
+          curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.15.1/pack-v0.15.1-linux.tgz" |
+          sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack
+
+      - name: setup-pack-builder
+        run: >
+          pack create-builder gcf-cpp-builder:bionic --config pack/builder.toml
+          && pack trust-builder gcf-cpp-builder:bionic
+          && pack set-default-builder gcf-cpp-builder:bionic
 
       - name: build-examples-site
         run: >
