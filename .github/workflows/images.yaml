@@ -122,7 +122,7 @@ jobs:
         run: >
           pack build \
             --env FUNCTION_SIGNATURE_TYPE=http \
-            --env TARGET_FUNCTION=hello_from_nanespace::HelloWorld \
+            --env TARGET_FUNCTION=hello_from_namespace::HelloWorld \
             --path examples/hello_from_namespace \
             examples-hello-from-namespace;
           docker image rm examples-hello-from-namespace:latest
