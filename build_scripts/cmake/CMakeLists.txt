@@ -27,10 +27,10 @@ function (functions_framework_cpp_define_target_with_glob directory)
                           PUBLIC googleapis-c++::functions_framework)
 endfunction ()
 
-if (EXISTS "${CMAKE_SOURCE_DIR}/application/CMakeLists.txt")
-    add_subdirectory(application)
+if (EXISTS "${CNB_APP_DIR}/CMakeLists.txt")
+    add_subdirectory("${CNB_APP_DIR}" "cnb_app_dir")
 else ()
-    functions_framework_cpp_define_target_with_glob("application")
+    functions_framework_cpp_define_target_with_glob("${CNB_APP_DIR}")
 endif ()
 
 if (NOT TARGET functions_framework_cpp_function)
@@ -40,9 +40,8 @@ if (NOT TARGET functions_framework_cpp_function)
 
 The application is expected to define a CMake library target called
 `functions_framework_cpp_function` which contains the target function. The
-framework automatically defines this target for you can define this target
-*UNLESS* you include a top-level CMakeLists.txt file in your code. If you
-do include this file you must either:
+framework automatically defines this target, *UNLESS* you include a top-level
+CMakeLists.txt file in your code. If you do include this file you must either:
 - Define the target manually, using the standard CMake commands.
 - Use the the `functions_framework_cpp_define_target_with_glob` function to
   define the target.

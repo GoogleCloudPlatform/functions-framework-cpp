@@ -33,20 +33,37 @@ launch = false
 EOL
 
 echo "-----> Setup build directory"
-cp -r /layers/cpp/gcf/cmake /var/tmp/source
-cp -r /workspace /var/tmp/source/application
-test -r /workspace/vcpkg.json && cp /workspace/vcpkg.json /var/tmp/source
-/layers/cpp/gcf/generate-wrapper.sh "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE:-http}" >/var/tmp/source/main.cc
+cat > "${layers}/source.toml" <<EOL
+build = true
+cache = false
+launch = false
+EOL
+
+cp -r /layers/cpp/gcf/cmake "${layers}/source"
+if [[ -r vcpkg.json ]]; then
+  cp vcpkg.json "${layers}/source"
+fi
+/layers/cpp/gcf/generate-wrapper.sh "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE:-http}" >"${layers}/source/main.cc"
+
 echo "-----> Configure Function"
-/layers/cpp/cmake/bin/cmake -S /var/tmp/source -B /var/tmp/build -GNinja \
-           -DCMAKE_BUILD_TYPE=Release \
-           -DCMAKE_INSTALL_PREFIX="${layers}/local" \
-           -DCMAKE_TOOLCHAIN_FILE="/layers/cpp/vcpkg/scripts/buildsystems/vcpkg.cmake"
+cat > "${layers}/binary.toml" <<EOL
+build = true
+cache = true
+launch = false
+EOL
+
+/layers/cpp/cmake/bin/cmake -S "${layers}/source" -B "${layers}/binary" -GNinja \
+  -DCNB_APP_DIR="${PWD}" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX="${layers}/local" \
+  -DCMAKE_TOOLCHAIN_FILE="/layers/cpp/vcpkg/scripts/buildsystems/vcpkg.cmake"
 echo "-----> Compile and Install Function``"
-/layers/cpp/cmake/bin/cmake --build /var/tmp/build --target install
+/layers/cpp/cmake/bin/cmake --build "${layers}/binary" --target install
 
 cat > "${layers}/local.toml" <<EOL
 launch = true
+cache = false
+build = false
 EOL
 
 cat > "${layers}/launch.toml" <<EOL
