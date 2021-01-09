@@ -83,7 +83,7 @@ RUN /usr/local/vcpkg/vcpkg install --clean-after-build boost-program-options
 FROM gcf-cpp-incremental-3 AS gcf-cpp-incremental-4
 RUN /usr/local/vcpkg/vcpkg install --clean-after-build boost-asio
 FROM gcf-cpp-incremental-4 AS gcf-cpp-incremental-5
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build boost-beast
+RUN /usr/local/vcpkg/vcpkg install --clean-after-build abseil boost-beast boost-serialization nlohmann-json
 
 # The following are not needed by the Functions Framework, but are used often
 # enough that it is a good idea to make them part of the base development
@@ -117,5 +117,8 @@ COPY --from=gcf-cpp-incremental-8 /var/cache/vcpkg-cache /var/cache/vcpkg-cache
 COPY vcpkg-overlays      /usr/local/share/gcf/vcpkg-overlays
 COPY generate-wrapper.sh /usr/local/share/gcf
 COPY cmake               /usr/local/share/gcf/cmake
+RUN find /usr/local/share/gcf -type f | xargs chmod 644
+RUN find /usr/local/share/gcf -type d | xargs chmod 755
+RUN chmod 755 /usr/local/share/gcf/generate-wrapper.sh
 
 USER cnb

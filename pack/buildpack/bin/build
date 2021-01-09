@@ -19,13 +19,18 @@ echo "---> Functions Framework C++ Buildpack"
 
 layers="$1"
 
-echo "-----> Setup vcpkg cache"
-export VCPKG_DEFAULT_BINARY_CACHE=${layers}/vcpkg
+echo "-----> Setup vcpkg"
+export VCPKG_DEFAULT_BINARY_CACHE=${layers}/vcpkg/vcpkg-cache
 export VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/vcpkg-overlays
 if [[ ! -d "${layers}/vcpkg" ]]; then
-  echo "-----> Restore cache from build image"
-  cp -r /var/cache/vcpkg-cache "${layers}/vcpkg"
+  echo "-----> Restore vcpkg from build image"
+  cp -r /usr/local/vcpkg "${layers}"
 fi
+if [[ ! -d "${layers}/vcpkg/vcpkg-cache" ]]; then
+  echo "-----> Restore cache from build image"
+  cp -r /var/cache/vcpkg-cache "${layers}/vcpkg/vcpkg-cache"
+fi
+"${layers}/vcpkg/vcpkg" install functions-framework-cpp
 cat > "${layers}/vcpkg.toml" <<EOL
 build = true
 cache = true
@@ -52,11 +57,11 @@ cache = true
 launch = false
 EOL
 
-/usr/local/bin/cmake -S "${layers}/source" -B "${layers}/binary" -GNinja \
+/usr/local/bin/cmake -S "${layers}/source" -B "${layers}/binary" -GNinja -DCMAKE_MAKE_PROGRAM=/usr/local/bin/ninja \
   -DCNB_APP_DIR="${PWD}" \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="${layers}/local" \
-  -DCMAKE_TOOLCHAIN_FILE="/usr/local/vcpkg/scripts/buildsystems/vcpkg.cmake"
+  -DCMAKE_TOOLCHAIN_FILE="${layers}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 echo "-----> Compile and Install Function``"
 /usr/local/bin/cmake --build "${layers}/binary" --target install
 
