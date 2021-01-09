@@ -21,10 +21,10 @@ layers="$1"
 
 echo "-----> Setup vcpkg cache"
 export VCPKG_DEFAULT_BINARY_CACHE=${layers}/vcpkg
-export VCPKG_OVERLAY_PORTS=/layers/cpp/gcf/vcpkg-overlays
+export VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/vcpkg-overlays
 if [[ ! -d "${layers}/vcpkg" ]]; then
   echo "-----> Restore cache from build image"
-  cp -r /layers/cpp/vcpkg-cache "${layers}/vcpkg"
+  cp -r /var/cache/vcpkg-cache "${layers}/vcpkg"
 fi
 cat > "${layers}/vcpkg.toml" <<EOL
 build = true
@@ -39,7 +39,7 @@ cache = false
 launch = false
 EOL
 
-cp -r /layers/cpp/gcf/cmake "${layers}/source"
+cp -r /usr/local/share/gcf/cmake "${layers}/source"
 if [[ -r vcpkg.json ]]; then
   cp vcpkg.json "${layers}/source"
 fi
