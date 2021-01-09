@@ -1,0 +1,8 @@
+{
+  "name": "hello-gcs",
+  "version-string": "unversioned",
+  "dependencies": [
+    "google-cloud-cpp",
+    "functions-framework-cpp"
+  ]
+}
