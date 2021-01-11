@@ -93,7 +93,8 @@ jobs:
             --env TARGET_FUNCTION=HelloCloudEvent \
             --path examples/hello_cloud_event \
             examples-hello-cloud-event;
-          docker image rm examples-hello-cloud-event:latest
+          docker image rm examples-hello-cloud-event:latest;
+          docker image prune -f
 
       - name: build-examples-multiple-sources
         run: >
@@ -102,7 +103,8 @@ jobs:
             --env TARGET_FUNCTION=HelloMultipleSources \
             --path examples/hello_multiple_sources \
             examples-hello-multiple-sources;
-          docker image rm examples-hello-multiple-sources:latest
+          docker image rm examples-hello-multiple-sources:latest;
+          docker image prune -f
 
       - name: build-examples-hello-with-third-party
         run: >
@@ -111,7 +113,8 @@ jobs:
             --env TARGET_FUNCTION=HelloWithThirdParty \
             --path examples/hello_with_third_party \
             examples-hello-with-third-party;
-          docker image rm examples-hello-with-third-party:latest
+          docker image rm examples-hello-with-third-party:latest;
+          docker image prune -f
 
       - name: build-examples-hello-gcs
         run: >
@@ -120,7 +123,8 @@ jobs:
             --env TARGET_FUNCTION=HelloGcs \
             --path examples/hello_gcs \
             examples-hello-gcs;
-          docker image rm examples-hello-gcs:latest
+          docker image rm examples-hello-gcs:latest;
+          docker image prune -f
 
       - name: build-examples-hello-world
         run: >
@@ -143,7 +147,8 @@ jobs:
             --env TARGET_FUNCTION=::HelloWorld \
             --path examples/hello_world \
             examples-hello-world-rooted;
-          docker image rm examples-hello-world-rooted:latest
+          docker image rm examples-hello-world-rooted:latest;
+          docker image prune -f
 
       - name: build-examples-hello-from-namespace
         run: >
@@ -152,7 +157,8 @@ jobs:
             --env TARGET_FUNCTION=hello_from_namespace::HelloWorld \
             --path examples/hello_from_namespace \
             examples-hello-from-namespace;
-          docker image rm examples-hello-from-namespace:latest
+          docker image rm examples-hello-from-namespace:latest;
+          docker image prune -f
 
       - name: build-examples-hello-from-namespace-rooted
         run: >
@@ -161,7 +167,8 @@ jobs:
             --env TARGET_FUNCTION=::hello_from_namespace::HelloWorld \
             --path examples/hello_from_namespace \
             examples-hello-from-namespace-rooted;
-          docker image rm examples-hello-from-namespace-rooted:latest
+          docker image rm examples-hello-from-namespace-rooted:latest;
+          docker image prune -f
 
       - name: build-examples-hello-from-nested-namespace
         run: >
@@ -170,7 +177,8 @@ jobs:
             --env FUNCTION_SIGNATURE_TYPE=http \
             --env TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld \
             examples-hello-from-nested-namespace;
-          docker image rm examples-hello-from-nested-namespace:latest
+          docker image rm examples-hello-from-nested-namespace:latest;
+          docker image prune -f
 
   site-examples:
     name: site-examples
@@ -216,4 +224,5 @@ jobs:
                 --path "${example}" \
                 "examples-site-${function}";
             docker image rm "examples-site-${function}:latest";
+            docker image prune -f;
           done
