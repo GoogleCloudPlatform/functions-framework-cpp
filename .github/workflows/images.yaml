@@ -223,6 +223,7 @@ jobs:
                 --env "FUNCTION_SIGNATURE_TYPE=${signature}" \
                 --path "${example}" \
                 "examples-site-${function}";
+            docker image ls;
             docker image rm "examples-site-${function}:latest";
             docker image prune -f;
           done
