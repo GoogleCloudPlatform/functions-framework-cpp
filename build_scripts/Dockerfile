@@ -90,6 +90,8 @@ RUN /layers/cpp/vcpkg/vcpkg install --clean-after-build boost-beast
 FROM gcf-cpp-incremental-5 AS gcf-cpp-incremental-6
 RUN /layers/cpp/vcpkg/vcpkg install --clean-after-build curl
 FROM gcf-cpp-incremental-6 AS gcf-cpp-incremental-7
+RUN /layers/cpp/vcpkg/vcpkg install --clean-after-build abseil
+RUN /layers/cpp/vcpkg/vcpkg install --clean-after-build protobuf
 RUN /layers/cpp/vcpkg/vcpkg install --clean-after-build grpc
 FROM gcf-cpp-incremental-7 AS gcf-cpp-incremental-8
 RUN /layers/cpp/vcpkg/vcpkg install --clean-after-build google-cloud-cpp
