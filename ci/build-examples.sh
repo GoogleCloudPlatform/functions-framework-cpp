@@ -88,6 +88,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'TARGET_FUNCTION=HelloCloudEvent',
       '--path', 'examples/hello_cloud_event',
@@ -97,6 +98,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=hello_from_namespace::HelloWorld',
       '--path', 'examples/hello_from_namespace',
@@ -106,6 +108,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=::hello_from_namespace::HelloWorld',
       '--path', 'examples/hello_from_namespace',
@@ -115,6 +118,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--path', 'examples/hello_from_nested_namespace',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld',
@@ -124,6 +128,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=HelloMultipleSources',
       '--path', 'examples/hello_multiple_sources',
@@ -133,6 +138,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=HelloGcs',
       '--path', 'examples/hello_gcs',
@@ -142,6 +148,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=HelloWithThirdParty',
       '--path', 'examples/hello_with_third_party',
@@ -151,6 +158,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=HelloWorld',
       '--path', 'examples/hello_world',
@@ -160,6 +168,7 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=::HelloWorld',
       '--path', 'examples/hello_world',
@@ -179,6 +188,7 @@ for example in examples/site/*; do
   - name: 'gcr.io/\${PROJECT_ID}/pack:\${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
+      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=${signature}',
       '--env', 'TARGET_FUNCTION=${function}',
       '--path', '${example}',
