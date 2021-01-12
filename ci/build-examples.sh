@@ -17,6 +17,10 @@ set -eu
 
 cat <<'_EOF_'
 timeout: 3600s
+options:
+  machineType: 'N1_HIGHCPU_32'
+  diskSizeGb: 512
+
 steps:
   # Create a docker image for the buildpacks `pack` tool
   - name: 'gcr.io/cloud-builders/git'
