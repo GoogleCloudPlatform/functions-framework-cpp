@@ -26,8 +26,6 @@ export VCPKG_ROOT="${layers}/vcpkg"
 
 if [[ ! -d "${VCPKG_ROOT}" ]]; then
   echo "-----> Install vcpkg"
-  ls -l /usr/local/vcpkg
-  ls -l /usr/local/vcpkg/installed
   cp -r /usr/local/vcpkg "${VCPKG_ROOT}"
 cat >"${layers}/vcpkg.toml" <<EOL
 build = true

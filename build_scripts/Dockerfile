@@ -92,8 +92,6 @@ RUN /usr/local/vcpkg/vcpkg install --clean-after-build protobuf
 RUN /usr/local/vcpkg/vcpkg install --clean-after-build grpc
 RUN /usr/local/vcpkg/vcpkg install --clean-after-build google-cloud-cpp
 
-RUN /usr/local/vcpkg/vcpkg list | awk '{print $1}' | xargs /usr/local/vcpkg/vcpkg remove --recurse
-
 # TODO(#41) - switch to the actual vcpkg package once created.
 COPY vcpkg-overlays      /usr/local/share/gcf/vcpkg-overlays
 COPY generate-wrapper.sh /usr/local/share/gcf
@@ -101,6 +99,9 @@ COPY cmake               /usr/local/share/gcf/cmake
 RUN find /usr/local/share/gcf -type f | xargs chmod 644
 RUN find /usr/local/share/gcf -type d | xargs chmod 755
 RUN chmod 755 /usr/local/share/gcf/generate-wrapper.sh
+
+RUN VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/vcpkg-overlays /usr/local/vcpkg/vcpkg install functions-framework-cpp
+RUN /usr/local/vcpkg/vcpkg list | awk '{print $1}' | xargs /usr/local/vcpkg/vcpkg remove --recurse
 
 FROM parent AS gcf-cpp-develop
 RUN apt-get update \
