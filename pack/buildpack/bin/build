@@ -20,25 +20,35 @@ echo "---> Functions Framework C++ Buildpack"
 layers="$1"
 
 echo "-----> Setup vcpkg"
-export VCPKG_DEFAULT_BINARY_CACHE=${layers}/vcpkg/vcpkg-cache
+export VCPKG_DEFAULT_BINARY_CACHE="${layers}/vcpkg-cache"
 export VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/vcpkg-overlays
+
 if [[ ! -d "${layers}/vcpkg" ]]; then
-  echo "-----> Restore vcpkg from build image"
-  cp -r /usr/local/vcpkg "${layers}"
-fi
-if [[ ! -d "${layers}/vcpkg/vcpkg-cache" ]]; then
-  echo "-----> Restore cache from build image"
-  cp -r /var/cache/vcpkg-cache "${layers}/vcpkg/vcpkg-cache"
-fi
-"${layers}/vcpkg/vcpkg" install functions-framework-cpp
-cat > "${layers}/vcpkg.toml" <<EOL
+  echo "-----> Install vcpkg"
+  (
+  cp -r /usr/local/vcpkg "${layers}/vcpkg"
+  )
+cat >"${layers}/vcpkg.toml" <<EOL
 build = true
 cache = true
 launch = false
 EOL
+fi
+
+if [[ ! -d "${layers}/vcpkg-cache" ]]; then
+  echo "-----> Restore cache from build image"
+  cp -r /var/cache/vcpkg-cache "${layers}/vcpkg-cache"
+cat >"${layers}/vcpkg-cache.toml" <<EOL
+build = true
+cache = true
+launch = false
+EOL
+fi
+
+"${layers}/vcpkg/vcpkg" install functions-framework-cpp
 
 echo "-----> Setup build directory"
-cat > "${layers}/source.toml" <<EOL
+cat >"${layers}/source.toml" <<EOL
 build = true
 cache = false
 launch = false
@@ -51,7 +61,7 @@ fi
 /usr/local/share/gcf/generate-wrapper.sh "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE:-http}" >"${layers}/source/main.cc"
 
 echo "-----> Configure Function"
-cat > "${layers}/binary.toml" <<EOL
+cat >"${layers}/binary.toml" <<EOL
 build = true
 cache = true
 launch = false
@@ -62,16 +72,16 @@ EOL
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="${layers}/local" \
   -DCMAKE_TOOLCHAIN_FILE="${layers}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-echo "-----> Compile and Install Function``"
+echo "-----> Compile and Install Function"
 /usr/local/bin/cmake --build "${layers}/binary" --target install
 
-cat > "${layers}/local.toml" <<EOL
+cat >"${layers}/local.toml" <<EOL
 launch = true
 cache = false
 build = false
 EOL
 
-cat > "${layers}/launch.toml" <<EOL
+cat >"${layers}/launch.toml" <<EOL
 [[processes]]
 type = "web"
 command = "${layers}/local/bin/function"
