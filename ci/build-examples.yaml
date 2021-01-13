@@ -72,7 +72,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'TARGET_FUNCTION=HelloCloudEvent',
       '--path', 'examples/hello_cloud_event',
@@ -82,7 +81,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=hello_from_namespace::HelloWorld',
       '--path', 'examples/hello_from_namespace',
@@ -92,7 +90,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=::hello_from_namespace::HelloWorld',
       '--path', 'examples/hello_from_namespace',
@@ -102,7 +99,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--path', 'examples/hello_from_nested_namespace',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld',
@@ -112,7 +108,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=HelloMultipleSources',
       '--path', 'examples/hello_multiple_sources',
@@ -122,7 +117,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=HelloGcs',
       '--path', 'examples/hello_gcs',
@@ -132,7 +126,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=HelloWithThirdParty',
       '--path', 'examples/hello_with_third_party',
@@ -142,7 +135,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=HelloWorld',
       '--path', 'examples/hello_world',
@@ -152,7 +144,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=::HelloWorld',
       '--path', 'examples/hello_world',
@@ -163,7 +154,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=concepts_after_response',
       '--path', 'examples/site/concepts_after_response',
@@ -172,7 +162,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=concepts_after_timeout',
       '--path', 'examples/site/concepts_after_timeout',
@@ -181,7 +170,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=concepts_filesystem',
       '--path', 'examples/site/concepts_filesystem',
@@ -190,7 +178,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=concepts_request',
       '--path', 'examples/site/concepts_request',
@@ -199,7 +186,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=concepts_stateless',
       '--path', 'examples/site/concepts_stateless',
@@ -208,7 +194,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=env_vars',
       '--path', 'examples/site/env_vars',
@@ -217,7 +202,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=hello_world_content',
       '--path', 'examples/site/hello_world_content',
@@ -226,7 +210,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=hello_world_get',
       '--path', 'examples/site/hello_world_get',
@@ -235,7 +218,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=hello_world_http',
       '--path', 'examples/site/hello_world_http',
@@ -244,7 +226,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'TARGET_FUNCTION=hello_world_pubsub',
       '--path', 'examples/site/hello_world_pubsub',
@@ -253,7 +234,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'TARGET_FUNCTION=hello_world_storage',
       '--path', 'examples/site/hello_world_storage',
@@ -262,7 +242,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=http_cors',
       '--path', 'examples/site/http_cors',
@@ -271,7 +250,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=http_cors_auth',
       '--path', 'examples/site/http_cors_auth',
@@ -280,7 +258,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=http_method',
       '--path', 'examples/site/http_method',
@@ -289,7 +266,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=http_xml',
       '--path', 'examples/site/http_xml',
@@ -298,7 +274,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'TARGET_FUNCTION=tips_infinite_retries',
       '--path', 'examples/site/tips_infinite_retries',
@@ -307,7 +282,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=tips_lazy_globals',
       '--path', 'examples/site/tips_lazy_globals',
@@ -316,7 +290,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'TARGET_FUNCTION=tips_retry',
       '--path', 'examples/site/tips_retry',
@@ -325,7 +298,6 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--clear-cache',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=tips_scopes',
       '--path', 'examples/site/tips_scopes',
