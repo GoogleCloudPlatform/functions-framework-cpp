@@ -22,12 +22,13 @@ layers="$1"
 echo "-----> Setup vcpkg"
 export VCPKG_DEFAULT_BINARY_CACHE="${layers}/vcpkg-cache"
 export VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/vcpkg-overlays
+export VCPKG_ROOT="${layers}/vcpkg"
 
-if [[ ! -d "${layers}/vcpkg" ]]; then
+if [[ ! -d "${VCPKG_ROOT}" ]]; then
   echo "-----> Install vcpkg"
-  (
-  cp -r /usr/local/vcpkg "${layers}/vcpkg"
-  )
+  ls -l /usr/local/vcpkg
+  ls -l /usr/local/vcpkg/installed
+  cp -r /usr/local/vcpkg "${VCPKG_ROOT}"
 cat >"${layers}/vcpkg.toml" <<EOL
 build = true
 cache = true

@@ -94,6 +94,14 @@ RUN /usr/local/vcpkg/vcpkg install --clean-after-build google-cloud-cpp
 
 RUN /usr/local/vcpkg/vcpkg list | awk '{print $1}' | xargs /usr/local/vcpkg/vcpkg remove --recurse
 
+# TODO(#41) - switch to the actual vcpkg package once created.
+COPY vcpkg-overlays      /usr/local/share/gcf/vcpkg-overlays
+COPY generate-wrapper.sh /usr/local/share/gcf
+COPY cmake               /usr/local/share/gcf/cmake
+RUN find /usr/local/share/gcf -type f | xargs chmod 644
+RUN find /usr/local/share/gcf -type d | xargs chmod 755
+RUN chmod 755 /usr/local/share/gcf/generate-wrapper.sh
+
 FROM parent AS gcf-cpp-develop
 RUN apt-get update \
     && apt install -y  --no-install-recommends \
@@ -108,13 +116,5 @@ COPY --from=gcf-cpp-incremental /usr/local/bin/ninja   /usr/local/bin/ninja
 COPY --from=gcf-cpp-incremental /usr/local/share /usr/local/share
 COPY --from=gcf-cpp-incremental /usr/local/vcpkg /usr/local/vcpkg
 COPY --from=gcf-cpp-incremental /var/cache/vcpkg-cache /var/cache/vcpkg-cache
-
-# TODO(#41) - switch to the actual vcpkg package once created.
-COPY vcpkg-overlays      /usr/local/share/gcf/vcpkg-overlays
-COPY generate-wrapper.sh /usr/local/share/gcf
-COPY cmake               /usr/local/share/gcf/cmake
-RUN find /usr/local/share/gcf -type f | xargs chmod 644
-RUN find /usr/local/share/gcf -type d | xargs chmod 755
-RUN chmod 755 /usr/local/share/gcf/generate-wrapper.sh
 
 USER cnb
