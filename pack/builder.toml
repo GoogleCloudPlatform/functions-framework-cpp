@@ -23,6 +23,5 @@ uri = "buildpack"
 # Stack that will be used by the builder
 [stack]
 id = "google"
-# TODO(#...) - these should be gcr.io/buildpacks/$something
 run-image = "gcf-cpp-runtime:latest"
 build-image = "gcf-cpp-develop:latest"

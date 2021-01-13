@@ -33,7 +33,9 @@ steps:
     ]
     waitFor: ['-']
     id: 'clone-cloud-builders-community'
-  - name: 'gcr.io/kaniko-project/executor:latest'
+  # Workaround a kaniko bug using the "edge" builder:
+  #     https://github.com/GoogleContainerTools/kaniko/issues/1058
+  - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
         "--context=dir:///workspace/third_party/cloud-builders-community/pack/",
         "--dockerfile=Dockerfile",
@@ -43,8 +45,8 @@ steps:
     ]
     waitFor: ['clone-cloud-builders-community']
 
-  # Create the docker images for the buildspacks builder.
-  - name: 'gcr.io/kaniko-project/executor:latest'
+  # Create the docker images for the buildpacks builder.
+  - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
         "--context=dir:///workspace/build_scripts/",
         "--dockerfile=Dockerfile",
@@ -57,7 +59,7 @@ steps:
     timeout: 1800s
   - name: 'gcr.io/cloud-builders/docker'
     args: ['pull', 'gcr.io/${PROJECT_ID}/functions-framework-cpp/runtime:${SHORT_SHA}']
-  - name: 'gcr.io/kaniko-project/executor:latest'
+  - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
         "--context=dir:///workspace/build_scripts/",
         "--dockerfile=Dockerfile",
