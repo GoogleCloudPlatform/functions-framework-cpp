@@ -142,7 +142,6 @@ generic_example hello_world HelloWorld http
 generic_example hello_world ::HelloWorld http hello-world-rooted
 
 cat <<_EOF_
-
   # Build the cloud site examples, these are more amenable to a for loop by design.
 _EOF_
 
