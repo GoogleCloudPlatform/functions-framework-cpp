@@ -101,6 +101,7 @@ generic_example() {
   cat <<_EOF_
   - name: 'gcr.io/\${PROJECT_ID}/pack:\${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
+    id: '${container}'
     args: ['build',
       '--env', 'FUNCTION_SIGNATURE_TYPE=${signature}',
       '--env', 'TARGET_FUNCTION=${function}',
@@ -119,14 +120,16 @@ site_example() {
   if grep -q gcf::CloudEvent ${example}/*; then
     signature="cloudevent"
   fi
+  local container="site-${function}"
   cat <<_EOF_
   - name: 'gcr.io/\${PROJECT_ID}/pack:\${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
+    id: '${container}'
     args: ['build',
       '--env', 'FUNCTION_SIGNATURE_TYPE=${signature}',
       '--env', 'TARGET_FUNCTION=${function}',
       '--path', '${example}',
-      'site-${function}',
+      '${container}',
     ]
 _EOF_
 }
@@ -148,3 +151,46 @@ _EOF_
 for example in examples/site/*; do
   site_example "${example}"
 done
+
+cat <<_EOF_
+
+  # Verify generated images are deployable
+  - name: 'gcr.io/cloud-builders/docker'
+    waitFor: ['hello-world']
+    args: ['tag', 'hello-world', 'gcr.io/\${PROJECT_ID}/hello-world-\${BUILD_ID}:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/\${PROJECT_ID}/hello-world-\${BUILD_ID}:latest']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: [
+      'run', 'deploy',
+      'hello-world-\${BUILD_ID}',
+      '--platform', 'managed',
+      '--project', '\${PROJECT_ID}',
+      '--region', 'us-central1',
+      '--image', 'gcr.io/\${PROJECT_ID}/hello-world-\${BUILD_ID}:latest',
+      '--allow-unauthenticated',
+    ]
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        URL=\$\$(gcloud run services list \\
+            --project=\${PROJECT_ID} \\
+            --platform managed \\
+            --filter=SERVICE:hello-world-\${BUILD_ID} \\
+            '--format=csv[no-heading](URL)')
+        echo "Pinging service at \$\${URL}"
+        curl -sSL --retry 3 "\$\${URL}"
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: [
+      'run', 'services', 'delete',
+      'hello-world-\${BUILD_ID}',
+      '--platform', 'managed',
+      '--project', '\${PROJECT_ID}',
+      '--region', 'us-central1',
+      '--quiet',
+    ]
+_EOF_
