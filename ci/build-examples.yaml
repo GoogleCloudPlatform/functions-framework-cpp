@@ -99,9 +99,9 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     args: ['build',
-      '--path', 'examples/hello_from_nested_namespace',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld',
+      '--path', 'examples/hello_from_nested_namespace',
       'hello-from-nested-namespace',
     ]
 
@@ -149,6 +149,7 @@ steps:
       '--path', 'examples/hello_world',
       'hello-world-rooted',
     ]
+
 
   # Build the cloud site examples, these are more amenable to a for loop by design.
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
