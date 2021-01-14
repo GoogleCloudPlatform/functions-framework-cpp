@@ -87,93 +87,35 @@ steps:
     id: 'gcf-builder-ready'
 
   # Build the examples using the builder. Keep these in alphabetical order.
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
-    args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
-      '--env', 'TARGET_FUNCTION=HelloCloudEvent',
-      '--path', 'examples/hello_cloud_event',
-      'hello-cloud-event',
-    ]
-
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
-    args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-      '--env', 'TARGET_FUNCTION=hello_from_namespace::HelloWorld',
-      '--path', 'examples/hello_from_namespace',
-      'hello-from-namespace',
-    ]
-
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
-    args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-      '--env', 'TARGET_FUNCTION=::hello_from_namespace::HelloWorld',
-      '--path', 'examples/hello_from_namespace',
-      'hello-from-namespace-rooted',
-    ]
-
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
-    args: ['build',
-      '--path', 'examples/hello_from_nested_namespace',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-      '--env', 'TARGET_FUNCTION=hello_from_nested_namespace::ns0::ns1::HelloWorld',
-      'hello-from-nested-namespace',
-    ]
-
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
-    args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-      '--env', 'TARGET_FUNCTION=HelloMultipleSources',
-      '--path', 'examples/hello_multiple_sources',
-      'hello-multiple-sources',
-    ]
-
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
-    args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-      '--env', 'TARGET_FUNCTION=HelloGcs',
-      '--path', 'examples/hello_gcs',
-      'hello-gcs',
-    ]
-
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
-    args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-      '--env', 'TARGET_FUNCTION=HelloWithThirdParty',
-      '--path', 'examples/hello_with_third_party',
-      'hello-with-third-party',
-    ]
-
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
-    args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-      '--env', 'TARGET_FUNCTION=HelloWorld',
-      '--path', 'examples/hello_world',
-      'hello-world',
-    ]
-
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
-    args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-      '--env', 'TARGET_FUNCTION=::HelloWorld',
-      '--path', 'examples/hello_world',
-      'hello-world-rooted',
-    ]
-
-  # Build the cloud site examples, these are more amenable to a for loop by design.
 _EOF_
 
-for example in examples/site/*; do
+generic_example() {
+  local example="${1}"
+  local function="${2}"
+  local signature="${3}"
+  local container=${example//_/-}
+  if [[ $# -eq 4 ]]; then
+    container="${4}"
+  fi
+
+  cat <<_EOF_
+  - name: 'gcr.io/\${PROJECT_ID}/pack:\${SHORT_SHA}'
+    waitFor: ['gcf-builder-ready']
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=${signature}',
+      '--env', 'TARGET_FUNCTION=${function}',
+      '--path', 'examples/${example}',
+      '${container}',
+    ]
+
+_EOF_
+}
+
+site_example() {
+  local example="${1}"
+  local function
   function="$(basename "${example}")"
-  signature="http"
+  local signature="http"
   if grep -q gcf::CloudEvent ${example}/*; then
     signature="cloudevent"
   fi
@@ -187,4 +129,22 @@ for example in examples/site/*; do
       'site-${function}',
     ]
 _EOF_
+}
+
+generic_example hello_cloud_event HelloCloudEvent cloudevent
+generic_example hello_from_namespace hello_from_namespace::HelloWorld http
+generic_example hello_from_namespace ::hello_from_namespace::HelloWorld http hello-from-namespace-rooted
+generic_example hello_from_nested_namespace hello_from_nested_namespace::ns0::ns1::HelloWorld http
+generic_example hello_multiple_sources HelloMultipleSources http
+generic_example hello_gcs HelloGcs http
+generic_example hello_with_third_party HelloWithThirdParty http
+generic_example hello_world HelloWorld http
+generic_example hello_world ::HelloWorld http hello-world-rooted
+
+cat <<_EOF_
+  # Build the cloud site examples, these are more amenable to a for loop by design.
+_EOF_
+
+for example in examples/site/*; do
+  site_example "${example}"
 done
