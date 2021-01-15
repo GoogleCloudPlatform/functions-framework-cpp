@@ -82,7 +82,7 @@ if (BUILD_TESTING)
         http_response_test.cc
         internal/call_user_function_test.cc
         internal/compiler_info_test.cc
-            internal/framework_impl_test.cc
+        internal/framework_impl_test.cc
         internal/parse_cloud_event_http_test.cc
         internal/parse_cloud_event_json_test.cc
         internal/parse_options_test.cc
