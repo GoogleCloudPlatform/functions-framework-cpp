@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <google/cloud/functions/internal/framework.h>
+#include <google/cloud/functions/framework.h>
 #include <cstdlib>
 
 namespace {
@@ -31,5 +31,5 @@ HttpResponse HelloWorld(HttpRequest const& request) {
 }  // namespace
 
 int main(int argc, char* argv[]) {
-  return ::google::cloud::functions_internal::Run(argc, argv, HelloWorld);
+  return ::google::cloud::functions::Run(argc, argv, HelloWorld);
 }

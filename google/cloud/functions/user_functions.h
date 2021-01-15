@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_USER_FUNCTIONS_H
-#define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_USER_FUNCTIONS_H
+#ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_USER_FUNCTIONS_H
+#define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_USER_FUNCTIONS_H
 
 #include "google/cloud/functions/cloud_event.h"
 #include "google/cloud/functions/http_request.h"
@@ -21,7 +21,7 @@
 #include "google/cloud/functions/version.h"
 #include <functional>
 
-namespace google::cloud::functions_internal {
+namespace google::cloud::functions {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
 using UserHttpFunction =
@@ -30,6 +30,6 @@ using UserHttpFunction =
 using UserCloudEventFunction = std::function<void(functions::CloudEvent)>;
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
-}  // namespace google::cloud::functions_internal
+}  // namespace google::cloud::functions
 
-#endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_USER_FUNCTIONS_H
+#endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_USER_FUNCTIONS_H
