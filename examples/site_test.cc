@@ -34,6 +34,7 @@ extern gcf::HttpResponse concepts_filesystem(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_request(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_stateless(gcf::HttpRequest request);
 extern gcf::HttpResponse env_vars(gcf::HttpRequest request);
+extern gcf::HttpResponse tips_gcp_apis(gcf::HttpRequest request);
 extern void tips_infinite_retries(gcf::CloudEvent event);
 extern gcf::HttpResponse tips_lazy_globals(gcf::HttpRequest request);
 extern gcf::HttpResponse tips_scopes(gcf::HttpRequest request);
@@ -299,6 +300,28 @@ TEST(ExamplesSiteTest, TipsLazyGlobals) {
   EXPECT_THAT(actual.payload(), HasSubstr("heavy computation"));
   actual = tips_lazy_globals(gcf::HttpRequest{});
   EXPECT_THAT(actual.payload(), HasSubstr("heavy computation"));
+}
+
+TEST(ExamplesSiteTest, TipsGcpApis) {
+#if defined(__has_feature)
+#if __has_feature(thread_sanitizer)
+  // The test creates false positives with TSAN.
+  GTEST_SKIP();
+#endif  // __has_feature(thread_sanitizer)
+#endif  // defined(__has_feature)
+  unsetenv("GCP_PROJECT");
+  EXPECT_THROW(tips_gcp_apis(gcf::HttpRequest{}), std::runtime_error);
+
+  setenv("GCP_PROJECT", "test-unused", 1);
+  EXPECT_THROW(tips_gcp_apis(gcf::HttpRequest{}), std::exception);
+  EXPECT_THROW(
+      tips_gcp_apis(gcf::HttpRequest{}.set_payload(nlohmann::json({}).dump())),
+      std::runtime_error);
+
+  setenv("PUBSUB_EMULATOR_HOST", "localhost:1", 1);
+  auto const actual = tips_gcp_apis(gcf::HttpRequest{}.set_payload(
+      nlohmann::json({{"topic", "test-unused"}}).dump()));
+  EXPECT_EQ(actual.result(), gcf::HttpResponse::kInternalServerError);
 }
 
 TEST(ExamplesSiteTest, TipsInfiniteRetries) {

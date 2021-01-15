@@ -1,0 +1,8 @@
+{
+  "name": "tips-gcp-apis",
+  "version-string": "unversioned",
+  "dependencies": [
+    "google-cloud-cpp",
+    "functions-framework-cpp"
+  ]
+}

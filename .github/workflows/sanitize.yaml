@@ -35,11 +35,13 @@ jobs:
             vcpkg-${{ runner.os }}-${{ github.job }}-
             vcpkg-${{ runner.os }}-
       - name: -fsanitize=${{matrix.sanitizer}} / configure
+        # See https://github.com/grpc/grpc/pull/22325 for an explanation around the
+        # -DGRPC_* flags.
         run: >
           cmake -S . -B ${{runner.workspace}}/build -GNinja
           -DCMAKE_CXX_COMPILER=clang++-10
           -DCMAKE_BUILD_TYPE=Debug
-          -DCMAKE_CXX_FLAGS=-fsanitize=${{matrix.sanitizer}}
+          -DCMAKE_CXX_FLAGS="-fsanitize=${{matrix.sanitizer}} -DGRPC_TSAN_SUPPRESSED -DGRPC_ASAN_SUPPRESSED"
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
       - name: -fsanitize=${{matrix.sanitizer}} / build
