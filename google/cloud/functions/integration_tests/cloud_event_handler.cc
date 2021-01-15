@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/internal/framework.h"
+#include "google/cloud/functions/framework.h"
 #include <cstdlib>
 #include <iostream>
 
-namespace functions_internal = google::cloud::functions_internal;
+namespace functions = google::cloud::functions;
 using ::google::cloud::functions::CloudEvent;
 
 void CloudEventHandler(CloudEvent const& event) {
@@ -33,5 +33,5 @@ void CloudEventHandler(CloudEvent const& event) {
 }
 
 int main(int argc, char* argv[]) {
-  return functions_internal::Run(argc, argv, CloudEventHandler);
+  return functions::Run(argc, argv, CloudEventHandler);
 }

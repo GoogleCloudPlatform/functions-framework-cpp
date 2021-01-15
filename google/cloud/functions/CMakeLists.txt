@@ -29,6 +29,7 @@ add_library(
     ${CMAKE_CURRENT_BINARY_DIR}/internal/build_info.cc
     cloud_event.cc
     cloud_event.h
+    framework.h
     http_request.h
     http_response.cc
     http_response.h
@@ -37,8 +38,8 @@ add_library(
     internal/call_user_function.h
     internal/compiler_info.cc
     internal/compiler_info.h
-    internal/framework.cc
-    internal/framework.h
+    internal/framework_impl.cc
+    internal/framework_impl.h
     internal/http_message_types.h
     internal/parse_cloud_event_http.cc
     internal/parse_cloud_event_http.h
@@ -46,12 +47,12 @@ add_library(
     internal/parse_cloud_event_json.h
     internal/parse_options.cc
     internal/parse_options.h
-    internal/user_functions.h
     internal/version_info.h
     internal/wrap_request.cc
     internal/wrap_request.h
     internal/wrap_response.cc
     internal/wrap_response.h
+    user_functions.h
     version.cc
     version.h)
 target_include_directories(googleapis_functions_framework
@@ -81,7 +82,7 @@ if (BUILD_TESTING)
         http_response_test.cc
         internal/call_user_function_test.cc
         internal/compiler_info_test.cc
-        internal/framework_test.cc
+            internal/framework_impl_test.cc
         internal/parse_cloud_event_http_test.cc
         internal/parse_cloud_event_json_test.cc
         internal/parse_options_test.cc

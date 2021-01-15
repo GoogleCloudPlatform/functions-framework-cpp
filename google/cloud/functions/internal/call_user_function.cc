@@ -32,7 +32,7 @@ struct UnwrapResponse {
   }
 };
 
-BeastResponse CallUserFunction(UserHttpFunction const& function,
+BeastResponse CallUserFunction(functions::UserHttpFunction const& function,
                                BeastRequest request) try {
   if (request.target() == "/favicon.ico" || request.target() == "/robots.txt") {
     BeastResponse response;
@@ -53,8 +53,9 @@ BeastResponse CallUserFunction(UserHttpFunction const& function,
   return response;
 }
 
-BeastResponse CallUserFunction(UserCloudEventFunction const& function,
-                               BeastRequest const& request) try {
+BeastResponse CallUserFunction(
+    functions::UserCloudEventFunction const& function,
+    BeastRequest const& request) try {
   if (request.target() == "/favicon.ico" || request.target() == "/robots.txt") {
     BeastResponse response;
     response.result(be::http::status::not_found);

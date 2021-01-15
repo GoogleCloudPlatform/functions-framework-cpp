@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/internal/framework.h"
+#include "google/cloud/functions/internal/framework_impl.h"
 #include "google/cloud/functions/internal/call_user_function.h"
 #include "google/cloud/functions/internal/parse_options.h"
 #include "google/cloud/functions/version.h"
@@ -109,23 +109,15 @@ int RunImpl(int argc, char const* const argv[], UserFunction&& f) noexcept try {
 
 }  // namespace
 
-int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept {
-  return RunImpl(argc, argv, std::move(handler));
-}
-
-int Run(int argc, char const* const argv[],
-        UserCloudEventFunction handler) noexcept {
-  return RunImpl(argc, argv, std::move(handler));
-}
-
-int RunForTest(int argc, char const* const argv[], UserHttpFunction handler,
+int RunForTest(int argc, char const* const argv[],
+               functions::UserHttpFunction handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port) {
   return RunForTestImpl(argc, argv, std::move(handler), shutdown, actual_port);
 }
 
 int RunForTest(int argc, char const* const argv[],
-               UserCloudEventFunction handler,
+               functions::UserCloudEventFunction handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port) {
   return RunForTestImpl(argc, argv, std::move(handler), shutdown, actual_port);
@@ -133,3 +125,18 @@ int RunForTest(int argc, char const* const argv[],
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal
+
+namespace google::cloud::functions {
+inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+
+int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept {
+  return functions_internal::RunImpl(argc, argv, std::move(handler));
+}
+
+int Run(int argc, char const* const argv[],
+        UserCloudEventFunction handler) noexcept {
+  return functions_internal::RunImpl(argc, argv, std::move(handler));
+}
+
+}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+}  // namespace google::cloud::functions

@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/internal/framework.h"
+#include "google/cloud/functions/internal/framework_impl.h"
+#include "google/cloud/functions/framework.h"
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast.hpp>
@@ -107,7 +108,8 @@ TEST(FrameworkTest, Http) {
     response.set_header("content-type", "text/plain");
     return response;
   };
-  auto run = [&](int argc, char const* const argv[], UserHttpFunction f) {
+  auto run = [&](int argc, char const* const argv[],
+                 functions::UserHttpFunction f) {
     return RunForTest(
         argc, argv, std::move(f), [&shutdown]() { return shutdown.load(); },
         [&port_p](int port) mutable { port_p.set_value(port); });
@@ -128,8 +130,8 @@ TEST(FrameworkTest, Http) {
 }
 
 TEST(FrameworkTest, HttpInvalidPort) {
-  auto const exit_code = ::google::cloud::functions_internal::Run(
-      kTestInvalidArgc, kTestInvalidArgv, UserHttpFunction{});
+  auto const exit_code = ::google::cloud::functions::Run(
+      kTestInvalidArgc, kTestInvalidArgv, functions::UserHttpFunction{});
   EXPECT_NE(exit_code, 0);
 }
 
@@ -138,7 +140,8 @@ TEST(FrameworkTest, CloudEvent) {
   auto port_f = port_p.get_future();
   std::atomic<bool> shutdown{false};
   auto hello = [](functions::CloudEvent const& /*event*/) {};
-  auto run = [&](int argc, char const* const argv[], UserCloudEventFunction f) {
+  auto run = [&](int argc, char const* const argv[],
+                 functions::UserCloudEventFunction f) {
     return RunForTest(
         argc, argv, std::move(f), [&shutdown]() { return shutdown.load(); },
         [&port_p](int port) mutable { port_p.set_value(port); });
@@ -159,8 +162,8 @@ TEST(FrameworkTest, CloudEvent) {
 }
 
 TEST(FrameworkTest, CloudEventInvalidPort) {
-  auto const exit_code = ::google::cloud::functions_internal::Run(
-      kTestInvalidArgc, kTestInvalidArgv, UserCloudEventFunction{});
+  auto const exit_code = ::google::cloud::functions::Run(
+      kTestInvalidArgc, kTestInvalidArgv, functions::UserCloudEventFunction{});
   EXPECT_NE(exit_code, 0);
 }
 
