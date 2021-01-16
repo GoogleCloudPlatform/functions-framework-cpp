@@ -25,9 +25,15 @@ jobs:
         with:
           path: |
             ~/.cache/vcpkg
-          key: vcpkg-${{ runner.os }}-${{ github.job }}-${{ matrix.sanitizer }}-${{ hashFiles('vcpkg.json') }}
+          key: |
+            vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles(
+                '/usr/local/share/vcpkg/**/vcpkg.json',
+                '/usr/local/share/vcpkg/**/CONTROL',
+                'vcpkg.json') }}
           restore-keys: |
             vcpkg-${{ runner.os }}-${{ github.job }}-${{ matrix.sanitizer }}-
+            vcpkg-${{ runner.os }}-${{ github.job }}-
+            vcpkg-${{ runner.os }}-
       - name: -fsanitize=${{matrix.sanitizer}} / configure
         run: >
           cmake -S . -B ${{runner.workspace}}/build -GNinja
