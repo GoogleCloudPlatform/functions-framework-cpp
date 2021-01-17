@@ -57,7 +57,8 @@ if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
     set(googleapis_functions_framework_examples_unit_tests
         # cmake-format: sort
-        cloud_event_examples_test.cc http_examples_test.cc site_test.cc)
+        cloud_event_examples_test.cc http_examples_test.cc http_unit_test.cc
+        site_test.cc)
 
     foreach (fname ${googleapis_functions_framework_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
