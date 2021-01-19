@@ -16,16 +16,17 @@
 #define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_CALL_USER_FUNCTION_H
 
 #include "google/cloud/functions/internal/http_message_types.h"
-#include "google/cloud/functions/internal/user_functions.h"
+#include "google/cloud/functions/user_functions.h"
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
-BeastResponse CallUserFunction(UserHttpFunction const& function,
+BeastResponse CallUserFunction(functions::UserHttpFunction const& function,
                                BeastRequest request);
 
-BeastResponse CallUserFunction(UserCloudEventFunction const& function,
-                               BeastRequest const& request);
+BeastResponse CallUserFunction(
+    functions::UserCloudEventFunction const& function,
+    BeastRequest const& request);
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
 }  // namespace google::cloud::functions_internal

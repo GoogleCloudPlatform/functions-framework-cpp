@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/internal/framework.h"
+#include "google/cloud/functions/framework.h"
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <sstream>
 
-namespace functions = google::cloud::functions_internal;
-using ::google::cloud::functions::HttpRequest;
-using ::google::cloud::functions::HttpResponse;
+namespace functions = ::google::cloud::functions;
+using functions::HttpRequest;
+using functions::HttpResponse;
 
 HttpResponse EchoServer(HttpRequest const& request) {
   auto const& target = request.target();
