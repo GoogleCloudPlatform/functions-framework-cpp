@@ -23,15 +23,14 @@ fi
 generate_http_main_no_namespace() {
   local function="${1}"
   cat <<_EOF_
-#include <google/cloud/functions/internal/framework.h>
+#include <google/cloud/functions/framework.h>
 
 namespace gcf = ::google::cloud::functions;
-namespace gcf_internal = ::google::cloud::functions_internal;
 
 extern gcf::HttpResponse ${function}(gcf::HttpRequest);
 
 int main(int argc, char* argv[]) {
-  return gcf_internal::Run(argc, argv, gcf_internal::UserHttpFunction(${function}));
+  return gcf::Run(argc, argv, gcf::UserHttpFunction(${function}));
 }
 _EOF_
 }
@@ -41,17 +40,16 @@ generate_http_main_with_namespace() {
   local namespace="${2}"
 
   cat <<_EOF_
-#include <google/cloud/functions/internal/framework.h>
+#include <google/cloud/functions/framework.h>
 
 namespace gcf = ::google::cloud::functions;
-namespace gcf_internal = ::google::cloud::functions_internal;
 
 namespace ${namespace} {
   extern gcf::HttpResponse ${function}(gcf::HttpRequest);
 } // namespace
 
 int main(int argc, char* argv[]) {
-  return gcf_internal::Run(argc, argv, gcf_internal::UserHttpFunction(::${namespace}::${function}));
+  return gcf::Run(argc, argv, gcf::UserHttpFunction(::${namespace}::${function}));
 }
 _EOF_
 }
@@ -59,15 +57,14 @@ _EOF_
 generate_cloud_event_main_no_namespace() {
   local function="${1}"
   cat <<_EOF_
-#include <google/cloud/functions/internal/framework.h>
+#include <google/cloud/functions/framework.h>
 
 namespace gcf = ::google::cloud::functions;
-namespace gcf_internal = ::google::cloud::functions_internal;
 
 extern void ${function}(gcf::CloudEvent);
 
 int main(int argc, char* argv[]) {
-  return gcf_internal::Run(argc, argv, gcf_internal::UserCloudEventFunction(${function}));
+  return gcf::Run(argc, argv, gcf::UserCloudEventFunction(${function}));
 }
 _EOF_
 }
@@ -77,17 +74,16 @@ generate_cloud_event_main_with_namespace() {
   local namespace="${2}"
 
   cat <<_EOF_
-#include <google/cloud/functions/internal/framework.h>
+#include <google/cloud/functions/framework.h>
 
 namespace gcf = ::google::cloud::functions;
-namespace gcf_internal = ::google::cloud::functions_internal;
 
 namespace ${namespace} {
   extern void ${function}(gcf::CloudEvent);
 } // namespace
 
 int main(int argc, char* argv[]) {
-  return gcf_internal::Run(argc, argv, gcf_internal::UserCloudEventFunction(::${namespace}::${function}));
+  return gcf::Run(argc, argv, gcf::UserCloudEventFunction(::${namespace}::${function}));
 }
 _EOF_
 }

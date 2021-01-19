@@ -21,7 +21,7 @@ layers="$1"
 
 echo "-----> Setup vcpkg"
 export VCPKG_DEFAULT_BINARY_CACHE="${layers}/vcpkg-cache"
-export VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/vcpkg-overlays
+export VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/build_scripts/vcpkg-overlays
 export VCPKG_ROOT="${layers}/vcpkg"
 
 if [[ ! -d "${VCPKG_ROOT}" ]]; then
@@ -53,11 +53,12 @@ cache = false
 launch = false
 EOL
 
-cp -r /usr/local/share/gcf/cmake "${layers}/source"
+cp -r /usr/local/share/gcf/build_scripts/cmake "${layers}/source"
 if [[ -r vcpkg.json ]]; then
   cp vcpkg.json "${layers}/source"
 fi
-/usr/local/share/gcf/generate-wrapper.sh "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE:-http}" >"${layers}/source/main.cc"
+/usr/local/share/gcf/build_scripts/generate-wrapper.sh \
+    "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE:-http}" >"${layers}/source/main.cc"
 
 echo "-----> Configure Function"
 cat >"${layers}/binary.toml" <<EOL
