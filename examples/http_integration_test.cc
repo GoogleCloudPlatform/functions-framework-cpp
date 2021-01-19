@@ -121,4 +121,4 @@ int main(int argc, char* argv[]) {
   return RUN_ALL_TESTS();
 }
 
-// [START functions_http_integration_test]
+// [END functions_http_integration_test]
