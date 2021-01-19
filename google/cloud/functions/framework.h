@@ -28,6 +28,12 @@ inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
  * Starts a HTTP server at the address and listening endpoint described by
  * @p argv, invoking @p handler to handle any HTTP request.
  *
+ * When deploying code to Google Cloud Functions applications should**not** use
+ * this function directly. The buildpack will automatically create a `main()`
+ * and invoke `Run()` with the correct parameters. We recommend that application
+ * developers use this function only for local development and integration
+ * tests.
+ *
  * @par Example
  * @code
  * namespace gcf = ::google::cloud::functions;
@@ -50,6 +56,12 @@ int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept;
  * Starts a HTTP server at the address and listening endpoint described by
  * @p argv, invoking @p handler to handle any HTTP request which *MUST* conform
  * to the Cloud Events [HTTP protocol binding][cloud-events-spec].
+ *
+ * When deploying code to Google Cloud Functions applications should**not** use
+ * this function directly. The buildpack will automatically create a `main()`
+ * and invoke `Run()` with the correct parameters. We recommend that application
+ * developers use this function only for local development and integration
+ * tests.
  *
  * @par Example
  * @code
