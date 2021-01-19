@@ -30,12 +30,11 @@ steps:
   # Create the docker images for the buildpacks builder.
   - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
-        "--context=dir:///workspace/build_scripts/",
-        "--dockerfile=Dockerfile",
+        "--context=dir:///workspace/",
+        "--dockerfile=build_scripts/Dockerfile",
         "--destination=gcr.io/${PROJECT_ID}/functions-framework-cpp/runtime:${SHORT_SHA}",
         "--target=gcf-cpp-runtime",
         "--cache=true",
-        "--cache-ttl=48h"
     ]
     waitFor: ['-']
     timeout: 1800s
@@ -43,11 +42,10 @@ steps:
     args: ['pull', 'gcr.io/${PROJECT_ID}/functions-framework-cpp/runtime:${SHORT_SHA}']
   - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
-        "--context=dir:///workspace/build_scripts/",
-        "--dockerfile=Dockerfile",
+        "--context=dir:///workspace/",
+        "--dockerfile=build_scripts/Dockerfile",
         "--destination=gcr.io/${PROJECT_ID}/functions-framework-cpp/develop:${SHORT_SHA}",
         "--cache=true",
-        "--cache-ttl=48h"
     ]
     waitFor: ['-']
     timeout: 1800s
@@ -294,6 +292,15 @@ steps:
       '--env', 'TARGET_FUNCTION=http_xml',
       '--path', 'examples/site/http_xml',
       'site-http_xml',
+    ]
+  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
+    waitFor: ['gcf-builder-ready']
+    id: 'site-tips_gcp_apis'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'TARGET_FUNCTION=tips_gcp_apis',
+      '--path', 'examples/site/tips_gcp_apis',
+      'site-tips_gcp_apis',
     ]
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']

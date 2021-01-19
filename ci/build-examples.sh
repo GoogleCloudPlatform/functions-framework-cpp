@@ -48,12 +48,11 @@ steps:
   # Create the docker images for the buildpacks builder.
   - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
-        "--context=dir:///workspace/build_scripts/",
-        "--dockerfile=Dockerfile",
+        "--context=dir:///workspace/",
+        "--dockerfile=build_scripts/Dockerfile",
         "--destination=gcr.io/${PROJECT_ID}/functions-framework-cpp/runtime:${SHORT_SHA}",
         "--target=gcf-cpp-runtime",
         "--cache=true",
-        "--cache-ttl=48h"
     ]
     waitFor: ['-']
     timeout: 1800s
@@ -61,11 +60,10 @@ steps:
     args: ['pull', 'gcr.io/${PROJECT_ID}/functions-framework-cpp/runtime:${SHORT_SHA}']
   - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
-        "--context=dir:///workspace/build_scripts/",
-        "--dockerfile=Dockerfile",
+        "--context=dir:///workspace/",
+        "--dockerfile=build_scripts/Dockerfile",
         "--destination=gcr.io/${PROJECT_ID}/functions-framework-cpp/develop:${SHORT_SHA}",
         "--cache=true",
-        "--cache-ttl=48h"
     ]
     waitFor: ['-']
     timeout: 1800s
