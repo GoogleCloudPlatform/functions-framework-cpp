@@ -17,6 +17,7 @@
 find_package(storage_client REQUIRED)
 find_package(pubsub_client REQUIRED)
 find_package(fmt REQUIRED)
+find_package(Boost REQUIRED COMPONENTS filesystem)
 
 add_library(
     functions_framework_examples # cmake-format: sort
@@ -57,17 +58,28 @@ if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
     set(googleapis_functions_framework_examples_unit_tests
         # cmake-format: sort
-        cloud_event_examples_test.cc http_examples_test.cc http_unit_test.cc
-        site_test.cc)
+        cloud_event_examples_test.cc http_examples_test.cc
+        http_integration_test.cc http_unit_test.cc site_test.cc)
 
-    foreach (fname ${googleapis_functions_framework_examples_unit_tests})
+    set(googleapis_functions_framework_examples_programs
+        # cmake-format: sort
+        http_integration_server.cc)
+
+    foreach (fname ${googleapis_functions_framework_examples_unit_tests}
+                   ${googleapis_functions_framework_examples_programs})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples googleapis_functions_framework
-                    GTest::gmock_main GTest::gmock GTest::gtest)
+                    Boost::filesystem GTest::gmock_main GTest::gmock
+                    GTest::gtest)
+    endforeach ()
+
+    foreach (fname ${googleapis_functions_framework_examples_unit_tests})
+        string(REPLACE "/" "_" target "${fname}")
+        string(REPLACE ".cc" "" target "${target}")
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 endif ()
