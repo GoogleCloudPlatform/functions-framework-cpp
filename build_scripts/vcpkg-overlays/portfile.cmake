@@ -4,9 +4,9 @@ vcpkg_from_github(
     REPO
     GoogleCloudPlatform/functions-framework-cpp
     REF
-    5d3f0bf618e3b28071c3f1668cf8fe8496933f3a
+    v0.1.0
     SHA512
-    ae8d092b7266d010c013b502176b7d28edf0abc36715a68cc54bbc6618d7ec3eda68a66fabe0917e9cc0594c4e052ffaf79a7501eaf2ed075723863f07c226e7
+    2f9b9b8b44036f07a20e580b9a9096668fb0c1385bb65e9422c901ac65daaa87708b577d495eea6a81f0857629939689517bacc1db0b7e2a86f40259811ec02e
     HEAD_REF
     main)
 
