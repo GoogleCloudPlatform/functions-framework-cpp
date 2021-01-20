@@ -19,6 +19,7 @@
 #include <gmock/gmock.h>
 #include <chrono>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace {
@@ -40,35 +41,47 @@ char const* argv0 = nullptr;
 class HttpIntegrationTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    auto const* base_url = std::getenv("BASE_URL");
+    if (base_url != nullptr) {
+      url_ = base_url;
+      return;
+    }
     curl_global_init(CURL_GLOBAL_ALL);
-
     auto const exe = bfs::path(argv0).parent_path() / "http_integration_server";
     auto server = bp::child(exe, "--port=8080");
-    ASSERT_TRUE(WaitForServerReady("http://localhost:8080/"));
+    url_ = "http://localhost:8080";
+    ASSERT_TRUE(WaitForServerReady(url_));
     process_ = std::move(server);
   }
 
   void TearDown() override {
-    process_.terminate();
-    process_.wait();
+    if (process_.has_value()) {
+      process_->terminate();
+      process_->wait();
+    }
     curl_global_cleanup();
   }
 
+  [[nodiscard]] std::string const& url() const { return url_; }
+
  private:
-  bp::child process_;
+  std::optional<bp::child> process_;
+  std::string url_;
 };
 
+// [START functions_http_system_test]
 TEST_F(HttpIntegrationTest, Basic) {
   auto constexpr kOkay = 200;
 
-  auto actual = HttpGet("http://localhost:8080/", R"js({"name": "Foo"})js");
+  auto actual = HttpGet(url(), R"js({"name": "Foo"})js");
   EXPECT_EQ(actual.code, kOkay);
   EXPECT_EQ(actual.payload, "Hello Foo!");
 
-  actual = HttpGet("http://localhost:8080/", R"js({})js");
+  actual = HttpGet(url(), R"js({})js");
   EXPECT_EQ(actual.code, kOkay);
   EXPECT_EQ(actual.payload, "Hello World!");
 }
+// [END functions_http_system_test]
 
 extern "C" size_t CurlOnWriteData(char* ptr, size_t size, size_t nmemb,
                                   void* userdata) {
