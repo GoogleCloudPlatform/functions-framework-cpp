@@ -14,6 +14,9 @@
 # limitations under the License.
 # ~~~
 
+find_package(CURL CONFIG REQUIRED)
+find_package(Boost REQUIRED COMPONENTS filesystem)
+
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
     set(googleapis_functions_framework_examples_unit_tests
@@ -31,8 +34,12 @@ if (BUILD_TESTING)
         add_executable("${target}" ${fname})
         target_link_libraries(
             ${target}
-            PRIVATE functions_framework_examples googleapis_functions_framework
-                    Boost::filesystem GTest::gmock_main GTest::gmock
+            PRIVATE functions_framework_examples
+                    googleapis_functions_framework
+                    CURL::libcurl
+                    Boost::filesystem
+                    GTest::gmock_main
+                    GTest::gmock
                     GTest::gtest)
     endforeach ()
 

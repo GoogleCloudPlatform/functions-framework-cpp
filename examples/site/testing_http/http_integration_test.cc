@@ -13,43 +13,45 @@
 // limitations under the License.
 
 // [START functions_http_integration_test]
-#include <boost/asio/connect.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/beast.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process.hpp>
+#include <curl/curl.h>
 #include <gmock/gmock.h>
 #include <chrono>
+#include <memory>
 #include <string>
 
 namespace {
 
 namespace bp = boost::process;
 namespace bfs = boost::filesystem;  // Boost.Process cannot use std::filesystem
-namespace beast = boost::beast;
-namespace http = beast::http;
-using http_response = http::response<http::string_body>;
+
+struct HttpResponse {
+  long code;
+  std::string payload;
+};
 
 // Wait until an HTTP server starts responding.
-int WaitForServerReady(std::string const& host, std::string const& port);
-http_response HttpGet(std::string const& host, std::string const& port,
-                      std::string const& target, std::string payload);
+bool WaitForServerReady(std::string const& url);
+HttpResponse HttpGet(std::string const& url, std::string const& payload);
 
 char const* argv0 = nullptr;
 
 class HttpIntegrationTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    curl_global_init(CURL_GLOBAL_ALL);
+
     auto const exe = bfs::path(argv0).parent_path() / "http_integration_server";
     auto server = bp::child(exe, "--port=8080");
-    auto result = WaitForServerReady("localhost", "8080");
-    ASSERT_EQ(result, 0);
+    ASSERT_TRUE(WaitForServerReady("http://localhost:8080/"));
     process_ = std::move(server);
   }
 
   void TearDown() override {
     process_.terminate();
     process_.wait();
+    curl_global_cleanup();
   }
 
  private:
@@ -59,58 +61,67 @@ class HttpIntegrationTest : public ::testing::Test {
 TEST_F(HttpIntegrationTest, Basic) {
   auto constexpr kOkay = 200;
 
-  auto actual = HttpGet("localhost", "8080", "/", R"js({"name": "Foo"})js");
-  EXPECT_EQ(actual.result_int(), kOkay);
-  EXPECT_EQ(actual.body(), "Hello Foo!");
+  auto actual = HttpGet("http://localhost:8080/", R"js({"name": "Foo"})js");
+  EXPECT_EQ(actual.code, kOkay);
+  EXPECT_EQ(actual.payload, "Hello Foo!");
 
-  actual = HttpGet("localhost", "8080", "/", R"js({})js");
-  EXPECT_EQ(actual.result_int(), kOkay);
-  EXPECT_EQ(actual.body(), "Hello World!");
+  actual = HttpGet("http://localhost:8080/", R"js({})js");
+  EXPECT_EQ(actual.code, kOkay);
+  EXPECT_EQ(actual.payload, "Hello World!");
 }
 
-http_response HttpGet(std::string const& host, std::string const& port,
-                      std::string const& target, std::string payload) {
-  using tcp = boost::asio::ip::tcp;
-
-  // Create a socket to make the HTTP request over
-  boost::asio::io_context ioc;
-  tcp::resolver resolver(ioc);
-  beast::tcp_stream stream(ioc);
-  auto const results = resolver.resolve(host, port);
-  stream.connect(results);
-
-  // Use Boost.Beast to make the HTTP request
-  auto constexpr kHttpVersion = 10;  // 1.0 as Boost.Beast spells it
-  http::request<http::string_body> req{http::verb::get, target, kHttpVersion};
-  req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
-  req.set(http::field::host, host);
-  req.body() = std::move(payload);
-  req.prepare_payload();
-  http::write(stream, req);
-  beast::flat_buffer buffer;
-  http_response res;
-  http::read(stream, buffer, res);
-  stream.socket().shutdown(tcp::socket::shutdown_both);
-
-  return res;
+extern "C" size_t CurlOnWriteData(char* ptr, size_t size, size_t nmemb,
+                                         void* userdata) {
+  auto* buffer = reinterpret_cast<std::string*>(userdata);
+  buffer->append(ptr, size * nmemb);
+  return size * nmemb;
 }
 
-int WaitForServerReady(std::string const& host, std::string const& port) {
-  auto constexpr kInitialDelay = std::chrono::milliseconds(100);
-  auto constexpr kAttempts = 5;
-  auto delay = kInitialDelay;
-  for (int i = 0; i != kAttempts; ++i) {
-    std::this_thread::sleep_for(delay);
-    try {
-      (void)HttpGet(host, port, "/", "{}");
-      return 0;
-    } catch (std::exception const& ex) {
-      std::cerr << "WaitForServerReady[" << i << "]: failed with " << ex.what()
-                << std::endl;
+HttpResponse HttpGet(std::string const& url, std::string const& payload) {
+  using CurlHandle = std::unique_ptr<CURL, decltype(&curl_easy_cleanup)>;
+
+  auto easy = CurlHandle(curl_easy_init(), curl_easy_cleanup);
+
+  auto setopt = [h = easy.get()](auto opt, auto value) {
+    if (auto e = curl_easy_setopt(h, opt, value); e != CURLE_OK) {
+      std::ostringstream os;
+      os << "error [" << e << "] setting curl_easy option <" << opt
+         << ">=" << value;
+      throw std::runtime_error(std::move(os).str());
     }
-    delay *= 2;
+  };
+  auto get_response_code = [h = easy.get()]() {
+    long code;                        // NOLINT(google-runtime-int)
+    auto e = curl_easy_getinfo(h, CURLINFO_RESPONSE_CODE, &code);
+    if (e == CURLE_OK) {
+      return code;
+    }
+    throw std::runtime_error("Cannot get response code");
+  };
+
+  setopt(CURLOPT_URL, url.c_str());
+  setopt(CURLOPT_POSTFIELDSIZE, payload.size());
+  setopt(CURLOPT_POSTFIELDS, payload.data());
+  setopt(CURLOPT_WRITEFUNCTION, &CurlOnWriteData);
+  std::string buffer;
+  setopt(CURLOPT_WRITEDATA, &buffer);
+
+  auto e = curl_easy_perform(easy.get());
+  if (e == CURLE_OK) {
+    return HttpResponse{get_response_code(), std::move(buffer)};
   }
-  return -1;
+  return HttpResponse{-1, {}};
+}
+
+bool WaitForServerReady(std::string const& url) {
+  using namespace std::chrono_literals;
+  auto constexpr kOkay = 200;
+  for (auto delay : {100ms, 200ms, 400ms, 800ms, 1600ms}) {  // NOLINT
+    std::this_thread::sleep_for(delay);
+    auto r = HttpGet(url, "{}");
+    if (r.code == kOkay) return true;
+  }
+  return false;
 }
 
 }  // namespace
