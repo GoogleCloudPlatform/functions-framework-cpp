@@ -27,7 +27,7 @@ namespace bp = boost::process;
 namespace bfs = boost::filesystem;  // Boost.Process cannot use std::filesystem
 
 struct HttpResponse {
-  long code;
+  long code;  // NOLINT(google-runtime-int)
   std::string payload;
 };
 
@@ -71,7 +71,7 @@ TEST_F(HttpIntegrationTest, Basic) {
 }
 
 extern "C" size_t CurlOnWriteData(char* ptr, size_t size, size_t nmemb,
-                                         void* userdata) {
+                                  void* userdata) {
   auto* buffer = reinterpret_cast<std::string*>(userdata);
   buffer->append(ptr, size * nmemb);
   return size * nmemb;
@@ -91,7 +91,7 @@ HttpResponse HttpGet(std::string const& url, std::string const& payload) {
     }
   };
   auto get_response_code = [h = easy.get()]() {
-    long code;                        // NOLINT(google-runtime-int)
+    long code;  // NOLINT(google-runtime-int)
     auto e = curl_easy_getinfo(h, CURLINFO_RESPONSE_CODE, &code);
     if (e == CURLE_OK) {
       return code;
