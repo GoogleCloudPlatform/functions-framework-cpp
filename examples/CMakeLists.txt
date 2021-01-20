@@ -58,15 +58,9 @@ if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
     set(googleapis_functions_framework_examples_unit_tests
         # cmake-format: sort
-        cloud_event_examples_test.cc http_examples_test.cc
-        http_integration_test.cc http_unit_test.cc site_test.cc)
+        cloud_event_examples_test.cc http_examples_test.cc site_test.cc)
 
-    set(googleapis_functions_framework_examples_programs
-        # cmake-format: sort
-        http_integration_server.cc)
-
-    foreach (fname ${googleapis_functions_framework_examples_unit_tests}
-                   ${googleapis_functions_framework_examples_programs})
+    foreach (fname ${googleapis_functions_framework_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
@@ -75,11 +69,8 @@ if (BUILD_TESTING)
             PRIVATE functions_framework_examples googleapis_functions_framework
                     Boost::filesystem GTest::gmock_main GTest::gmock
                     GTest::gtest)
-    endforeach ()
-
-    foreach (fname ${googleapis_functions_framework_examples_unit_tests})
-        string(REPLACE "/" "_" target "${fname}")
-        string(REPLACE ".cc" "" target "${target}")
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 endif ()
+
+add_subdirectory(site/testing_http)
