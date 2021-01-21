@@ -16,11 +16,13 @@
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
-    set(googleapis_functions_framework_examples_unit_tests # cmake-format: sort
-                                                           pubsub_unit_test.cc)
+    set(googleapis_functions_framework_examples_unit_tests
+        # cmake-format: sort
+        pubsub_integration_test.cc pubsub_unit_test.cc)
 
-    set(googleapis_functions_framework_examples_programs # cmake-format: sort
-    )
+    set(googleapis_functions_framework_examples_programs
+        # cmake-format: sort
+        pubsub_integration_server.cc)
 
     foreach (fname ${googleapis_functions_framework_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
