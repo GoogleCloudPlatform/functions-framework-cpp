@@ -76,14 +76,14 @@ curl http://localhost:8080/quit/program/0
    cd $HOME/functions-framework-cpp
    docker build -t gcf-cpp-runtime --target gcf-cpp-runtime -f build_scripts/Dockerfile .
    docker build -t gcf-cpp-develop --target gcf-cpp-develop -f build_scripts/Dockerfile .
-   pack create-builder cpp-builder:bionic --config pack/builder.toml
-   pack trust-builder cpp-builder:bionic
+   pack create-builder gcf-cpp-builder:bionic --config pack/builder.toml
+   pack trust-builder gcf-cpp-builder:bionic
    ```
 
 1. Build a Docker image from your function using this buildpack:
    ```shell
    pack build \
-       --builder cpp-builder:bionic \
+       --builder gcf-cpp-builder:bionic \
        --env FUNCTION_SIGNATURE_TYPE=http \
        --env TARGET_FUNCTION=HelloWorld \
        --path google/cloud/functions/quickstart/hello_function \
