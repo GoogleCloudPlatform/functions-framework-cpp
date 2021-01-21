@@ -1,13 +1,14 @@
 {
   "name": "functions-framework-cpp-dev",
   "version-string": "0.3.0-dev",
-  "port-version": 1,
+  "port-version": 2,
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
   "description": "Functions Framework for C++ -- Development",
   "dependencies": [
     "abseil",
     "boost-beast",
     "boost-filesystem",
+    "boost-log",
     "boost-process",
     "boost-program-options",
     "boost-property-tree",

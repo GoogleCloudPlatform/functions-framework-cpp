@@ -16,6 +16,7 @@
 #include <google/cloud/functions/cloud_event.h>
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
+#include <boost/log/trivial.hpp>
 #include <nlohmann/json.hpp>
 #include <iostream>
 
@@ -27,11 +28,13 @@ void hello_world_storage(gcf::CloudEvent event) {  // NOLINT
     return;
   }
   auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
-  std::cout << "Event: " << event.id() << "\nEvent Type: " << event.type()
-            << "\nBucket: " << payload.value("bucket", "")
-            << "\nFile: " << payload.value("name", "")
-            << "\nMetageneration: " << payload.value("metageneration", "")
-            << "\nCreated: " << payload.value("timeCreated", "")
-            << "\nUpdated: " << payload.value("updated", "") << "\n";
+  BOOST_LOG_TRIVIAL(info) << "Event: " << event.id();
+  BOOST_LOG_TRIVIAL(info) << "Event Type: " << event.type();
+  BOOST_LOG_TRIVIAL(info) << "Bucket: " << payload.value("bucket", "");
+  BOOST_LOG_TRIVIAL(info) << "File: " << payload.value("name", "");
+  BOOST_LOG_TRIVIAL(info) << "Metageneration: "
+                          << payload.value("metageneration", "");
+  BOOST_LOG_TRIVIAL(info) << "Created: " << payload.value("timeCreated", "");
+  BOOST_LOG_TRIVIAL(info) << "Updated: " << payload.value("updated", "");
 }
 // [END functions_helloworld_storage]

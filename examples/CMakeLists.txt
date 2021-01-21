@@ -17,6 +17,7 @@
 find_package(storage_client REQUIRED)
 find_package(pubsub_client REQUIRED)
 find_package(fmt REQUIRED)
+find_package(Boost REQUIRED COMPONENTS log)
 
 add_library(
     functions_framework_examples # cmake-format: sort
@@ -66,7 +67,7 @@ if (BUILD_TESTING)
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples googleapis_functions_framework
-                    GTest::gmock_main GTest::gmock GTest::gtest)
+                    Boost::log GTest::gmock_main GTest::gmock GTest::gtest)
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 endif ()

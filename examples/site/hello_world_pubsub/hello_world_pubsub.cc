@@ -16,6 +16,7 @@
 #include <google/cloud/functions/cloud_event.h>
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
+#include <boost/log/trivial.hpp>
 #include <nlohmann/json.hpp>
 #include <iostream>
 
@@ -31,7 +32,7 @@ void hello_world_pubsub(gcf::CloudEvent event) {  // NOLINT
   }
   auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
   auto name = decode_base64(payload["message"]["data"].get<std::string>());
-  std::cerr << "Hello " << (name.empty() ? "World" : name) << "\n";
+  BOOST_LOG_TRIVIAL(info) << "Hello " << (name.empty() ? "World" : name);
 }
 // [END functions_helloworld_pubsub]
 
