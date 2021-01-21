@@ -66,10 +66,16 @@ if (BUILD_TESTING)
         add_executable("${target}" ${fname})
         target_link_libraries(
             ${target}
-            PRIVATE functions_framework_examples googleapis_functions_framework
-                    Boost::log GTest::gmock_main GTest::gmock GTest::gtest)
+            PRIVATE functions_framework_examples
+                    googleapis_functions_framework
+                    Boost::filesystem
+                    Boost::log
+                    GTest::gmock_main
+                    GTest::gmock
+                    GTest::gtest)
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 endif ()
 
 add_subdirectory(site/testing_http)
+add_subdirectory(site/testing_pubsub)
