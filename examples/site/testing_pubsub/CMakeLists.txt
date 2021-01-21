@@ -16,12 +16,12 @@
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
+    find_package(fmt CONFIG REQUIRED)
+    find_package(google_cloud_cpp_pubsub REQUIRED)
+
     set(functions_framework_cpp_examples_unit_tests
         # cmake-format: sort
         pubsub_integration_test.cc pubsub_unit_test.cc)
-
-    set(functions_framework_cpp_examples_programs # cmake-format: sort
-                                                  pubsub_integration_server.cc)
 
     foreach (fname ${functions_framework_cpp_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
@@ -39,14 +39,15 @@ if (BUILD_TESTING)
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 
-    foreach (fname ${functions_framework_cpp_examples_programs})
-        string(REPLACE "/" "_" target "${fname}")
-        string(REPLACE ".cc" "" target "${target}")
-        add_executable("${target}" ${fname})
-        target_link_libraries(
-            ${target}
-            PRIVATE functions_framework_examples
-                    functions-framework-cpp::framework Boost::filesystem
-                    Boost::log)
-    endforeach ()
+    add_executable(pubsub_integration_server pubsub_integration_server.cc)
+    target_link_libraries(
+        pubsub_integration_server
+        PRIVATE functions_framework_examples functions-framework-cpp::framework
+                Boost::filesystem Boost::log)
+
+    add_executable(pubsub_system_test pubsub_system_test.cc)
+    target_link_libraries(
+        pubsub_system_test
+        PRIVATE google-cloud-cpp::pubsub fmt::fmt Boost::log
+                GTest::gmock_main GTest::gmock GTest::gtest)
 endif ()
