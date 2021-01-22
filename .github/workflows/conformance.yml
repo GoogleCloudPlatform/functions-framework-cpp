@@ -46,7 +46,7 @@ jobs:
           functionType: 'cloudevent'
           useBuildpacks: false
           validateMapping: false
-          cmd: 'build/google/cloud/functions/integration_tests/cloud_event_conformance'
+          cmd: '${{runner.workspace}}/build/google/cloud/functions/integration_tests/cloud_event_conformance'
 
       - name: Run HTTP conformance tests
         uses: GoogleCloudPlatform/functions-framework-conformance/action@v0.3.2
@@ -54,4 +54,4 @@ jobs:
           functionType: 'http'
           useBuildpacks: false
           validateMapping: false
-          cmd: 'build/google/cloud/functions/integration_tests/http_conformance'
+          cmd: '${{runner.workspace}}/build/google/cloud/functions/integration_tests/http_conformance'
