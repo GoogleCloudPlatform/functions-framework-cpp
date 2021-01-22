@@ -19,6 +19,8 @@ namespace functions = ::google::cloud::functions;
 functions::HttpResponse HttpConformance(functions::HttpRequest const& request) {
   auto constexpr kOutputFilename = "function_output.json";
   std::ofstream(kOutputFilename) << request.payload() << "\n";
+  // This is here just to gracefully shutdown and collect coverage data.
+  if (request.target() == "/quit/program/0") std::exit(0);
   return functions::HttpResponse{};
 }
 

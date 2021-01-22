@@ -52,6 +52,9 @@ void CloudEventConformance(functions::CloudEvent const& ev) {
   }
 
   std::ofstream(kOutputFilename) << event.dump() << "\n";
+
+  // This is here just to gracefully shutdown and collect coverage data.
+  if (ev.subject() == "/quit/program/0") std::exit(0);
 }
 
 int main(int argc, char* argv[]) {

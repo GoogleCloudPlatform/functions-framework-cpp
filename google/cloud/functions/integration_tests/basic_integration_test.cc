@@ -80,8 +80,11 @@ int WaitForServerReady(std::string const& host, std::string const& port) {
 
 char const* argv0 = nullptr;
 
+auto constexpr kServer = "echo_server";
+auto constexpr kConformanceServer = "http_conformance";
+
 TEST(RunIntegrationTest, Basic) {
-  auto const exe = bfs::path(argv0).parent_path() / "echo_server";
+  auto const exe = bfs::path(argv0).parent_path() / kServer;
   auto server = bp::child(exe, "--port=8080");
   auto result = WaitForServerReady("localhost", "8080");
   ASSERT_EQ(result, 0);
@@ -118,7 +121,7 @@ TEST(RunIntegrationTest, Basic) {
 }
 
 TEST(RunIntegrationTest, ExceptionLogsToStderr) {
-  auto const exe = bfs::path(argv0).parent_path() / "echo_server";
+  auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
   auto server = bp::child(exe, "--port=8080", bp::std_err > child_stderr);
   auto result = WaitForServerReady("localhost", "8080");
@@ -142,7 +145,7 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
 }
 
 TEST(RunIntegrationTest, OutputIsFlushed) {
-  auto const exe = bfs::path(argv0).parent_path() / "echo_server";
+  auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
   bp::ipstream child_stdout;
   auto server = bp::child(exe, "--port=8080", bp::std_err > child_stderr,
@@ -163,6 +166,20 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
   EXPECT_TRUE(std::getline(child_stderr, line));
   EXPECT_THAT(line, HasSubstr("stderr:"));
   EXPECT_THAT(line, HasSubstr("/buffered-stderr/test-string"));
+
+  try {
+    (void)HttpGet("localhost", "8080", "/quit/program/0");
+  } catch (...) {
+  }
+  server.wait();
+  EXPECT_EQ(server.exit_code(), 0);
+}
+
+TEST(RunIntegrationTest, ConformanceSmokeTest) {
+  auto const exe = bfs::path(argv0).parent_path() / kConformanceServer;
+  auto server = bp::child(exe, "--port=8080");
+  auto result = WaitForServerReady("localhost", "8080");
+  ASSERT_EQ(result, 0);
 
   try {
     (void)HttpGet("localhost", "8080", "/quit/program/0");
