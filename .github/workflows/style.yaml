@@ -1,4 +1,4 @@
-name: style
+name: C++ Lint CI
 
 on:
   push:
