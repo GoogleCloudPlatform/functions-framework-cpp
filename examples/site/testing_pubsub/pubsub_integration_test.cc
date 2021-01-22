@@ -113,8 +113,7 @@ TEST_F(PubsubIntegrationTest, Basic) {
 
 extern "C" size_t CurlOnWriteData(char* ptr, size_t size, size_t nmemb,
                                   void* userdata) {
-  auto* buffer = reinterpret_cast<std::string*>(userdata);
-  buffer->append(ptr, size * nmemb);
+  reinterpret_cast<std::string*>(userdata)->append(ptr, size * nmemb);
   return size * nmemb;
 }
 
@@ -136,10 +135,8 @@ HttpResponse HttpEvent(std::string const& url, std::string const& payload) {
   auto get_response_code = [h = easy.get()]() {
     long code;  // NOLINT(google-runtime-int)
     auto e = curl_easy_getinfo(h, CURLINFO_RESPONSE_CODE, &code);
-    if (e == CURLE_OK) {
-      return code;
-    }
-    throw std::runtime_error("Cannot get response code");
+    if (e != CURLE_OK) std::runtime_error("Cannot get response code");
+    return code;
   };
 
   auto headers = CurlHeaders(nullptr, curl_slist_free_all);
@@ -152,18 +149,16 @@ HttpResponse HttpEvent(std::string const& url, std::string const& payload) {
   setopt(CURLOPT_URL, url.c_str());
   setopt(CURLOPT_POSTFIELDSIZE, payload.size());
   setopt(CURLOPT_POSTFIELDS, payload.data());
+  std::string buffer;
+  setopt(CURLOPT_WRITEDATA, &buffer);
   setopt(CURLOPT_WRITEFUNCTION, &CurlOnWriteData);
   add_header("Content-Type: application/cloudevents+json");
   add_header("Content-Length: " + std::to_string(payload.size()));
   setopt(CURLOPT_HTTPHEADER, headers.get());
-  std::string buffer;
-  setopt(CURLOPT_WRITEDATA, &buffer);
 
   auto e = curl_easy_perform(easy.get());
-  if (e == CURLE_OK) {
-    return HttpResponse{get_response_code(), std::move(buffer)};
-  }
-  return HttpResponse{-1, {}};
+  if (e != CURLE_OK) throw std::runtime_error("Error in curl_easy_perform");
+  return HttpResponse{get_response_code(), std::move(buffer)};
 }
 
 bool PubsubIntegrationTest::WaitForServerReady(std::string const& url) {
