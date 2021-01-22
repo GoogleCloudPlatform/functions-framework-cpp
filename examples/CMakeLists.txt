@@ -79,3 +79,4 @@ endif ()
 
 add_subdirectory(site/testing_http)
 add_subdirectory(site/testing_pubsub)
+add_subdirectory(site/testing_storage)
