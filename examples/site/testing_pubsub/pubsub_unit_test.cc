@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START functions_pubsub_unit_test]
 #include <google/cloud/functions/cloud_event.h>
 #include <boost/log/core.hpp>
 #include <boost/log/sinks/sync_frontend.hpp>
@@ -73,3 +74,4 @@ TEST(PubsubUnitTest, Basic) {
 }
 
 }  // namespace
+// [END functions_pubsub_unit_test]
