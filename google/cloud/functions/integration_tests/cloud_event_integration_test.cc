@@ -63,6 +63,8 @@ http_response HttpPost(std::string const& host, std::string const& port,
       {"source", "/test-program"},
       {"id", boost::uuids::to_string(id)},
       {"subject", subject},
+      {"time", "2020-01-22T12:34:56.78Z"},
+      {"data", "just-a-test-string"},
   };
   req.body() = json.dump();
   req.prepare_payload();
@@ -165,6 +167,7 @@ int WaitForServerReady(std::string const& host, std::string const& port) {
 char const* argv0 = nullptr;
 
 auto constexpr kServer = "cloud_event_handler";
+auto constexpr kConformanceServer = "cloud_event_conformance";
 
 TEST(RunIntegrationTest, Basic) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
@@ -275,6 +278,20 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
   EXPECT_TRUE(std::getline(child_stderr, line));
   EXPECT_THAT(line, HasSubstr("stderr:"));
   EXPECT_THAT(line, HasSubstr("/buffered-stderr/test-string"));
+
+  try {
+    (void)HttpPost("localhost", "8080", "/quit/program/0");
+  } catch (...) {
+  }
+  server.wait();
+  EXPECT_EQ(server.exit_code(), 0);
+}
+
+TEST(RunIntegrationTest, ConformanceSmokeTest) {
+  auto const exe = bfs::path(argv0).parent_path() / kConformanceServer;
+  auto server = bp::child(exe, "--port=8080");
+  auto result = WaitForServerReady("localhost", "8080");
+  ASSERT_EQ(result, 0);
 
   try {
     (void)HttpPost("localhost", "8080", "/quit/program/0");

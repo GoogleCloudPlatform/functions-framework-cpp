@@ -33,7 +33,8 @@ endforeach ()
 
 set(googleapis_functions_framework_integration_programs
     # cmake-format: sort
-    cloud_event_handler.cc echo_server.cc)
+    cloud_event_conformance.cc cloud_event_handler.cc echo_server.cc
+    http_conformance.cc)
 
 foreach (fname ${googleapis_functions_framework_integration_programs})
     string(REPLACE "/" "_" target "${fname}")
