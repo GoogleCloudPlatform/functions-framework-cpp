@@ -31,7 +31,7 @@ void hello_world_storage(gcf::CloudEvent event) {  // NOLINT
   BOOST_LOG_TRIVIAL(info) << "Event: " << event.id();
   BOOST_LOG_TRIVIAL(info) << "Event Type: " << event.type();
   BOOST_LOG_TRIVIAL(info) << "Bucket: " << payload.value("bucket", "");
-  BOOST_LOG_TRIVIAL(info) << "File: " << payload.value("name", "");
+  BOOST_LOG_TRIVIAL(info) << "Object: " << payload.value("name", "");
   BOOST_LOG_TRIVIAL(info) << "Metageneration: "
                           << payload.value("metageneration", "");
   BOOST_LOG_TRIVIAL(info) << "Created: " << payload.value("timeCreated", "");
