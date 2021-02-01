@@ -10,7 +10,7 @@ with the Google Cloud SDK command-line tool.
 
 These notes assume you have setup a valid GCP project, with billing enabled.
 
-> :warning: most of these services will incur billing costs, probably in the
+> :warning: Most of these services will incur billing costs, probably in the
 > hundreds of dollars per month. Do not run these steps unless you understand
 > these costs.
 
@@ -180,7 +180,9 @@ gcloud run deploy gcf-hello-world-pubsub \
 Create a Pub/Sub trigger for this deployment:
 
 ```sh
-PROJECT_NUMBER="$(gcloud projects list --filter="PROJECT_ID=${GOOGLE_CLOUD_PROJECT}" --format="value(project_number)")"
+PROJECT_NUMBER="$(gcloud projects list \
+    --filter="PROJECT_ID=${GOOGLE_CLOUD_PROJECT}" \
+    --format="value(project_number)")"
 gcloud beta eventarc triggers create gcf-hello-world-pubsub-trigger \
     --project="${GOOGLE_CLOUD_PROJECT}" \
     --location="us-central1" \
@@ -246,7 +248,7 @@ gcloud logging read \
 
 ## Run the Cloud Build
 
-Finally verify this works by running the Cloud Build 
+Finally verify this works by running the Cloud Build:
 
 ```sh
 gcloud builds submit \
