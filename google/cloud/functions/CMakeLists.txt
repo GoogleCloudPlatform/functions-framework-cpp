@@ -25,7 +25,7 @@ find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Threads REQUIRED)
 
 add_library(
-    googleapis_functions_framework # cmake-format: sort
+    functions_framework_cpp # cmake-format: sort
     ${CMAKE_CURRENT_BINARY_DIR}/internal/build_info.cc
     cloud_event.cc
     cloud_event.h
@@ -55,23 +55,22 @@ add_library(
     user_functions.h
     version.cc
     version.h)
-target_include_directories(googleapis_functions_framework
+target_include_directories(functions_framework_cpp
                            PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 
-target_include_directories(googleapis_functions_framework SYSTEM
+target_include_directories(functions_framework_cpp SYSTEM
                            PUBLIC $<INSTALL_INTERFACE:include>)
 target_link_libraries(
-    googleapis_functions_framework
-    PUBLIC absl::time Boost::headers Boost::program_options Threads::Threads)
-target_compile_definitions(googleapis_functions_framework
+    functions_framework_cpp PUBLIC absl::time Boost::headers
+                                   Boost::program_options Threads::Threads)
+target_compile_definitions(functions_framework_cpp
                            PUBLIC BOOST_BEAST_USE_STD_STRING_VIEW)
 set_target_properties(
-    googleapis_functions_framework
-    PROPERTIES EXPORT_NAME googleapis-c++::functions_framework
+    functions_framework_cpp
+    PROPERTIES EXPORT_NAME functions-framework-cpp::framework
                VERSION "${PROJECT_VERSION}"
                SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
-add_library(googleapis-c++::functions_framework ALIAS
-            googleapis_functions_framework)
+add_library(functions-framework-cpp::framework ALIAS functions_framework_cpp)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
@@ -94,8 +93,8 @@ if (BUILD_TESTING)
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
         target_link_libraries(
-            ${target} PRIVATE googleapis_functions_framework GTest::gmock_main
-                              GTest::gmock GTest::gtest)
+            ${target} PRIVATE functions-framework-cpp::framework
+                              GTest::gmock_main GTest::gmock GTest::gtest)
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 
@@ -109,8 +108,8 @@ include(GNUInstallDirs)
 # Install the libraries and headers in the locations determined by
 # GNUInstallDirs
 install(
-    TARGETS googleapis_functions_framework
-    EXPORT googleapis_functions_framework-targets
+    TARGETS functions_framework_cpp
+    EXPORT functions-framework-cpp-targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             COMPONENT runtime
@@ -120,29 +119,27 @@ install(
             NAMELINK_COMPONENT development
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT development)
 
-google_cloud_cpp_install_headers(googleapis_functions_framework
+google_cloud_cpp_install_headers(functions_framework_cpp
                                  include/google/cloud/functions)
 
 # Create and install the CMake configuration files.
-install(
-    EXPORT googleapis_functions_framework-targets
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis_functions_framework")
+install(EXPORT functions-framework-cpp-targets
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/functions_framework_cpp")
 configure_package_config_file(
-    "config.cmake.in" "googleapis_functions_framework-config.cmake"
-    INSTALL_DESTINATION
-        "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis_functions_framework"
+    "config.cmake.in" "functions_framework_cpp-config.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/functions_framework_cpp"
     NO_SET_AND_CHECK_MACRO)
 write_basic_package_version_file(
-    "googleapis_functions_framework-config-version.cmake"
+    "functions_framework_cpp-config-version.cmake"
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMinorVersion)
 install(
     FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/googleapis_functions_framework-config.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/googleapis_functions_framework-config-version.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis_functions_framework")
+        "${CMAKE_CURRENT_BINARY_DIR}/functions_framework_cpp-config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/functions_framework_cpp-config-version.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/functions_framework_cpp")
 
 # Create and install the pkg-config configuration files.
-configure_file("config.pc.in" "googleapis_functions_framework.pc" @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/googleapis_functions_framework.pc"
+configure_file("config.pc.in" "functions_framework_cpp.pc" @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/functions_framework_cpp.pc"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")

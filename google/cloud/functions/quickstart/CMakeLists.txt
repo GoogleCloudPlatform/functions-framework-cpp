@@ -27,4 +27,4 @@ find_package(Threads REQUIRED)
 find_package(googleapis_functions_framework REQUIRED)
 
 add_executable(quickstart quickstart.cc)
-target_link_libraries(quickstart googleapis-c++::functions_framework)
+target_link_libraries(quickstart functions-framework-cpp::framework)

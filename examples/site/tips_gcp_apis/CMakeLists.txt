@@ -20,4 +20,4 @@ find_package(googleapis_functions_framework)
 add_library(functions_framework_cpp_function tips_gcp_apis.cc)
 target_link_libraries(
     functions_framework_cpp_function googleapis-c++::pubsub_client
-    googleapis-c++::functions_framework)
+    functions-framework-cpp::framework)

@@ -52,7 +52,7 @@ add_library(
     site/tips_scopes/tips_scopes.cc)
 target_link_libraries(
     functions_framework_examples storage_client fmt::fmt
-    googleapis-c++::functions_framework googleapis-c++::pubsub_client)
+    functions-framework-cpp::framework googleapis-c++::pubsub_client)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
@@ -67,7 +67,7 @@ if (BUILD_TESTING)
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples
-                    googleapis_functions_framework
+                    functions-framework-cpp::framework
                     Boost::filesystem
                     Boost::log
                     GTest::gmock_main

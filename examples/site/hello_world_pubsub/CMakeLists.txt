@@ -19,4 +19,4 @@ find_package(Boost REQUIRED COMPONENTS log)
 
 add_library(functions_framework_cpp_function hello_world_pubsub.cc)
 target_link_libraries(functions_framework_cpp_function
-                      googleapis-c++::functions_framework Boost::log)
+                      functions-framework-cpp::framework Boost::log)
