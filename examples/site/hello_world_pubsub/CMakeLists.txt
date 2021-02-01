@@ -14,7 +14,7 @@
 # limitations under the License.
 # ~~~
 
-find_package(googleapis_functions_framework)
+find_package(functions_framework_cpp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS log)
 
 add_library(functions_framework_cpp_function hello_world_pubsub.cc)

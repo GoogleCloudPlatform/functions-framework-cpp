@@ -15,7 +15,7 @@
 # ~~~
 
 find_package(storage_client REQUIRED)
-find_package(googleapis_functions_framework)
+find_package(functions_framework_cpp REQUIRED)
 
 add_library(functions_framework_cpp_function hello_gcs.cc)
 target_link_libraries(functions_framework_cpp_function storage_client
