@@ -15,8 +15,8 @@
 # ~~~
 
 find_package(fmt REQUIRED)
-find_package(googleapis_functions_framework)
+find_package(functions_framework_cpp REQUIRED)
 
 add_library(functions_framework_cpp_function hello_with_third_party.cc)
 target_link_libraries(functions_framework_cpp_function fmt::fmt
-                      googleapis-c++::functions_framework)
+                      functions-framework-cpp::framework)

@@ -18,13 +18,13 @@
 # CMake-based projects.
 
 cmake_minimum_required(VERSION 3.5)
-project(google-cloud-cpp-pubsub-quickstart CXX C)
+project(functions-framework-cpp-quickstart CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Threads REQUIRED)
-find_package(googleapis_functions_framework REQUIRED)
+find_package(functions_framework_cpp REQUIRED)
 
 add_executable(quickstart quickstart.cc)
-target_link_libraries(quickstart googleapis-c++::functions_framework)
+target_link_libraries(quickstart functions-framework-cpp::framework)

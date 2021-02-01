@@ -17,28 +17,28 @@
 find_package(GTest CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-set(googleapis_functions_framework_integration_tests
+set(functions_framework_cpp_integration_tests
     # cmake-format: sort
     basic_integration_test.cc cloud_event_integration_test.cc)
 
-foreach (fname ${googleapis_functions_framework_integration_tests})
+foreach (fname ${functions_framework_cpp_integration_tests})
     string(REPLACE "/" "_" target "${fname}")
     string(REPLACE ".cc" "" target "${target}")
     add_executable("${target}" ${fname})
     target_link_libraries(
-        ${target} PRIVATE googleapis_functions_framework GTest::gmock
+        ${target} PRIVATE functions-framework-cpp::framework GTest::gmock
                           GTest::gtest Boost::filesystem)
     add_test(NAME ${target} COMMAND ${target})
 endforeach ()
 
-set(googleapis_functions_framework_integration_programs
+set(functions_framework_cpp_integration_programs
     # cmake-format: sort
     cloud_event_conformance.cc cloud_event_handler.cc echo_server.cc
     http_conformance.cc)
 
-foreach (fname ${googleapis_functions_framework_integration_programs})
+foreach (fname ${functions_framework_cpp_integration_programs})
     string(REPLACE "/" "_" target "${fname}")
     string(REPLACE ".cc" "" target "${target}")
     add_executable("${target}" ${fname})
-    target_link_libraries(${target} PRIVATE googleapis_functions_framework)
+    target_link_libraries(${target} PRIVATE functions-framework-cpp::framework)
 endforeach ()

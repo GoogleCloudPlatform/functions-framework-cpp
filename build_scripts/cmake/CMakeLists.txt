@@ -17,14 +17,14 @@ project(functions-framework-application CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(googleapis_functions_framework)
+find_package(functions_framework_cpp REQUIRED)
 
 function (functions_framework_cpp_define_target_with_glob directory)
     file(GLOB_RECURSE application_sources "${directory}/*.cc"
          "${directory}/*.cpp" "${directory}/*.cxx")
     add_library(functions_framework_cpp_function ${application_sources})
     target_link_libraries(functions_framework_cpp_function
-                          PUBLIC googleapis-c++::functions_framework)
+                          PUBLIC functions-framework-cpp::framework)
 endfunction ()
 
 if (EXISTS "${CNB_APP_DIR}/CMakeLists.txt")

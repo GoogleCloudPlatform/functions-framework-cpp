@@ -52,22 +52,22 @@ add_library(
     site/tips_scopes/tips_scopes.cc)
 target_link_libraries(
     functions_framework_examples storage_client fmt::fmt
-    googleapis-c++::functions_framework googleapis-c++::pubsub_client)
+    functions-framework-cpp::framework googleapis-c++::pubsub_client)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
-    set(googleapis_functions_framework_examples_unit_tests
+    set(functions_framework_cpp_examples_unit_tests
         # cmake-format: sort
         cloud_event_examples_test.cc http_examples_test.cc site_test.cc)
 
-    foreach (fname ${googleapis_functions_framework_examples_unit_tests})
+    foreach (fname ${functions_framework_cpp_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples
-                    googleapis_functions_framework
+                    functions-framework-cpp::framework
                     Boost::filesystem
                     Boost::log
                     GTest::gmock_main

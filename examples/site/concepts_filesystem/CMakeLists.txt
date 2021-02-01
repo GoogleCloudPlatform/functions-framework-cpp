@@ -14,8 +14,8 @@
 # limitations under the License.
 # ~~~
 
-find_package(googleapis_functions_framework)
+find_package(functions_framework_cpp REQUIRED)
 
 add_library(functions_framework_cpp_function concepts_filesystem.cc)
 target_link_libraries(functions_framework_cpp_function
-                      googleapis-c++::functions_framework stdc++fs)
+                      functions-framework-cpp::framework stdc++fs)
