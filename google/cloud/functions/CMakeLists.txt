@@ -74,7 +74,7 @@ add_library(functions-framework-cpp::framework ALIAS functions_framework_cpp)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
-    set(googleapis_functions_framework_unit_tests
+    set(functions_framework_cpp_unit_tests
         # cmake-format: sort
         cloud_event_test.cc
         http_request_test.cc
@@ -88,7 +88,7 @@ if (BUILD_TESTING)
         internal/wrap_request_test.cc
         version_test.cc)
 
-    foreach (fname ${googleapis_functions_framework_unit_tests})
+    foreach (fname ${functions_framework_cpp_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})

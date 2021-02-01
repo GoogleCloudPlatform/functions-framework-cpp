@@ -19,23 +19,22 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
-    set(googleapis_functions_framework_examples_unit_tests
+    set(functions_framework_cpp_examples_unit_tests
         # cmake-format: sort
         http_integration_test.cc http_unit_test.cc)
 
-    set(googleapis_functions_framework_examples_programs
-        # cmake-format: sort
-        http_integration_server.cc)
+    set(functions_framework_cpp_examples_programs # cmake-format: sort
+                                                  http_integration_server.cc)
 
-    foreach (fname ${googleapis_functions_framework_examples_unit_tests}
-                   ${googleapis_functions_framework_examples_programs})
+    foreach (fname ${functions_framework_cpp_examples_unit_tests}
+                   ${functions_framework_cpp_examples_programs})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples
-                    googleapis_functions_framework
+                    functions-framework-cpp::framework
                     CURL::libcurl
                     Boost::filesystem
                     GTest::gmock_main
@@ -43,7 +42,7 @@ if (BUILD_TESTING)
                     GTest::gtest)
     endforeach ()
 
-    foreach (fname ${googleapis_functions_framework_examples_unit_tests})
+    foreach (fname ${functions_framework_cpp_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_test(NAME ${target} COMMAND ${target})

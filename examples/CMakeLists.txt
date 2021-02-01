@@ -56,11 +56,11 @@ target_link_libraries(
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
-    set(googleapis_functions_framework_examples_unit_tests
+    set(functions_framework_cpp_examples_unit_tests
         # cmake-format: sort
         cloud_event_examples_test.cc http_examples_test.cc site_test.cc)
 
-    foreach (fname ${googleapis_functions_framework_examples_unit_tests})
+    foreach (fname ${functions_framework_cpp_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
