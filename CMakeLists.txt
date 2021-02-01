@@ -20,7 +20,7 @@ set(PACKAGE_BUGREPORT
     "http://github.com/GoogleCloudPlatform/functions-framework-cpp")
 project(
     functions-framework-cpp
-    VERSION 0.3.0
+    VERSION 0.4.0
     DESCRIPTION "Functions Framework for C++"
     LANGUAGES CXX)
 
