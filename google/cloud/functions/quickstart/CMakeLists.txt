@@ -26,5 +26,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Threads REQUIRED)
 find_package(functions_framework_cpp REQUIRED)
 
-add_executable(quickstart quickstart.cc)
+add_executable(quickstart quickstart.cc hello_function/hello_function.cc)
 target_link_libraries(quickstart functions-framework-cpp::framework)

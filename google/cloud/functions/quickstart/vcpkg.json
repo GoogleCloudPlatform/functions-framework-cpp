@@ -1,14 +1,10 @@
 {
-  "name": "google-functions-framework-cpp-quickstart",
-  "version-string": "0.0.1-dev",
+  "name": "functions-framework-cpp-quickstart",
+  "version-string": "0.4.0-dev",
   "port-version": 1,
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
-  "description": "Functions Framework for C++.",
+  "description": "Quickstart with Functions Framework for C++.",
   "dependencies": [
-    "abseil",
-    "boost-beast",
-    "boost-program-options",
-    "boost-serialization",
-    "nlohmann-json"
+    "functions-framework-cpp"
   ]
 }
