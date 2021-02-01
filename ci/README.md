@@ -51,11 +51,17 @@ gsutil mb -p "${GOOGLE_CLOUD_PROJECT}" \
 
 ### Grant the GCS service permissions to publish to Pub/Sub
 
-Get the GCS service account:
+Get the GCS service account. This will print the service account
+as the `email_address` field in a JSON object:
 
 ```shell
 curl -X GET -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   "https://storage.googleapis.com/storage/v1/projects/${GOOGLE_CLOUD_PROJECT}/serviceAccount"
+```
+
+Capture the field value in a variable:
+
+```sh
 GCS_SA="... @gs-project-accounts.iam.gserviceaccount.com"
 ```
 
