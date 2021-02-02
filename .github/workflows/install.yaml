@@ -48,7 +48,7 @@ jobs:
             ${{runner.temp}}/quickstart/vcpkg-overlays/portfile.cmake
       - name: test-configure
         env:
-          VCPKG_OVERLAY_PORTS: "${{runner.workspace}}/quickstart/vcpkg-overlays"
+          VCPKG_OVERLAY_PORTS: "${{runner.temp}}/quickstart/vcpkg-overlays"
         run: >
           cmake -S google/cloud/functions/quickstart -B "${{runner.temp}}/quickstart/build" -GNinja
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
@@ -93,7 +93,7 @@ jobs:
             ${{runner.temp}}/quickstart/vcpkg-overlays/portfile.cmake
       - name: test-configure
         env:
-          VCPKG_OVERLAY_PORTS: "${{runner.workspace}}/quickstart/vcpkg-overlays"
+          VCPKG_OVERLAY_PORTS: "${{runner.temp}}/quickstart/vcpkg-overlays"
         run: >
           cmake -S google/cloud/functions/quickstart -B "${{runner.temp}}/quickstart/build" -GNinja
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
