@@ -20,7 +20,7 @@ extern gcf::HttpResponse HelloWorld(gcf::HttpRequest);
 
 namespace {
 
-gcf::HttpResponse HelloWithShutdown(gcf::HttpRequest request) {
+gcf::HttpResponse HelloWithShutdown(gcf::HttpRequest request) {  // NOLINT
   // Add a way to gracefully shutdown this service, mostly for testing.
   if (request.target() == "/quit/program") std::exit(0);
   return HelloWorld(std::move(request));
