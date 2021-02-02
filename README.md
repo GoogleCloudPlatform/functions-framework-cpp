@@ -1,26 +1,114 @@
 # Functions Framework for C++
 
+<!-- Repo links -->
+[github-discussions]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/discussions
+[github-issue]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/issues/new
+[github-releases]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/releases
+[github-repo]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
+
+<!-- Build Status links -->
+[ff_cpp_unit_img]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/workflows/C++%20Unit%20CI/badge.svg
+[ff_cpp_unit_link]:  https://github.com/GoogleCloudPlatform/functions-framework-cpp/actions?query=workflow%3A%22C%2B%2B+Unit+CI%22
+[ff_cpp_lint_img]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/workflows/C%2B%2B%20Lint%20CI/badge.svg
+[ff_cpp_lint_link]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/actions?query=workflow%3A%22C%2B%2B+Lint+CI%22
+[ff_cpp_conformance_img]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/workflows/C++%20Conformance%20CI/badge.svg
+[ff_cpp_conformance_link]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/actions?query=workflow%3A%22C%2B%2B+Conformance+CI%22
+
+<!-- Reference links -->
 [abseil-gh]: https://github.com/abseil/abseil-cpp
 [boost-org]: https://boost.org/
 [nlohmann-json-gh]: https://github.com/nlohmann/json
 [google-cloud-cpp-gh]: https://github.com/googleapis/google-cloud-cpp
 [fmt-gh]: https://github.com/fmtlib/fmt
-[github-releases]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/releases
-[github-issue]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/issues/new
+[buildpacks]: https://github.com/GoogleCloudPlatform/buildpacks
+[CloudEvents]: https://cloudevents.io/
+[C++ quickstart]: google/cloud/functions/quickstart/README.md
+[docs]: docs
+[examples]: examples
+[examples/hello_world/hello_world.cc]: examples/hello_world/hello_world.cc
+[Google Cloud Run]:
+https://cloud.google.com/run/docs/quickstarts/build-and-deploy
+[Google App Engine]: https://cloud.google.com/appengine/docs/go/
+[Google Cloud Functions]: https://cloud.google.com/functions/
+[Knative]: https://github.com/knative/
+[quickstart]: google/cloud/functions/quickstart/README.md
+
+> :warning: This is not ready for production. Expect breaking changes.
+> We're sharing our progress with the developer community and appreciate
+> your feedback. Feel free to start a [discussion][github-discussions] to share
+> thoughts or open [issues][github-issue] for bugs.
+
+|Functions Framework|Unit Tests|Lint Test|Conformance Tests|
+|---|---|---|---|
+| [C++][github-repo] | [![][ff_cpp_unit_img]][ff_cpp_unit_link] | [![][ff_cpp_lint_img]][ff_cpp_lint_link] | [![][ff_cpp_conformance_img]][ff_cpp_conformance_link] |
 
 An open source FaaS (Functions as a Service) framework for writing portable C++
 functions -- brought to you by Google.
 
+The Functions Framework lets you write lightweight functions that run in many
+different environments, including:
+
+- Your local development machine
+- [Google Cloud Run] - see [quickstart]
+- [Google App Engine]
+- [Knative]-based environments
+
+[Google Cloud Functions] does not currently provide an officially supported C++
+language runtime, but we're working to make running on [Google Cloud Run] as
+seamless and symmetric an experience as possible for your C++ Functions
+Framework projects.
+
+The framework allows you to go from:
+
+[examples/hello_world/hello_world.cc]
+
+```cc
+#include <google/cloud/functions/http_request.h>
+#include <google/cloud/functions/http_response.h>
+
+using ::google::cloud::functions::HttpRequest;
+using ::google::cloud::functions::HttpResponse;
+
+HttpResponse HelloWorld(HttpRequest) {  // NOLINT
+  HttpResponse response;
+  response.set_header("Content-Type", "text/plain");
+  response.set_payload("Hello World\n");
+  return response;
+}
+```
+
+To:
+
+```shell
+curl https://<your-app-url>
+# Output: Hello, World!
+```
+
+All without needing to worry about writing an HTTP server or request
+handling logic.
+
+See more demos under the [examples] directory.
+
+## Features
+
+- Build your Function in the same container environment used by Cloud Functions
+  using [buildpacks]
+- Invoke a function in response to a request
+- Automatically unmarshal events conforming to the [CloudEvents] spec
+- Portable between serverless platforms
+
 ## Versions and Status
 
-This library is considered *experimental* its API and other interfaces
-are subject to change without notice. This library does **not** follow the
-[Semantic Versioning](https://semver.org) conventions.
+> :warning: This library is considered **experimental** its API and other
+> interfaces are subject to change without notice.
+
+This library does **not** follow the [Semantic Versioning](https://semver.org)
+conventions.
 
 ## Requirements
 
 This is a C++17-based framework. It requires a compiler supporting C++17, we
-routinely test with GCC (>= 8.), and with Clang (>= 10), let us know if you
+routinely test with GCC (>= 8), and with Clang (>= 10), let us know if you
 have problems with other compilers. The framework also depends on a number
 of other libraries, note that these libraries may have their own dependencies:
 
