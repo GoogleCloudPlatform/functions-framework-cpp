@@ -38,16 +38,16 @@ jobs:
         # See https://github.com/grpc/grpc/pull/22325 for an explanation around the
         # -DGRPC_* flags.
         run: >
-          cmake -S . -B ${{runner.workspace}}/build -GNinja
+          cmake -S . -B "${{runner.temp}}/build" -GNinja
           -DCMAKE_CXX_COMPILER=clang++-10
           -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_CXX_FLAGS="-fsanitize=${{matrix.sanitizer}} -DGRPC_TSAN_SUPPRESSED -DGRPC_ASAN_SUPPRESSED"
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
       - name: -fsanitize=${{matrix.sanitizer}} / build
-        run: cmake --build ${{runner.workspace}}/build
+        run: cmake --build "${{runner.temp}}/build"
       - name: -fsanitize=${{matrix.sanitizer}} / test
-        working-directory: ${{runner.workspace}}/build
+        working-directory: "${{runner.temp}}/build"
         env:
           ASAN_OPTIONS: detect_leaks=1:color=always
           LSAN_OPTIONS: report_objects=1
