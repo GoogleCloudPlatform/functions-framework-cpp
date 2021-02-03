@@ -16,25 +16,37 @@ jobs:
     - name: install ninja
       run: sudo apt install ninja-build
     - uses: actions/checkout@v2
+    - name: clone-vcpkg
+      run: >
+        git clone --quiet --shallow-since 2021-02-01 \
+            https://github.com/microsoft/vcpkg.git "${{runner.temp}}/vcpkg" && \
+        git -C "${{runner.temp}}/vcpkg" checkout "${{env.vcpkg_SHA}}"
     - name: cache-vcpkg
       id: cache-vcpkg
       uses: actions/cache@v2
       with:
+        # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
         path: |
           ~/.cache/vcpkg
+          ~/.cache/bin
         key: |
-          vcpkg-${{env.vcpkg_SHA}}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
         restore-keys: |
-          vcpkg-${{env.vcpkg_SHA}}-${{ runner.os }}-${{ github.job }}-
-          vcpkg-${{env.vcpkg_SHA}}-${{ runner.os }}-
-    - name: clone-vcpkg
-      run: >
-        git clone --quiet --shallow-since 2021-02-01 \
-          https://github.com/microsoft/vcpkg.git "${{runner.temp}}/vcpkg" &&
-        git -C "${{runner.temp}}/vcpkg" checkout "${{env.vcpkg_SHA}}" &&
+          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
+          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-
     - name: boostrap-vcpkg
       working-directory: "${{runner.temp}}/vcpkg"
-      run: ./bootstrap.sh
+      run: |
+        if [[ -x "${HOME}/.cache/bin/vcpkg" ]]; then
+          cp "${HOME}/.cache/bin/vcpkg" .
+        else
+          ./bootstrap-vcpkg.sh -useSystemBinaries
+          mkdir -p "${HOME}/.cache/bin"
+          cp ./vcpkg "${HOME}/.cache/bin/vcpkg"
+        fi
+        sha256sum "${{runner.temp}}/vcpkg/vcpkg" || true
+        sha256sum "$HOME/.cache/bin/vcpkg" || true
+
     - name: configure
       run: >
         cmake -S . -B "${{runner.temp}}/build" -GNinja
