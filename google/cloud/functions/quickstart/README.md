@@ -29,6 +29,8 @@ git clone https://github.com/microsoft/vcpkg
 (cd vcpkg && ./bootstrap.sh)
 ```
 
+### Compiling a function
+
 Once vcpkg is compiled you can build the quickstart example using:
 
 > :warning: the first time you build the framework it might take several
@@ -39,7 +41,10 @@ Once vcpkg is compiled you can build the quickstart example using:
 ```shell
 cd $HOME/functions-framework-cpp/google/cloud/functions/quickstart
 cmake -H. -B.build -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build .build
 ```
+
+### Running the function locally
 
 This will produce a standalone HTTP server, which you can run locally using:
 
@@ -47,7 +52,7 @@ This will produce a standalone HTTP server, which you can run locally using:
 .build/quickstart --port 8080
 ```
 
-Test this program using `curl`. In a separate shell run:
+Test this program using `curl`. In a separate terminal window run:
 
 ```shell
 curl http://localhost:8080
@@ -58,3 +63,45 @@ And terminate the program gracefully using:
 ```shell
 curl http://localhost:8080/quit/program/0
 ```
+
+## How-to Guide: Running your function as Docker container
+
+1. Install [Docker](https://store.docker.com/search?type=edition&offering=community) and
+   the [`pack` tool](https://buildpacks.io/docs/install-pack/).
+
+1. Create the `pack` builder for C++. The first time your run this it can take
+   several minutes, maybe as long as an hour, depending on the capabilities of
+   your workstation.
+   ```shell
+   cd $HOME/functions-framework-cpp
+   docker build -t gcf-cpp-runtime --target gcf-cpp-runtime -f build_scripts/Dockerfile .
+   docker build -t gcf-cpp-develop --target gcf-cpp-develop -f build_scripts/Dockerfile .
+   pack create-builder cpp-builder:bionic --config pack/builder.toml
+   pack trust-builder cpp-builder:bionic
+   ```
+
+1. Build a Docker image from your function using this buildpack:
+   ```shell
+   pack build \
+       --builder cpp-builder:bionic \
+       --env FUNCTION_SIGNATURE_TYPE=http \
+       --env TARGET_FUNCTION=HelloWorld \
+       --path google/cloud/functions/quickstart/hello_function \
+       gcf-cpp-quickstart
+   ```
+
+1. Start a Docker container in the background with this image:
+   ```shell
+   ID=$(docker run --detach --rm -p 8080:8080 gcf-cpp-quickstart)
+   ```
+
+1. Send requests to this function using `curl`:
+   ```shell
+   curl http://localhost:8080
+   # Output: Hello, World!
+   ```
+
+1. Stop the background container:
+   ```shell
+   docker kill "${ID}"
+   ```
