@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   pull_request:
 
+env:
+  vcpkg_SHA: "5214a247018b3bf2d793cea188ea2f2c150daddd"
+
 jobs:
   build-ubuntu-focal:
     name: ubuntu-20.04
@@ -20,18 +23,23 @@ jobs:
         path: |
           ~/.cache/vcpkg
         key: |
-          vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles(
-              '/usr/local/share/vcpkg/**/vcpkg.json',
-              '/usr/local/share/vcpkg/**/CONTROL',
-              'vcpkg.json') }}
+          vcpkg-${{env.vcpkg_SHA}}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
         restore-keys: |
-          vcpkg-${{ runner.os }}-${{ github.job }}-
-          vcpkg-${{ runner.os }}-
+          vcpkg-${{env.vcpkg_SHA}}-${{ runner.os }}-${{ github.job }}-
+          vcpkg-${{env.vcpkg_SHA}}-${{ runner.os }}-
+    - name: clone-vcpkg
+      run: >
+        git clone --quiet --shallow-since 2021-02-01 \
+          https://github.com/microsoft/vcpkg.git "${{runner.temp}}/vcpkg" &&
+        git -C "${{runner.temp}}/vcpkg" checkout "${{env.vcpkg_SHA}}" &&
+    - name: boostrap-vcpkg
+      working-directory: "${{runner.temp}}/vcpkg"
+      run: ./bootstrap.sh
     - name: configure
       run: >
         cmake -S . -B "${{runner.temp}}/build" -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-        -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
     - name: build
       run: cmake --build "${{runner.temp}}/build"
     - name: test
