@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,21 +13,12 @@
 // limitations under the License.
 
 #include <google/cloud/functions/framework.h>
-#include <cstdlib>
 
 namespace gcf = ::google::cloud::functions;
-extern gcf::HttpResponse HelloWorld(gcf::HttpRequest);
 
-namespace {
-
-gcf::HttpResponse HelloWithShutdown(gcf::HttpRequest request) {  // NOLINT
-  // Add a way to gracefully shutdown this service, mostly for testing.
-  if (request.target() == "/quit/program") std::exit(0);
-  return HelloWorld(std::move(request));
-}
-
-}  // namespace
-
-int main(int argc, char* argv[]) {
-  return ::google::cloud::functions::Run(argc, argv, HelloWithShutdown);
+gcf::HttpResponse HelloWorld(gcf::HttpRequest request) {  // NOLINT
+  gcf::HttpResponse response;
+  response.set_header("Content-Type", "text/plain");
+  response.set_payload("Hello World\n");
+  return response;
 }
