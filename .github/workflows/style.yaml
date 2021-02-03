@@ -27,7 +27,7 @@ jobs:
             vcpkg-${{ runner.os }}-
       - name: configure
         run: >
-          cmake -S . -B ${{runner.workspace}}/build
+          cmake -S . -B "${{runner.temp}}/build"
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
       - name: install clang-tidy
@@ -36,7 +36,7 @@ jobs:
         run: >
           git ls-files -z |
           grep -zE '\.cc$' |
-          xargs --verbose -P 2 -n 1 -0 clang-tidy-10 -p=${{runner.workspace}}/build
+          xargs --verbose -P 2 -n 1 -0 clang-tidy-10 -p="${{runner.temp}}/build"
 
   clang-format:
     name: clang-format

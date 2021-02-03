@@ -29,11 +29,11 @@ jobs:
           vcpkg-${{ runner.os }}-
     - name: configure
       run: >
-        cmake -S . -B ${{runner.workspace}}/build -GNinja
+        cmake -S . -B "${{runner.temp}}/build" -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
     - name: build
-      run: cmake --build ${{runner.workspace}}/build
+      run: cmake --build "${{runner.temp}}/build"
     - name: test
-      working-directory: ${{runner.workspace}}/build
+      working-directory: "${{runner.temp}}/build"
       run: ctest --output-on-failure --timeout=60s
