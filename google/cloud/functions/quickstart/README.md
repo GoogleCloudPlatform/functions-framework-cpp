@@ -18,7 +18,7 @@ server, or as a container to be deployed in Cloud Run or a similar environment.
 
 The Functions Framework for C++ recommends using [vcpkg][vcpkg-gh] to manage
 dependencies. This is how dependencies will be installed and compiled in the
-production environment, you probably want to use the same approach in
+production environment, so you probably want to use the same approach in
 development. Follow the [vcpkg install instructions][vcpkg-install] to get
 vcpkg installed on your development environment. For example, on Linux you
 would use:
@@ -47,7 +47,7 @@ This will produce a standalone HTTP server, which you can run locally using:
 .build/quickstart --port 8080
 ```
 
-Test this program using `curl`, in a separate shell run:
+Test this program using `curl`. In a separate shell run:
 
 ```shell
 curl http://localhost:8080
