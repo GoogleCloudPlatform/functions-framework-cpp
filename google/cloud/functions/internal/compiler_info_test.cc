@@ -14,10 +14,13 @@
 
 #include "google/cloud/functions/internal/compiler_info.h"
 #include <gmock/gmock.h>
+#include <regex>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
+
+using ::testing::Contains;
 
 TEST(CompilerInfo, CompilerId) {
   auto const cn = CompilerId();
@@ -31,7 +34,10 @@ TEST(CompilerInfo, CompilerVersion) {
   auto const cv = CompilerVersion();
   EXPECT_NE(cv, "");
   // Look for something that looks vaguely like an X.Y version number.
-  EXPECT_THAT(cv, ::testing::ContainsRegex(R"([0-9]+.[0-9]+)"));
+  // Cannot use a regex because GTest does not have them with MSVC.
+  EXPECT_THAT(cv, Contains('.'));
+  EXPECT_TRUE(std::regex_match(cv, std::regex(R"(^[0-9]+\.[0-9]+.*)")))
+      << "version=" << cv;
 }
 
 TEST(CompilerInfo, LanguageVersion) {

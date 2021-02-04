@@ -47,6 +47,8 @@ add_library(
     internal/parse_cloud_event_json.h
     internal/parse_options.cc
     internal/parse_options.h
+    internal/setenv.cc
+    internal/setenv.h
     internal/version_info.h
     internal/wrap_request.cc
     internal/wrap_request.h
@@ -56,6 +58,12 @@ add_library(
     version.cc
     version.h)
 functions_framework_cpp_add_common_options(functions_framework_cpp)
+if (MSVC)
+    set_property(
+        SOURCE internal/parse_options.cc
+        APPEND
+        PROPERTY COMPILE_DEFINITIONS "_CRT_SECURE_NO_WARNINGS")
+endif ()
 target_include_directories(functions_framework_cpp
                            PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 target_include_directories(functions_framework_cpp SYSTEM

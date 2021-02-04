@@ -13,16 +13,16 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/parse_options.h"
+#include "google/cloud/functions/internal/setenv.h"
 #include <gmock/gmock.h>
-#include <cstdlib>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
 TEST(WrapRequestTest, NoCmd) {
-  char const* argv[] = {};
-  auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
+  char const* argv[] = {"unused"};
+  auto const vm = ParseOptions(0, argv);
   EXPECT_EQ(vm.count("help"), 0);
 }
 
@@ -48,56 +48,56 @@ TEST(WrapRequestTest, ExceptionOnUnknown) {
 }
 
 TEST(WrapRequestTest, AcceptsRequiredOptions) {
-  ::unsetenv("PORT");
+  SetEnv("PORT", std::nullopt);
   char const* argv[] = {
-      "unused",       "--port=8085",          "--address=localhost",
+      "unused",       "--port=7060",          "--address=localhost",
       "--target=foo", "--signature-type=bar",
   };
   auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
   EXPECT_EQ(vm.count("help"), 0);
-  EXPECT_EQ(vm["port"].as<int>(), 8085);
+  EXPECT_EQ(vm["port"].as<int>(), 7060);
   EXPECT_EQ(vm["address"].as<std::string>(), "localhost");
   EXPECT_EQ(vm["target"].as<std::string>(), "foo");
   EXPECT_EQ(vm["signature-type"].as<std::string>(), "bar");
 }
 
 TEST(WrapRequestTest, UseEnvForPort) {
-  ::setenv("PORT", "8081", 1);
+  SetEnv("PORT", "7070");
   char const* argv[] = {"unused"};
   auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
-  EXPECT_EQ(vm["port"].as<int>(), 8081);
+  EXPECT_EQ(vm["port"].as<int>(), 7070);
 }
 
 TEST(WrapRequestTest, CommandLineOverridesEnv) {
-  ::setenv("PORT", "8081", 1);
-  char const* argv[] = {"unused", "--port=8082"};
+  SetEnv("PORT", "7070");
+  char const* argv[] = {"unused", "--port=7080"};
   auto const vm = ParseOptions(sizeof(argv) / sizeof(argv[0]), argv);
-  EXPECT_EQ(vm["port"].as<int>(), 8082);
+  EXPECT_EQ(vm["port"].as<int>(), 7080);
 }
 
 TEST(WrapRequestTest, PortEnvInvalid) {
-  ::setenv("PORT", "not-a-number", 1);
+  SetEnv("PORT", "not-a-number");
   char const* argv[] = {"unused"};
   int argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
 
 TEST(WrapRequestTest, PortEnvTooLow) {
-  ::setenv("PORT", "-1", 1);
+  SetEnv("PORT", "-1");
   char const* argv[] = {"unused"};
   int argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
 
 TEST(WrapRequestTest, PortEnvTooHigh) {
-  ::setenv("PORT", "65536", 1);
+  SetEnv("PORT", "65536");
   char const* argv[] = {"unused"};
   int argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
 
 TEST(WrapRequestTest, PortCommandLineInvalid) {
-  ::unsetenv("PORT");
+  SetEnv("PORT", std::nullopt);
   char const* argv_1[] = {"unused", "--port=invalid-not-a-number"};
   char const* argv_2[] = {"unused", "--port=-1"};
   char const* argv_3[] = {"unused", "--port=65536"};

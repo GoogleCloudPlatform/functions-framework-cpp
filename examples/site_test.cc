@@ -13,12 +13,12 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/parse_cloud_event_json.h"
+#include "google/cloud/functions/internal/setenv.h"
 #include "google/cloud/functions/cloud_event.h"
 #include "google/cloud/functions/http_request.h"
 #include "google/cloud/functions/http_response.h"
 #include <gmock/gmock.h>
 #include <nlohmann/json.hpp>
-#include <stdlib.h>  // NOLINT - we need the POSIX header, for setenv.
 
 namespace gcf = ::google::cloud::functions;
 extern gcf::HttpResponse hello_world_content(gcf::HttpRequest request);
@@ -286,11 +286,11 @@ TEST(ExamplesSiteTest, ConceptsStateless) {
 }
 
 TEST(ExamplesSiteTest, EnvVars) {
-  unsetenv("FOO");
+  google::cloud::functions_internal::SetEnv("FOO", std::nullopt);
   auto actual = env_vars(gcf::HttpRequest{});
   EXPECT_THAT(actual.payload(), AllOf(HasSubstr("FOO"), HasSubstr("not set")));
 
-  setenv("FOO", "test-value", 1);
+  google::cloud::functions_internal::SetEnv("FOO", "test-value");
   actual = env_vars(gcf::HttpRequest{});
   EXPECT_THAT(actual.payload(), HasSubstr("test-value"));
 }
@@ -309,16 +309,17 @@ TEST(ExamplesSiteTest, TipsGcpApis) {
   GTEST_SKIP();
 #endif  // __has_feature(thread_sanitizer)
 #endif  // defined(__has_feature)
-  unsetenv("GCP_PROJECT");
+  google::cloud::functions_internal::SetEnv("GCP_PROJECT", std::nullopt);
   EXPECT_THROW(tips_gcp_apis(gcf::HttpRequest{}), std::runtime_error);
 
-  setenv("GCP_PROJECT", "test-unused", 1);
+  google::cloud::functions_internal::SetEnv("GCP_PROJECT", "test-unused");
   EXPECT_THROW(tips_gcp_apis(gcf::HttpRequest{}), std::exception);
   EXPECT_THROW(
       tips_gcp_apis(gcf::HttpRequest{}.set_payload(nlohmann::json({}).dump())),
       std::runtime_error);
 
-  setenv("PUBSUB_EMULATOR_HOST", "localhost:1", 1);
+  google::cloud::functions_internal::SetEnv("PUBSUB_EMULATOR_HOST",
+                                            "localhost:1");
   auto const actual = tips_gcp_apis(gcf::HttpRequest{}.set_payload(
       nlohmann::json({{"topic", "test-unused"}}).dump()));
   EXPECT_EQ(actual.result(), gcf::HttpResponse::kInternalServerError);

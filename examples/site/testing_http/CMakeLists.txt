@@ -32,6 +32,10 @@ if (BUILD_TESTING)
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
         functions_framework_cpp_add_common_options(${target})
+        if (MSVC)
+            target_compile_definitions(${target}
+                                       PRIVATE "_CRT_SECURE_NO_WARNINGS")
+        endif ()
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples

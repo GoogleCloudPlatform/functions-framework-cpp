@@ -43,8 +43,9 @@ class StorageIntegrationTest : public ::testing::Test {
   void SetUp() override {
     curl_global_init(CURL_GLOBAL_ALL);
 
-    auto const exe =
-        bfs::path(argv0).parent_path() / "storage_integration_server";
+    static auto const kPath = std::vector<bfs::path>{
+        bfs::canonical(argv0).make_preferred().parent_path()};
+    auto const exe = bp::search_path("storage_integration_server", kPath);
     auto server =
         bp::child(exe, "--port=8050", (bp::std_out & bp::std_err) > child_log_);
     ASSERT_TRUE(WaitForServerReady("http://localhost:8050/"));

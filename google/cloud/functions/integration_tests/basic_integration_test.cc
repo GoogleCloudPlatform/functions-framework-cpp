@@ -83,9 +83,14 @@ char const* argv0 = nullptr;
 auto constexpr kServer = "echo_server";
 auto constexpr kConformanceServer = "http_conformance";
 
+auto ExePath(bfs::path const& filename) {
+  static auto const kPath = std::vector<bfs::path>{
+      bfs::canonical(argv0).make_preferred().parent_path()};
+  return bp::search_path(filename, kPath);
+}
+
 TEST(RunIntegrationTest, Basic) {
-  auto const exe = bfs::path(argv0).parent_path() / kServer;
-  auto server = bp::child(exe, "--port=8010");
+  auto server = bp::child(ExePath(kServer), "--port=8010");
   auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
@@ -121,9 +126,9 @@ TEST(RunIntegrationTest, Basic) {
 }
 
 TEST(RunIntegrationTest, ExceptionLogsToStderr) {
-  auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
-  auto server = bp::child(exe, "--port=8010", bp::std_err > child_stderr);
+  auto server =
+      bp::child(ExePath(kServer), "--port=8010", bp::std_err > child_stderr);
   auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
@@ -145,11 +150,11 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
 }
 
 TEST(RunIntegrationTest, OutputIsFlushed) {
-  auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
   bp::ipstream child_stdout;
-  auto server = bp::child(exe, "--port=8010", bp::std_err > child_stderr,
-                          bp::std_out > child_stdout);
+  auto server =
+      bp::child(ExePath(kServer), "--port=8010", bp::std_err > child_stderr,
+                bp::std_out > child_stdout);
   auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
@@ -176,8 +181,7 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
 }
 
 TEST(RunIntegrationTest, ConformanceSmokeTest) {
-  auto const exe = bfs::path(argv0).parent_path() / kConformanceServer;
-  auto server = bp::child(exe, "--port=8010");
+  auto server = bp::child(ExePath(kConformanceServer), "--port=8010");
   auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
