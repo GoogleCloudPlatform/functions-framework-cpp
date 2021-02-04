@@ -15,12 +15,12 @@
 
 set -eu
 
-if [[ $# -le 2 ]]; then
-  echo "Usage: $(basename "${0}") <VCPKG_ROOT>"
+if [[ $# -ne 1 ]]; then
+  >&2 echo "Usage: $(basename "${0}") <VCPKG_ROOT>"
   exit 1
 fi
 
-readonly VCPKG_ROOT="${2}"
+readonly VCPKG_ROOT="${1}"
 
 if [[ -x "${HOME}/.cache/bin/vcpkg" ]]; then
   cp "${HOME}/.cache/bin/vcpkg" .
