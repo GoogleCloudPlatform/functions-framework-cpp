@@ -13,8 +13,17 @@ jobs:
     name: ubuntu-20.04
     runs-on: ubuntu-20.04
     steps:
-      - name: install ninja
-        run: sudo apt install ninja-build
+      - name: install-dependencies
+        run: sudo apt install ninja-build libboost-dev libboost-program-options-dev nlohmann-json3-dev
+      - name: install-abseil
+        run: >
+          curl -sSL https://github.com/abseil/abseil-cpp/archive/20200225.2.tar.gz |
+          tar -xzf - --strip-components=1 &&
+          sed -i 's/^#define ABSL_OPTION_USE_\(.*\) 1/#define ABSL_OPTION_USE_\1 0/' "absl/base/options.h" &&
+          cmake -GNinja -DCMAKE_BUILD_TYPE="Release" -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=yes -H. -Bcmake-out/abseil &&
+          cmake --build cmake-out/abseil &&
+          sudo cmake --build cmake-out/abseil --target install &&
+          sudo ldconfig
       - uses: actions/checkout@v2
       - name: clone-vcpkg
         working-directory: "${{runner.temp}}"
@@ -41,30 +50,18 @@ jobs:
         run: >
           cmake -S . -B ${{runner.temp}}/build -GNinja -DBUILD_TESTING=OFF
           -DCMAKE_INSTALL_PREFIX=${{runner.temp}}/staging
-          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       - name: build
         run: cmake --build ${{runner.temp}}/build
       - name: install
         run: cmake --build ${{runner.temp}}/build --target install
-      - name: create-overlay
-        # We want to test with the *current* version of
-        # `functions-framework-cpp`, not with the version published by vcpkg.
-        # One can do that by creating an vcpkg overlay.
-        run: >
-          mkdir -p "${{runner.temp}}/quickstart/vcpkg-overlays" &&
-          cp build_scripts/vcpkg-overlays/* "${{runner.temp}}/quickstart/vcpkg-overlays" &&
-          sed -i -e "s;/usr/local/share/gcf;${{github.workspace}};" \
-            ${{runner.temp}}/quickstart/vcpkg-overlays/portfile.cmake
       - name: test-configure
-        env:
-          VCPKG_OVERLAY_PORTS: "${{runner.temp}}/quickstart/vcpkg-overlays"
         run: >
-          cmake -S google/cloud/functions/quickstart -B "${{runner.temp}}/quickstart/build" -GNinja
-          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          cmake -S ci/test_install -B "${{runner.temp}}/test_install/build" -GNinja
+          -DCMAKE_PREFIX_PATH="${{runner.temp}}/staging"
       - name: test-build
-        run: cmake --build ${{runner.temp}}/quickstart/build
+        run: cmake --build "${{runner.temp}}/test_install/build"
+      - name: test
+        run: "${{runner.temp}}/test_install/build/test_install"
 
   build-ubuntu-focal-shared:
     name: ubuntu-20.04-shared
@@ -87,14 +84,15 @@ jobs:
           cmake -S . -B ${{runner.temp}}/build -GNinja
           -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=ON
           -DCMAKE_INSTALL_PREFIX=${{runner.temp}}/staging
-          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       - name: build
         run: cmake --build ${{runner.temp}}/build
       - name: install
         run: cmake --build ${{runner.temp}}/build --target install
       - name: test-configure
         run: >
-          cmake -S google/cloud/functions/quickstart -B "${{runner.temp}}/quickstart/build" -GNinja
+          cmake -S ci/test_install -B "${{runner.temp}}/test_install/build" -GNinja
           -DCMAKE_PREFIX_PATH="${{runner.temp}}/staging"
       - name: test-build
-        run: cmake --build ${{runner.temp}}/quickstart/build
+        run: cmake --build "${{runner.temp}}/test_install/build"
+      - name: test
+        run: "${{runner.temp}}/test_install/build/test_install"

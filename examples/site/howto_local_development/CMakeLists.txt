@@ -1,5 +1,5 @@
 # ~~~
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 # CMake-based projects.
 
 cmake_minimum_required(VERSION 3.5)
-project(functions-framework-cpp-quickstart CXX C)
+project(functions-framework-cpp-howto-local-development CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -26,5 +26,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Threads REQUIRED)
 find_package(functions_framework_cpp REQUIRED)
 
-add_executable(quickstart hello_function/hello_function.cc quickstart.cc)
-target_link_libraries(quickstart functions-framework-cpp::framework)
+add_executable(local_server local_server.cc)
+target_link_libraries(local_server functions-framework-cpp::framework)

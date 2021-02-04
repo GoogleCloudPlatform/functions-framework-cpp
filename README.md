@@ -31,7 +31,7 @@ https://cloud.google.com/run/docs/quickstarts/build-and-deploy
 [Google App Engine]: https://cloud.google.com/appengine/docs/go/
 [Google Cloud Functions]: https://cloud.google.com/functions/
 [Knative]: https://github.com/knative/
-[quickstart]: google/cloud/functions/quickstart/README.md
+[quickstart]: examples/site/howto_local_development/README.md
 
 > :warning: This is not ready for production. Expect breaking changes.
 > We're sharing our progress with the developer community and appreciate
@@ -49,8 +49,7 @@ The Functions Framework lets you write lightweight functions that run in many
 different environments, including:
 
 - Your local development machine
-- [Google Cloud Run] - see [quickstart]
-- [Google App Engine]
+<!-- TODO(#202) - [Google Cloud Run] - see [quickstart] -->
 - [Knative]-based environments
 
 [Google Cloud Functions] does not currently provide an officially supported C++
