@@ -33,17 +33,7 @@ jobs:
             vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
             vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-
       - name: boostrap-vcpkg
-        working-directory: "${{runner.temp}}/vcpkg"
-        run: |
-          if [[ -x "${HOME}/.cache/bin/vcpkg" ]]; then
-          cp "${HOME}/.cache/bin/vcpkg" .
-          else
-          ./bootstrap-vcpkg.sh -useSystemBinaries
-          mkdir -p "${HOME}/.cache/bin"
-          cp ./vcpkg "${HOME}/.cache/bin/vcpkg"
-          fi
-          sha256sum "${{runner.temp}}/vcpkg/vcpkg" || true
-          sha256sum "$HOME/.cache/bin/vcpkg" || true
+        run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
       - name: configure
         run: >
           cmake -S . -B "${{runner.temp}}/build"
