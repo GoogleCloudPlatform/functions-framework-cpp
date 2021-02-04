@@ -12,22 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <google/cloud/functions/framework.h>
-#include <cstdlib>
-
-namespace gcf = ::google::cloud::functions;
-extern gcf::HttpResponse HelloWorld(gcf::HttpRequest);
-
-namespace {
-
-gcf::HttpResponse HelloWithShutdown(gcf::HttpRequest request) {  // NOLINT
-  // Add a way to gracefully shutdown this service, mostly for testing.
-  if (request.target() == "/quit/program") std::exit(0);
-  return HelloWorld(std::move(request));
-}
-
-}  // namespace
+#include <google/cloud/functions/version.h>
+#include <iostream>
 
 int main(int argc, char* argv[]) {
-  return ::google::cloud::functions::Run(argc, argv, HelloWithShutdown);
+  std::cout << google::cloud::functions::VersionString() << "\n";
+  return 0;
 }
