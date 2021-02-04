@@ -1,0 +1,86 @@
+name: C++ Conformance CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+env:
+  vcpkg_SHA: "5214a247018b3bf2d793cea188ea2f2c150daddd"
+
+jobs:
+  coverage:
+    name: coverage
+    runs-on: ubuntu-20.04
+    steps:
+    - name: install tools
+      run: sudo apt install ninja-build lcov
+    - uses: actions/checkout@v2
+    - name: clone-vcpkg
+      run: >
+        git clone --quiet --shallow-since 2021-02-01 \
+         https://github.com/microsoft/vcpkg.git "${{runner.temp}}/vcpkg" && \
+        git -C "${{runner.temp}}/vcpkg" checkout "${{env.vcpkg_SHA}}"
+    - name: cache-vcpkg
+      id: cache-vcpkg
+      uses: actions/cache@v2
+      with:
+        # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
+        path: |
+          ~/.cache/vcpkg
+          ~/.cache/bin
+        key: |
+          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
+          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-
+    - name: boostrap-vcpkg
+      working-directory: "${{runner.temp}}/vcpkg"
+      run: |
+        if [[ -x "${HOME}/.cache/bin/vcpkg" ]]; then
+          cp "${HOME}/.cache/bin/vcpkg" .
+        else
+          ./bootstrap-vcpkg.sh -useSystemBinaries
+          mkdir -p "${HOME}/.cache/bin"
+          cp ./vcpkg "${HOME}/.cache/bin/vcpkg"
+        fi
+        sha256sum "${{runner.temp}}/vcpkg/vcpkg" || true
+        sha256sum "$HOME/.cache/bin/vcpkg" || true
+    - name: configure
+      run: >
+        cmake -S . -B "${{runner.temp}}/build" -GNinja
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_CXX_FLAGS=--coverage
+        -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    - name: build
+      run: cmake --build "${{runner.temp}}/build"
+    - name: test
+      working-directory: "${{runner.temp}}/build"
+      run: ctest --output-on-failure --timeout=60s
+
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.13'
+
+    - name: Run Cloud Event conformance tests
+      uses: GoogleCloudPlatform/functions-framework-conformance/action@v0.3.2
+      with:
+        functionType: 'cloudevent'
+        useBuildpacks: false
+        validateMapping: false
+        cmd: '${{runner.temp}}/build/google/cloud/functions/integration_tests/cloud_event_conformance'
+
+    - name: Run HTTP conformance tests
+      uses: GoogleCloudPlatform/functions-framework-conformance/action@v0.3.2
+      with:
+        functionType: 'http'
+        useBuildpacks: false
+        validateMapping: false
+        cmd: '${{runner.temp}}/build/google/cloud/functions/integration_tests/http_conformance'
+
+    - name: coverage-upload
+      working-directory: "${{runner.temp}}"
+      run: >
+        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
