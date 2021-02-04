@@ -1,0 +1,74 @@
+name: sanitize
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+env:
+  vcpkg_SHA: "5214a247018b3bf2d793cea188ea2f2c150daddd"
+
+jobs:
+  sanitized-build:
+    # Using a blank name produces better output on
+    # the web UI (e.g. "sanitize /  (address)") than
+    # any other alternative we tried.
+    name: " "
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        sanitizer: ["address", "undefined", "thread"]
+    steps:
+      - name: install ninja
+        run: sudo apt install ninja-build
+      - uses: actions/checkout@v2
+      - name: clone-vcpkg
+        run: >
+          git clone --quiet --shallow-since 2021-02-01 \
+           https://github.com/microsoft/vcpkg.git "${{runner.temp}}/vcpkg" && \
+          git -C "${{runner.temp}}/vcpkg" checkout "${{env.vcpkg_SHA}}"
+      - name: cache-vcpkg
+        id: cache-vcpkg
+        uses: actions/cache@v2
+        with:
+          # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
+          path: |
+            ~/.cache/vcpkg
+            ~/.cache/bin
+          key: |
+            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
+            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-
+      - name: boostrap-vcpkg
+        working-directory: "${{runner.temp}}/vcpkg"
+        run: |
+          if [[ -x "${HOME}/.cache/bin/vcpkg" ]]; then
+          cp "${HOME}/.cache/bin/vcpkg" .
+          else
+          ./bootstrap-vcpkg.sh -useSystemBinaries
+          mkdir -p "${HOME}/.cache/bin"
+          cp ./vcpkg "${HOME}/.cache/bin/vcpkg"
+          fi
+          sha256sum "${{runner.temp}}/vcpkg/vcpkg" || true
+          sha256sum "$HOME/.cache/bin/vcpkg" || true
+      - name: -fsanitize=${{matrix.sanitizer}} / configure
+        # See https://github.com/grpc/grpc/pull/22325 for an explanation around the
+        # -DGRPC_* flags.
+        run: >
+          cmake -S . -B "${{runner.temp}}/build" -GNinja
+          -DCMAKE_CXX_COMPILER=clang++-10
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_CXX_FLAGS="-fsanitize=${{matrix.sanitizer}} -DGRPC_TSAN_SUPPRESSED -DGRPC_ASAN_SUPPRESSED"
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      - name: -fsanitize=${{matrix.sanitizer}} / build
+        run: cmake --build "${{runner.temp}}/build"
+      - name: -fsanitize=${{matrix.sanitizer}} / test
+        working-directory: "${{runner.temp}}/build"
+        env:
+          ASAN_OPTIONS: detect_leaks=1:color=always
+          LSAN_OPTIONS: report_objects=1
+          TSAN_OPTIONS: halt_on_error=1:second_deadlock_stack=1
+          UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+        run: ctest --output-on-failure --timeout=60s
