@@ -72,6 +72,6 @@ jobs:
         cmd: '${{runner.temp}}/build/google/cloud/functions/integration_tests/http_conformance'
 
     - name: coverage-upload
-      working-directory: "${{runner.temp}}"
+      working-directory: "${{github.workspace}}"
       run: >
-        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
+        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov -s "${{runner.temp}}/build"
