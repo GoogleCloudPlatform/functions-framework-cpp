@@ -5,31 +5,40 @@ on:
     branches: [ main ]
   pull_request:
 
+env:
+  vcpkg_SHA: "5214a247018b3bf2d793cea188ea2f2c150daddd"
+
 jobs:
   clang-tidy:
     name: clang-tidy
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+        working-directory: "${{runner.temp}}"
+        run: >
+          mkdir -p vcpkg &&
+          curl -sSL "https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.tar.gz" |
+          tar -C vcpkg --strip-components=1 -zxf -
       - name: cache-vcpkg
         id: cache-vcpkg
         uses: actions/cache@v2
         with:
+          # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
           path: |
             ~/.cache/vcpkg
+            ~/.cache/bin
           key: |
-            vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles(
-                '/usr/local/share/vcpkg/**/vcpkg.json',
-                '/usr/local/share/vcpkg/**/CONTROL',
-                'vcpkg.json') }}
+            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ runner.os }}-${{ github.job }}-
-            vcpkg-${{ runner.os }}-
+            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
+            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-
+      - name: boostrap-vcpkg
+        run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
       - name: configure
         run: >
           cmake -S . -B "${{runner.temp}}/build"
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       - name: install clang-tidy
         run: sudo apt install clang-tidy-10
       - name: tidy

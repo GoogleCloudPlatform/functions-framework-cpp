@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   pull_request:
 
+env:
+  vcpkg_SHA: "5214a247018b3bf2d793cea188ea2f2c150daddd"
+
 jobs:
   coverage:
     name: coverage
@@ -13,27 +16,34 @@ jobs:
     - name: install tools
       run: sudo apt install ninja-build lcov
     - uses: actions/checkout@v2
+    - name: clone-vcpkg
+      working-directory: "${{runner.temp}}"
+      run: >
+        mkdir -p vcpkg &&
+        curl -sSL "https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.tar.gz" |
+        tar -C vcpkg --strip-components=1 -zxf -
     - name: cache-vcpkg
       id: cache-vcpkg
       uses: actions/cache@v2
       with:
+        # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
         path: |
           ~/.cache/vcpkg
+          ~/.cache/bin
         key: |
-          vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles(
-              '/usr/local/share/vcpkg/**/vcpkg.json',
-              '/usr/local/share/vcpkg/**/CONTROL',
-              'vcpkg.json') }}
+          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
         restore-keys: |
-          vcpkg-${{ runner.os }}-${{ github.job }}-
-          vcpkg-${{ runner.os }}-
+          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
+          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-
+    - name: boostrap-vcpkg
+      run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
     - name: configure
       run: >
         cmake -S . -B "${{runner.temp}}/build" -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_BUILD_TYPE=Debug
         -DCMAKE_CXX_FLAGS=--coverage
-        -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
     - name: build
       run: cmake --build "${{runner.temp}}/build"
     - name: test
