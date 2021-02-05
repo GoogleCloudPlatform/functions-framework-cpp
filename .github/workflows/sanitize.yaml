@@ -37,9 +37,9 @@ jobs:
             ~/.cache/vcpkg
             ~/.cache/bin
           key: |
-            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ matrix.sanitize }}-${{ hashFiles('vcpkg.json') }}
+            vcpkg-${{ env.vcpkg_SHA }}-sanitize-${{ matrix.sanitize }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ matrix.sanitize }}-
+            vcpkg-${{ env.vcpkg_SHA }}-sanitize-${{ matrix.sanitize }}-
       - name: boostrap-vcpkg
         run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
       - name: -fsanitize=${{matrix.sanitizer}} / configure

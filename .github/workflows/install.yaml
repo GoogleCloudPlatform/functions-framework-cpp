@@ -9,7 +9,7 @@ env:
   vcpkg_SHA: "5214a247018b3bf2d793cea188ea2f2c150daddd"
 
 jobs:
-  build-ubuntu-focal:
+  static:
     name: ubuntu-20.04
     runs-on: ubuntu-20.04
     steps:
@@ -31,9 +31,9 @@ jobs:
             ~/.cache/vcpkg
             ~/.cache/bin
           key: |
-            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+            vcpkg-${{ env.vcpkg_SHA }}-install-static-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
+            vcpkg-${{ env.vcpkg_SHA }}-install-static-
       - name: boostrap-vcpkg
         run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
       - name: configure
@@ -65,7 +65,7 @@ jobs:
       - name: test-build
         run: cmake --build ${{runner.temp}}/quickstart/build
 
-  build-ubuntu-focal-shared:
+  shared:
     name: ubuntu-20.04-shared
     runs-on: ubuntu-20.04
     steps:
