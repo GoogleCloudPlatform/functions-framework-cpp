@@ -38,15 +38,15 @@ jobs:
       run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
     - name: configure
       run: >
-        cmake -S . -B "${{runner.temp}}/build" -GNinja
+        cmake -S . -B .build -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_BUILD_TYPE=Debug
         -DCMAKE_CXX_FLAGS=--coverage
         -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
     - name: build
-      run: cmake --build "${{runner.temp}}/build"
+      run: cmake --build .build
     - name: test
-      working-directory: "${{runner.temp}}/build"
+      working-directory: "${{github.workspace}}/.build"
       run: ctest --output-on-failure --timeout=60s
 
     - name: Setup Go
@@ -73,4 +73,4 @@ jobs:
     - name: coverage-upload
       working-directory: "${{github.workspace}}"
       run: >
-        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov -s "${{runner.temp}}"
+        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
