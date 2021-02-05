@@ -23,10 +23,11 @@ jobs:
         run: sudo apt install ninja-build
       - uses: actions/checkout@v2
       - name: clone-vcpkg
+        working-directory: "${{runner.temp}}"
         run: >
-          git clone --quiet --shallow-since 2021-02-01 \
-           https://github.com/microsoft/vcpkg.git "${{runner.temp}}/vcpkg" && \
-          git -C "${{runner.temp}}/vcpkg" checkout "${{env.vcpkg_SHA}}"
+          mkdir -p vcpkg &&
+          curl -sSL "https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.tar.gz" |
+          tar -C vcpkg --strip-components=1 -zxf -
       - name: cache-vcpkg
         id: cache-vcpkg
         uses: actions/cache@v2
