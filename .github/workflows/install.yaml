@@ -62,7 +62,7 @@ jobs:
         run: >
           cmake -S google/cloud/functions/quickstart -B "${{runner.temp}}/quickstart/build" -GNinja
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       - name: test-build
         run: cmake --build ${{runner.temp}}/quickstart/build
 
