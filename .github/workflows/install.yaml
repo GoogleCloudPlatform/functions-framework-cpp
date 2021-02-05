@@ -34,7 +34,6 @@ jobs:
             vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
             vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
-            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-
       - name: boostrap-vcpkg
         run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
       - name: configure
