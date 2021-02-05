@@ -23,7 +23,7 @@ fi
 readonly VCPKG_ROOT="${1}"
 
 if [[ -x "${HOME}/.cache/bin/vcpkg" ]]; then
-  cp "${HOME}/.cache/bin/vcpkg" .
+  cp "${HOME}/.cache/bin/vcpkg" "${VCPKG_ROOT}/vcpkg"
 else
   (cd "${VCPKG_ROOT}"  && ./bootstrap-vcpkg.sh -useSystemBinaries)
   mkdir -p "${HOME}/.cache/bin"
