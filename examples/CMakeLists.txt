@@ -14,8 +14,8 @@
 # limitations under the License.
 # ~~~
 
-find_package(storage_client REQUIRED)
-find_package(pubsub_client REQUIRED)
+find_package(google_cloud_cpp_storage REQUIRED)
+find_package(google_cloud_cpp_pubsub REQUIRED)
 find_package(fmt REQUIRED)
 find_package(Boost REQUIRED COMPONENTS log)
 
@@ -51,8 +51,8 @@ add_library(
     site/tips_retry/tips_retry.cc
     site/tips_scopes/tips_scopes.cc)
 target_link_libraries(
-    functions_framework_examples storage_client fmt::fmt
-    functions-framework-cpp::framework googleapis-c++::pubsub_client)
+    functions_framework_examples fmt::fmt functions-framework-cpp::framework
+    google-cloud-cpp::pubsub google-cloud-cpp::storage)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)

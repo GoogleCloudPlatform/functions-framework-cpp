@@ -14,10 +14,10 @@
 # limitations under the License.
 # ~~~
 
-find_package(pubsub_client REQUIRED)
+find_package(google_cloud_cpp_pubsub REQUIRED)
 find_package(functions_framework_cpp REQUIRED)
 
 add_library(functions_framework_cpp_function tips_gcp_apis.cc)
 target_link_libraries(
-    functions_framework_cpp_function googleapis-c++::pubsub_client
-    functions-framework-cpp::framework)
+    functions_framework_cpp_function functions-framework-cpp::framework
+    google-cloud-cpp::pubsub)
