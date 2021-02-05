@@ -27,7 +27,7 @@ if [[ -x "${HOME}/.cache/bin/vcpkg" ]]; then
 else
   (cd "${VCPKG_ROOT}"  && ./bootstrap-vcpkg.sh -useSystemBinaries)
   mkdir -p "${HOME}/.cache/bin"
-  cp ./vcpkg "${HOME}/.cache/bin/vcpkg"
+  cp "${VCPKG_ROOT}/vcpkg" "${HOME}/.cache/bin/vcpkg"
 fi
 sha256sum "${VCPKG_ROOT}/vcpkg" || true
 sha256sum "${HOME}/.cache/bin/vcpkg" || true
