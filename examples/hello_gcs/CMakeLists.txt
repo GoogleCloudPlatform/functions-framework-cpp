@@ -14,9 +14,10 @@
 # limitations under the License.
 # ~~~
 
-find_package(storage_client REQUIRED)
+find_package(google_cloud_cpp_storage REQUIRED)
 find_package(functions_framework_cpp REQUIRED)
 
 add_library(functions_framework_cpp_function hello_gcs.cc)
-target_link_libraries(functions_framework_cpp_function storage_client
-                      functions-framework-cpp::framework)
+target_link_libraries(
+    functions_framework_cpp_function functions-framework-cpp::framework
+    google-cloud-cpp::storage)
