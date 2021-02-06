@@ -31,23 +31,22 @@ jobs:
           ~/.cache/vcpkg
           ~/.cache/bin
         key: |
-          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
+          vcpkg-${{ env.vcpkg_SHA }}-coverage-${{ hashFiles('vcpkg.json') }}
         restore-keys: |
-          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
-          vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-
+          vcpkg-${{ env.vcpkg_SHA }}-coverage-
     - name: boostrap-vcpkg
       run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
     - name: configure
       run: >
-        cmake -S . -B "${{runner.temp}}/build" -GNinja
+        cmake -S . -B .build -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_BUILD_TYPE=Debug
         -DCMAKE_CXX_FLAGS=--coverage
         -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
     - name: build
-      run: cmake --build "${{runner.temp}}/build"
+      run: cmake --build .build
     - name: test
-      working-directory: "${{runner.temp}}/build"
+      working-directory: "${{github.workspace}}/.build"
       run: ctest --output-on-failure --timeout=60s
 
     - name: Setup Go
@@ -61,7 +60,7 @@ jobs:
         functionType: 'cloudevent'
         useBuildpacks: false
         validateMapping: false
-        cmd: '${{runner.temp}}/build/google/cloud/functions/integration_tests/cloud_event_conformance'
+        cmd: '${{github.workspace}}/.build/google/cloud/functions/integration_tests/cloud_event_conformance'
 
     - name: Run HTTP conformance tests
       uses: GoogleCloudPlatform/functions-framework-conformance/action@v0.3.2
@@ -69,9 +68,9 @@ jobs:
         functionType: 'http'
         useBuildpacks: false
         validateMapping: false
-        cmd: '${{runner.temp}}/build/google/cloud/functions/integration_tests/http_conformance'
+        cmd: '${{github.workspace}}/.build/google/cloud/functions/integration_tests/http_conformance'
 
     - name: coverage-upload
-      working-directory: "${{runner.temp}}"
+      working-directory: "${{github.workspace}}"
       run: >
         /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
