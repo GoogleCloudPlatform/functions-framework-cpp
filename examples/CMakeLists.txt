@@ -50,6 +50,7 @@ add_library(
     site/tips_lazy_globals/tips_lazy_globals.cc
     site/tips_retry/tips_retry.cc
     site/tips_scopes/tips_scopes.cc)
+functions_framework_cpp_add_common_options(functions_framework_examples)
 target_link_libraries(
     functions_framework_examples fmt::fmt functions-framework-cpp::framework
     google-cloud-cpp::pubsub google-cloud-cpp::storage)
@@ -64,6 +65,7 @@ if (BUILD_TESTING)
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
+        functions_framework_cpp_add_common_options(${target})
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples

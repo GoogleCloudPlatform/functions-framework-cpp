@@ -31,6 +31,7 @@ if (BUILD_TESTING)
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
+        functions_framework_cpp_add_common_options(${target})
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples
@@ -45,6 +46,7 @@ if (BUILD_TESTING)
     foreach (fname ${functions_framework_cpp_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
+        functions_framework_cpp_add_common_options(${target})
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 endif ()

@@ -21,7 +21,7 @@ configure_file(internal/version_info.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/internal/version_info.h)
 
 find_package(absl REQUIRED)
-find_package(Boost REQUIRED COMPONENTS program_options)
+find_package(Boost REQUIRED COMPONENTS program_options filesystem)
 find_package(Threads REQUIRED)
 
 add_library(
@@ -55,9 +55,9 @@ add_library(
     user_functions.h
     version.cc
     version.h)
+functions_framework_cpp_add_common_options(functions_framework_cpp)
 target_include_directories(functions_framework_cpp
                            PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-
 target_include_directories(functions_framework_cpp SYSTEM
                            PUBLIC $<INSTALL_INTERFACE:include>)
 target_link_libraries(
@@ -93,8 +93,10 @@ if (BUILD_TESTING)
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
         target_link_libraries(
-            ${target} PRIVATE functions-framework-cpp::framework
-                              GTest::gmock_main GTest::gmock GTest::gtest)
+            ${target}
+            PRIVATE functions-framework-cpp::framework GTest::gmock_main
+                    GTest::gmock GTest::gtest Boost::headers)
+        functions_framework_cpp_add_common_options(${target})
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 
