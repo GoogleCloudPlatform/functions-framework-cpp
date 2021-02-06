@@ -77,9 +77,9 @@ jobs:
             ~/.cache/vcpkg
             ~/.cache/bin
           key: |
-            vcpkg-${{ env.vcpkg_SHA }}-werror-${{ matrix.compiler.cc }}-${{ hashFiles('vcpkg.json') }}
+            vcpkg-${{ env.vcpkg_SHA }}-werror-${{ matrix.compiler.cxx }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ env.vcpkg_SHA }}-werror-${{ matrix.compiler.cc }}-
+            vcpkg-${{ env.vcpkg_SHA }}-werror-${{ matrix.compiler.cxx }}-
       - name: boostrap-vcpkg
         run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
       - name: compiler=${{matrix.sanitizer}} / configure
@@ -87,14 +87,14 @@ jobs:
           cmake -S . -B "${{runner.temp}}/build" -GNinja
           -DFUNCTIONS_FRAMEWORK_CPP_ENABLE_WERROR=ON
           -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}
-          -DCMAKE_C_COMPILER=${matrix.compiler.cc}}
+          -DCMAKE_C_COMPILER=${{matrix.compiler.cc}}
           -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 # TODO(coryan) - uncomment after warming up the cache
 #      - name: compiler=${{matrix.compiler.cxx}} / build
 #        run: cmake --build "${{runner.temp}}/build"
-#      - name: -fsanitize=${{matrix.compiler.cxx}} / test
+#      - name: compiler=${{matrix.compiler.cxx}} / test
 #        working-directory: "${{runner.temp}}/build"
 #        run: ctest --output-on-failure --timeout=60s
 
