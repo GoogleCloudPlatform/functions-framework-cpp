@@ -25,7 +25,7 @@ namespace gcf = ::google::cloud::functions;
 // Use Boost.Archive to decode Pub/Sub message payload
 std::string decode_base64(std::string const& base64);
 
-void hello_world_pubsub(gcf::CloudEvent event) {  // NOLINT
+void hello_world_pubsub(gcf::CloudEvent event) {
   if (event.data_content_type().value_or("") != "application/json") {
     std::cerr << "Error: expected application/json data\n";
     return;
