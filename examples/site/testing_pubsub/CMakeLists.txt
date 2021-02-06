@@ -47,7 +47,6 @@ if (BUILD_TESTING)
 
     add_executable(pubsub_system_test pubsub_system_test.cc)
     target_link_libraries(
-        pubsub_system_test
-        PRIVATE google-cloud-cpp::pubsub fmt::fmt Boost::log
-                GTest::gmock_main GTest::gmock GTest::gtest)
+        pubsub_system_test PRIVATE google-cloud-cpp::pubsub fmt::fmt Boost::log
+                                   GTest::gmock_main GTest::gmock GTest::gtest)
 endif ()
