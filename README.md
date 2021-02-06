@@ -22,7 +22,6 @@
 [fmt-gh]: https://github.com/fmtlib/fmt
 [buildpacks]: https://github.com/GoogleCloudPlatform/buildpacks
 [CloudEvents]: https://cloudevents.io/
-[C++ quickstart]: google/cloud/functions/quickstart/README.md
 [docs]: docs
 [examples]: examples
 [examples/hello_world/hello_world.cc]: examples/hello_world/hello_world.cc
