@@ -15,7 +15,7 @@
 #include <google/cloud/functions/version.h>
 #include <iostream>
 
-int main(int argc, char* argv[]) {
+int main() {
   std::cout << google::cloud::functions::VersionString() << "\n";
   return 0;
 }
