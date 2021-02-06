@@ -57,14 +57,14 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100
 
 WORKDIR /usr/local
-RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.19.2/cmake-3.19.2-Linux-x86_64.tar.gz | \
+RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.19.4/cmake-3.19.4-Linux-x86_64.tar.gz | \
     tar -xzf - --strip-components=1
 
 RUN curl -sSL https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip | \
     funzip >/usr/local/bin/ninja && \
     chmod 755 /usr/local/bin/ninja
 WORKDIR /usr/local/vcpkg
-RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/5dc53211caedebf4387d590155ed53ee44161f10.tar.gz | \
+RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/5214a247018b3bf2d793cea188ea2f2c150daddd.tar.gz | \
     tar -xzf - --strip-components=1 && \
     ./bootstrap-vcpkg.sh -disableMetrics -useSystemBinaries && \
     rm -fr toolsrc/build.rel downloads/*
