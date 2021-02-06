@@ -45,10 +45,16 @@ std::string decode_base64(std::string const& base64) {
                            kBase64EncodedBits, kBase64RawBits>;
   // Pad the raw string if needed.
   auto padded = base64;
-  padded.append((4 - base64.size() % 4) % 4, '=');
-  auto const last_non_pad = base64.find_last_not_of('=');
-  auto const pad_count =
-      std::distance(padded.begin() + last_non_pad + 1, padded.end());
+  padded.append((4 - padded.size() % 4) % 4, '=');
+  auto pad_begin = [&padded] {
+    auto const last_non_pad = padded.find_last_not_of('=');
+    if (last_non_pad == std::string::npos) return padded.end();
+    auto r = padded.begin();
+    std::advance(r, last_non_pad + 1);
+    return r;
+  }();
+  auto const pad_count = std::distance(pad_begin, padded.end());
+
   std::string data{Decoder(padded.begin()), Decoder(padded.end())};
   if (pad_count == 2) {
     data.pop_back();
