@@ -82,17 +82,16 @@ jobs:
             vcpkg-${{ env.vcpkg_SHA }}-werror-${{ matrix.compiler.cc }}-
       - name: boostrap-vcpkg
         run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
+      - name: compiler=${{matrix.sanitizer}} / configure
+        run: >
+          cmake -S . -B "${{runner.temp}}/build" -GNinja
+          -DFUNCTIONS_FRAMEWORK_CPP_ENABLE_WERROR=ON
+          -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}
+          -DCMAKE_C_COMPILER=${matrix.compiler.cc}}
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 # TODO(coryan) - uncomment after warming up the cache
-#      - name: compiler=${{matrix.sanitizer}} / configure
-#        # See https://github.com/grpc/grpc/pull/22325 for an explanation around the
-#        # -DGRPC_* flags.
-#        run: >
-#          cmake -S . -B "${{runner.temp}}/build" -GNinja
-#          -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}
-#          -DCMAKE_C_COMPILER=${matrix.compiler.cc}}
-#          -DCMAKE_BUILD_TYPE=Debug
-#          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-#          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 #      - name: compiler=${{matrix.compiler.cxx}} / build
 #        run: cmake --build "${{runner.temp}}/build"
 #      - name: -fsanitize=${{matrix.compiler.cxx}} / test
