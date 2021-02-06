@@ -91,12 +91,11 @@ jobs:
           -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-# TODO(coryan) - uncomment after warming up the cache
-#      - name: compiler=${{matrix.compiler.cxx}} / build
-#        run: cmake --build "${{runner.temp}}/build"
-#      - name: compiler=${{matrix.compiler.cxx}} / test
-#        working-directory: "${{runner.temp}}/build"
-#        run: ctest --output-on-failure --timeout=60s
+      - name: compiler=${{matrix.compiler.cxx}} / build
+        run: cmake --build "${{runner.temp}}/build"
+      - name: compiler=${{matrix.compiler.cxx}} / test
+        working-directory: "${{runner.temp}}/build"
+        run: ctest --output-on-failure --timeout=60s
 
   clang-format:
     name: clang-format
