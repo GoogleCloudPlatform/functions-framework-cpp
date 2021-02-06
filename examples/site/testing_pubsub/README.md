@@ -6,7 +6,8 @@
 [pubsub_unit_test.cc]: pubsub_unit_test.cc
 [pubsub_integration_server.cc]: pubsub_integration_server.cc
 [pubsub_integration_test.cc]: pubsub_integration_test.cc
-[quickstart-guide]: /google/cloud/functions/quickstart/README.md
+[quickstart-guide]: /examples/site/howto_local_development/README.md
+[container-guide]: /examples/site/howto_create_container/README.md
 [pubsub-quickstart]: https://cloud.google.com/pubsub/docs/quickstart-console
 
 Event-driven functions do not return values, their only observable behavior are
@@ -69,7 +70,7 @@ This guide assumes that you have:
   ``` 
 * you need to create a [buildpacks builder][buildpacks] that can create
   Docker images from your C++ functions, see the
-  [quickstart guide][quickstart-guide] for more information,
+  [Howto Guide][container-guide] for more information,
 
 ```shell
 pack build pack build \
