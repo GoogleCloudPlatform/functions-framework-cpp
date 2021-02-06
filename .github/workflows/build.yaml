@@ -47,3 +47,47 @@ jobs:
     - name: test
       working-directory: "${{runner.temp}}/build"
       run: ctest --output-on-failure --timeout=60s
+
+  # Verify the howto guides compile correctly, they need a special setup to use the
+  # current version of `functions-framework-cpp` through vcpkg.
+  build-ubuntu-focal-howto:
+    name: ubuntu-20.04
+    runs-on: ubuntu-20.04
+    steps:
+      - name: install ninja
+        run: sudo apt install ninja-build
+      - uses: actions/checkout@v2
+      - name: cache-vcpkg
+        id: cache-vcpkg
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/vcpkg
+          key: |
+            vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles(
+                '/usr/local/share/vcpkg/**/vcpkg.json',
+                '/usr/local/share/vcpkg/**/CONTROL',
+                'vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-${{ github.job }}-
+            vcpkg-${{ runner.os }}-
+      - name: create-overlay
+        # We want to test with the *current* version of
+        # `functions-framework-cpp`, not with the version published by vcpkg.
+        # One can do that by creating an vcpkg overlay.
+        run: >
+          mkdir -p "${{runner.temp}}/quickstart/vcpkg-overlays" &&
+          cp build_scripts/vcpkg-overlays/* "${{runner.temp}}/quickstart/vcpkg-overlays" &&
+          sed -i -e "s;/usr/local/share/gcf;${{github.workspace}};" \
+            ${{runner.temp}}/quickstart/vcpkg-overlays/portfile.cmake
+      - name: configure-local-development
+        env:
+          VCPKG_OVERLAY_PORTS: "${{runner.temp}}/quickstart/vcpkg-overlays"
+        run: >
+          cmake -S examples/site/howto_local_development -B "${{runner.temp}}/howto_local_development/build" -GNinja
+          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+      - name: build-local-development
+        env:
+          VCPKG_OVERLAY_PORTS: "${{runner.temp}}/quickstart/vcpkg-overlays"
+        run: >
+          cmake --build "${{runner.temp}}/howto_local_development/build"

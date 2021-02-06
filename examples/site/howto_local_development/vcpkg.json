@@ -1,9 +1,9 @@
 {
-  "name": "functions-framework-cpp-quickstart",
+  "name": "functions-framework-cpp-local-development",
   "version-string": "0.4.0-dev",
   "port-version": 1,
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
-  "description": "Quickstart with Functions Framework for C++.",
+  "description": "How-to Guide: Local Development with the Functions Framework for C++.",
   "dependencies": [
     "functions-framework-cpp"
   ]
