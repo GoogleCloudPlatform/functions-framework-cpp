@@ -21,7 +21,7 @@ configure_file(internal/version_info.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/internal/version_info.h)
 
 find_package(absl REQUIRED)
-find_package(Boost REQUIRED COMPONENTS program_options filesystem)
+find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Threads REQUIRED)
 
 add_library(
