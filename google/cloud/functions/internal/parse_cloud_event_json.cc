@@ -59,17 +59,12 @@ functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
     // While we know how much padding we added, there may have been some padding
     // there, just not enough. We need to determine the actual number of `=`
     // characters at the end of th string.
-    auto const pad_count = std::distance(
+    auto pad_count = std::distance(
         base64.rbegin(), std::find_if(base64.rbegin(), base64.rend(),
                                       [](auto c) { return c != '='; }));
 
     std::string data{Decoder(base64.begin()), Decoder(base64.end())};
-    if (pad_count == 2) {
-      data.pop_back();
-      data.pop_back();
-    } else if (pad_count == 1) {
-      data.pop_back();
-    }
+    for (; pad_count != 0; --pad_count) data.pop_back();
     // TODO(#117) - consider storing as std::vector<std::uint8_t>
     event.set_data(std::move(data));
   }
