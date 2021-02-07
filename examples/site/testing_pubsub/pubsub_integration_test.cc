@@ -37,16 +37,19 @@ HttpResponse HttpEvent(std::string const& url, std::string const& payload);
 
 char const* argv0 = nullptr;
 
+auto ExePath(bfs::path const& filename) {
+  static auto const kPath = std::vector<bfs::path>{
+      bfs::canonical(argv0).make_preferred().parent_path()};
+  return bp::search_path(filename, kPath);
+}
+
 class PubsubIntegrationTest : public ::testing::Test {
  protected:
   void SetUp() override {
     curl_global_init(CURL_GLOBAL_ALL);
 
-    static auto const kPath = std::vector<bfs::path>{
-        bfs::canonical(argv0).make_preferred().parent_path()};
-    auto const exe = bp::search_path("pubsub_integration_server", kPath);
-    auto server =
-        bp::child(exe, "--port=8040", (bp::std_out & bp::std_err) > child_log_);
+    auto server = bp::child(ExePath("pubsub_integration_server"), "--port=8040",
+                            (bp::std_out & bp::std_err) > child_log_);
     ASSERT_TRUE(WaitForServerReady("http://localhost:8040/"));
     process_ = std::move(server);
   }

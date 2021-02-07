@@ -33,10 +33,11 @@ TEST(CompilerInfo, CompilerId) {
 TEST(CompilerInfo, CompilerVersion) {
   auto const cv = CompilerVersion();
   EXPECT_NE(cv, "");
-  // Look for something that looks vaguely like an X.Y version number.
-  // Cannot use a regex because GTest does not have them with MSVC.
+  // Look for something that looks vaguely like an X.Y version number. Cannot
+  // use ::testing::ContainsRegex() because these do not work when GTest is
+  // compiled under MSVC.
   EXPECT_THAT(cv, Contains('.'));
-  EXPECT_TRUE(std::regex_match(cv, std::regex(R"(^[0-9]+\.[0-9]+.*)")))
+  EXPECT_TRUE(std::regex_search(cv, std::regex(R"([0-9]+\.[0-9]+)")))
       << "version=" << cv;
 }
 
