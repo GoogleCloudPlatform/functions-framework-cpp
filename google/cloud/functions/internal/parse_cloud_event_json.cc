@@ -58,7 +58,7 @@ functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
     base64.append((4 - base64.size() % 4) % 4, '=');
     // While we know how much padding we added, there may have been some padding
     // there, just not enough. We need to determine the actual number of `=`
-    // characters at the end of th string.
+    // characters at the end of the string.
     auto pad_count = std::distance(
         base64.rbegin(), std::find_if(base64.rbegin(), base64.rend(),
                                       [](auto c) { return c != '='; }));

@@ -48,7 +48,7 @@ std::string decode_base64(std::string const& base64) {
   padded.append((4 - padded.size() % 4) % 4, '=');
   // While we know how much padding we added, there may have been some padding
   // there, just not enough. We need to determine the actual number of `=`
-  // characters at the end of th string.
+  // characters at the end of the string.
   auto pad_count = std::distance(padded.rbegin(),
                                  std::find_if(padded.rbegin(), padded.rend(),
                                               [](auto c) { return c != '='; }));

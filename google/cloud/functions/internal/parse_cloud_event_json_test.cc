@@ -188,15 +188,17 @@ TEST(ParseCloudEventJson, WithDataBase64) {
 }
 
 TEST(ParseCloudEventJson, WithDataBase64Padding) {
+  struct Test {
+    std::string expected_data;
+    std::string json;
+  };
+
   // Obtained magic string using:
   //   echo -n "" | openssl base64 -e
   //   echo -n "a" | openssl base64 -e
   //   echo -n "ab" | openssl base64 -e
   //   echo -n "abc" | openssl base64 -e
-  struct Test {
-    std::string expected_data;
-    std::string json;
-  } cases[] = {
+  Test const normal_cases[] = {
       {"", R"js({
     "type" : "com.example.someevent",
     "source" : "/mycontext",
@@ -207,11 +209,6 @@ TEST(ParseCloudEventJson, WithDataBase64Padding) {
     "source" : "/mycontext",
     "id" : "A234-1234-1234",
     "data_base64" : "YQ=="})js"},
-      {"a", R"js({
-    "type" : "com.example.someevent",
-    "source" : "/mycontext",
-    "id" : "A234-1234-1234",
-    "data_base64" : "YQ="})js"},
       {"ab", R"js({
     "type" : "com.example.someevent",
     "source" : "/mycontext",
@@ -223,7 +220,30 @@ TEST(ParseCloudEventJson, WithDataBase64Padding) {
     "id" : "A234-1234-1234",
     "data_base64" : "YWJj"})js"},
   };
-  for (auto const& c : cases) {
+
+  Test const underpadded_cases[] = {
+      {"a", R"js({
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234",
+    "data_base64" : "YQ="})js"},
+      {"a", R"js({
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234",
+    "data_base64" : "YQ"})js"},
+      {"ab", R"js({
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234",
+    "data_base64" : "YWI"})js"},
+  };
+
+  for (auto const& c : normal_cases) {
+    auto const ce = ParseCloudEventJson(c.json);
+    EXPECT_EQ(ce.data().value_or(""), c.expected_data);
+  }
+  for (auto const& c : underpadded_cases) {
     auto const ce = ParseCloudEventJson(c.json);
     EXPECT_EQ(ce.data().value_or(""), c.expected_data);
   }
