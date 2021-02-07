@@ -52,6 +52,9 @@ std::string decode_base64(std::string const& base64) {
   auto pad_count = std::distance(
       padded.rbegin(), std::find_if(padded.rbegin(), padded.rend(),
                                     [](auto c) { return c != '='; }));
+  if (pad_count > 2) {
+    throw std::invalid_argument("Invalid base64 string <" + base64 + ">");
+  }
 
   std::string data{Decoder(padded.begin()), Decoder(padded.end())};
   for (; pad_count != 0; --pad_count) data.pop_back();

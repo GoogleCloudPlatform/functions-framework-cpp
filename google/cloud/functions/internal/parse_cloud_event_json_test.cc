@@ -207,6 +207,11 @@ TEST(ParseCloudEventJson, WithDataBase64Padding) {
     "source" : "/mycontext",
     "id" : "A234-1234-1234",
     "data_base64" : "YQ=="})js"},
+      {"a", R"js({
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234",
+    "data_base64" : "YQ="})js"},
       {"ab", R"js({
     "type" : "com.example.someevent",
     "source" : "/mycontext",
@@ -222,6 +227,13 @@ TEST(ParseCloudEventJson, WithDataBase64Padding) {
     auto const ce = ParseCloudEventJson(c.json);
     EXPECT_EQ(ce.data().value_or(""), c.expected_data);
   }
+
+  auto constexpr kExcessivePadding = R"js({
+    "type" : "com.example.someevent",
+    "source" : "/mycontext",
+    "id" : "A234-1234-1234",
+    "data_base64" : "YWJj============"})js";
+  EXPECT_THROW(ParseCloudEventJson(kExcessivePadding), std::invalid_argument);
 }
 
 TEST(ParseCloudEventJson, Batch) {

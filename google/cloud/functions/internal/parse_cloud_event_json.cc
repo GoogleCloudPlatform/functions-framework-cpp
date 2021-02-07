@@ -62,6 +62,9 @@ functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
     auto pad_count = std::distance(
         base64.rbegin(), std::find_if(base64.rbegin(), base64.rend(),
                                       [](auto c) { return c != '='; }));
+    if (pad_count > 2) {
+      throw std::invalid_argument("Invalid base64 string <" + base64 + ">");
+    }
 
     std::string data{Decoder(base64.begin()), Decoder(base64.end())};
     for (; pad_count != 0; --pad_count) data.pop_back();
