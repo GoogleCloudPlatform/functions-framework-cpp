@@ -45,16 +45,18 @@ std::string decode_base64(std::string const& base64) {
                            kBase64EncodedBits, kBase64RawBits>;
   // Pad the raw string if needed.
   auto padded = base64;
-  padded.append((4 - base64.size() % 4) % 4, '=');
-  auto const last_non_pad = base64.find_last_not_of('=');
-  auto const pad_count =
-      std::distance(padded.begin() + last_non_pad + 1, padded.end());
-  std::string data{Decoder(padded.begin()), Decoder(padded.end())};
-  if (pad_count == 2) {
-    data.pop_back();
-    data.pop_back();
-  } else if (pad_count == 1) {
-    data.pop_back();
+  padded.append((4 - padded.size() % 4) % 4, '=');
+  // While we know how much padding we added, there may have been some padding
+  // there, just not enough. We need to determine the actual number of `=`
+  // characters at the end of the string.
+  auto pad_count = std::distance(padded.rbegin(),
+                                 std::find_if(padded.rbegin(), padded.rend(),
+                                              [](auto c) { return c != '='; }));
+  if (pad_count > 2) {
+    throw std::invalid_argument("Invalid base64 string <" + base64 + ">");
   }
+
+  std::string data{Decoder(padded.begin()), Decoder(padded.end())};
+  for (; pad_count != 0; --pad_count) data.pop_back();
   return data;
 }
