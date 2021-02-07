@@ -148,9 +148,8 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
   bp::ipstream child_stdout;
-  auto server =
-      bp::child(exe, "--port=8010", bp::std_err > child_stderr,
-                bp::std_out > child_stdout);
+  auto server = bp::child(exe, "--port=8010", bp::std_err > child_stderr,
+                          bp::std_out > child_stdout);
   auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
