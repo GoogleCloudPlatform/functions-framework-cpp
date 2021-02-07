@@ -46,8 +46,8 @@ class StorageIntegrationTest : public ::testing::Test {
     auto const exe =
         bfs::path(argv0).parent_path() / "storage_integration_server";
     auto server =
-        bp::child(exe, "--port=8082", (bp::std_out & bp::std_err) > child_log_);
-    ASSERT_TRUE(WaitForServerReady("http://localhost:8082/"));
+        bp::child(exe, "--port=8050", (bp::std_out & bp::std_err) > child_log_);
+    ASSERT_TRUE(WaitForServerReady("http://localhost:8050/"));
     process_ = std::move(server);
   }
 
@@ -106,7 +106,7 @@ TEST_F(StorageIntegrationTest, Basic) {
     auto object = base;
     object["data"]["name"] = test.name;
     SCOPED_TRACE("event=" + object.dump());
-    auto actual = HttpEvent("http://localhost:8082/", object.dump());
+    auto actual = HttpEvent("http://localhost:8050/", object.dump());
     ASSERT_EQ(actual.code, kOkay);
     EXPECT_THAT(actual.payload, IsEmpty());
 

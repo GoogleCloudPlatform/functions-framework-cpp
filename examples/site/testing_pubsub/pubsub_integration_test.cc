@@ -45,8 +45,8 @@ class PubsubIntegrationTest : public ::testing::Test {
     auto const exe =
         bfs::path(argv0).parent_path() / "pubsub_integration_server";
     auto server =
-        bp::child(exe, "--port=8081", (bp::std_out & bp::std_err) > child_log_);
-    ASSERT_TRUE(WaitForServerReady("http://localhost:8081/"));
+        bp::child(exe, "--port=8040", (bp::std_out & bp::std_err) > child_log_);
+    ASSERT_TRUE(WaitForServerReady("http://localhost:8040/"));
     process_ = std::move(server);
   }
 
@@ -102,7 +102,7 @@ TEST_F(PubsubIntegrationTest, Basic) {
     auto object = base;
     object["data"]["message"] = nlohmann::json{{"data", test.data}};
     SCOPED_TRACE("event=" + object.dump());
-    auto actual = HttpEvent("http://localhost:8081/", object.dump());
+    auto actual = HttpEvent("http://localhost:8040/", object.dump());
     EXPECT_EQ(actual.code, kOkay);
     EXPECT_THAT(actual.payload, IsEmpty());
 

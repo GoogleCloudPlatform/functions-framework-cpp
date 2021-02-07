@@ -85,35 +85,35 @@ auto constexpr kConformanceServer = "http_conformance";
 
 TEST(RunIntegrationTest, Basic) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
-  auto server = bp::child(exe, "--port=8080");
-  auto result = WaitForServerReady("localhost", "8080");
+  auto server = bp::child(exe, "--port=8010");
+  auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
-  auto actual = HttpGet("localhost", "8080", "/say/hello");
+  auto actual = HttpGet("localhost", "8010", "/say/hello");
   EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
   EXPECT_THAT(actual.body(), HasSubstr(R"js("target": "/say/hello")js"));
 
   actual =
-      HttpGet("localhost", "8080",
+      HttpGet("localhost", "8010",
               "/error/" + std::to_string(functions::HttpResponse::kNotFound));
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
 
-  actual = HttpGet("localhost", "8080", "/exception/");
+  actual = HttpGet("localhost", "8010", "/exception/");
   EXPECT_THAT(actual.result_int(),
               functions::HttpResponse::kInternalServerError);
 
-  actual = HttpGet("localhost", "8080", "/unknown-exception/");
+  actual = HttpGet("localhost", "8010", "/unknown-exception/");
   EXPECT_THAT(actual.result_int(),
               functions::HttpResponse::kInternalServerError);
 
-  actual = HttpGet("localhost", "8080", "/favicon.ico");
+  actual = HttpGet("localhost", "8010", "/favicon.ico");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
 
-  actual = HttpGet("localhost", "8080", "/robots.txt");
+  actual = HttpGet("localhost", "8010", "/robots.txt");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
 
   try {
-    (void)HttpGet("localhost", "8080", "/quit/program/0");
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -123,11 +123,11 @@ TEST(RunIntegrationTest, Basic) {
 TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
-  auto server = bp::child(exe, "--port=8080", bp::std_err > child_stderr);
-  auto result = WaitForServerReady("localhost", "8080");
+  auto server = bp::child(exe, "--port=8010", bp::std_err > child_stderr);
+  auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
-  auto actual = HttpGet("localhost", "8080", "/exception/test-string");
+  auto actual = HttpGet("localhost", "8010", "/exception/test-string");
   EXPECT_THAT(actual.result_int(),
               functions::HttpResponse::kInternalServerError);
 
@@ -137,7 +137,7 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   EXPECT_THAT(line, HasSubstr("/exception/test-string"));
 
   try {
-    (void)HttpGet("localhost", "8080", "/quit/program/0");
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -148,27 +148,28 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
   bp::ipstream child_stdout;
-  auto server = bp::child(exe, "--port=8080", bp::std_err > child_stderr,
-                          bp::std_out > child_stdout);
-  auto result = WaitForServerReady("localhost", "8080");
+  auto server =
+      bp::child(exe, "--port=8010", bp::std_err > child_stderr,
+                bp::std_out > child_stdout);
+  auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
   std::string line;
 
-  auto actual = HttpGet("localhost", "8080", "/buffered-stdout/test-string");
+  auto actual = HttpGet("localhost", "8010", "/buffered-stdout/test-string");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kOkay);
   EXPECT_TRUE(std::getline(child_stdout, line));
   EXPECT_THAT(line, HasSubstr("stdout:"));
   EXPECT_THAT(line, HasSubstr("/buffered-stdout/test-string"));
 
-  actual = HttpGet("localhost", "8080", "/buffered-stderr/test-string");
+  actual = HttpGet("localhost", "8010", "/buffered-stderr/test-string");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kOkay);
   EXPECT_TRUE(std::getline(child_stderr, line));
   EXPECT_THAT(line, HasSubstr("stderr:"));
   EXPECT_THAT(line, HasSubstr("/buffered-stderr/test-string"));
 
   try {
-    (void)HttpGet("localhost", "8080", "/quit/program/0");
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -177,12 +178,12 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
 
 TEST(RunIntegrationTest, ConformanceSmokeTest) {
   auto const exe = bfs::path(argv0).parent_path() / kConformanceServer;
-  auto server = bp::child(exe, "--port=8080");
-  auto result = WaitForServerReady("localhost", "8080");
+  auto server = bp::child(exe, "--port=8010");
+  auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
   try {
-    (void)HttpGet("localhost", "8080", "/quit/program/0");
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
   server.wait();

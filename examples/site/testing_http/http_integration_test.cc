@@ -48,8 +48,8 @@ class HttpIntegrationTest : public ::testing::Test {
     }
     curl_global_init(CURL_GLOBAL_ALL);
     auto const exe = bfs::path(argv0).parent_path() / "http_integration_server";
-    auto server = bp::child(exe, "--port=8080");
-    url_ = "http://localhost:8080";
+    auto server = bp::child(exe, "--port=8030");
+    url_ = "http://localhost:8030";
     ASSERT_TRUE(WaitForServerReady(url_));
     process_ = std::move(server);
   }
