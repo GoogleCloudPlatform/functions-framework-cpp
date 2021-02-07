@@ -42,7 +42,7 @@ gcf::HttpResponse hello_world_http(gcf::HttpRequest request) {
 ## Getting the code for this example
 
 This example is included in the Functions Framework for C++
-[source code repository][repository], download this code as usual:
+[source code repository][repository]. Download this code as usual:
 
 ```shell
 cd $HOME
@@ -110,7 +110,7 @@ Stop the background container:
 docker kill "${ID}"
 ```
 
-And delete the local image
+And delete the local image:
 
 ```shell
 docker image rm gcf-cpp-hello-world-http

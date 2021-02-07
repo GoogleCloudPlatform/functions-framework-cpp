@@ -49,7 +49,7 @@ gcf::HttpResponse hello_world_http(gcf::HttpRequest request) {
 ## Getting the code for this example
 
 This example is included in the Functions Framework for C++
-[source code repository][repository], download this code as usual:
+[source code repository][repository]. Download this code as usual:
 
 ```shell
 cd $HOME
@@ -81,7 +81,7 @@ pack set-default-builder gcf-cpp-builder:bionic
 ## Building a Docker image
 
 Set the `GOOGLE_CLOUD_PROJECT` shell variable to the project id of your GCP
-project, and create a docker image with your function.
+project, and create a docker image with your function:
 
 ```shell
 GOOGLE_CLOUD_PROJECT=... # put the right value here
@@ -102,7 +102,7 @@ docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-http:latest"
 ## Deploy to Cloud Run
 
 To deploy this image in Cloud Run use this command. You need to select
-a Cloud Run region for your deployment, we will use `us-central1` in this
+a Cloud Run region for your deployment. We will use `us-central1` in this
 guide:
 
 ```sh
