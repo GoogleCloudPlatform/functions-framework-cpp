@@ -24,6 +24,7 @@
 #include <gmock/gmock.h>
 #include <nlohmann/json.hpp>
 #include <chrono>
+#include <iostream>
 #include <string>
 
 namespace google::cloud::functions_internal {
@@ -171,29 +172,29 @@ auto constexpr kConformanceServer = "cloud_event_conformance";
 
 TEST(RunIntegrationTest, Basic) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
-  auto server = bp::child(exe, "--port=8080");
-  auto result = WaitForServerReady("localhost", "8080");
+  auto server = bp::child(exe, "--port=8020");
+  auto result = WaitForServerReady("localhost", "8020");
   ASSERT_EQ(result, 0);
 
-  auto actual = HttpPost("localhost", "8080", "hello");
+  auto actual = HttpPost("localhost", "8020", "hello");
   EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
 
-  actual = HttpPost("localhost", "8080", "/exception/");
+  actual = HttpPost("localhost", "8020", "/exception/");
   EXPECT_THAT(actual.result_int(),
               functions::HttpResponse::kInternalServerError);
 
-  actual = HttpPost("localhost", "8080", "/unknown-exception/");
+  actual = HttpPost("localhost", "8020", "/unknown-exception/");
   EXPECT_THAT(actual.result_int(),
               functions::HttpResponse::kInternalServerError);
 
-  actual = HttpPost("localhost", "8080", "none", "/favicon.ico");
+  actual = HttpPost("localhost", "8020", "none", "/favicon.ico");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
 
-  actual = HttpPost("localhost", "8080", "none", "/robots.txt");
+  actual = HttpPost("localhost", "8020", "none", "/robots.txt");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kNotFound);
 
   try {
-    (void)HttpPost("localhost", "8080", "/quit/program/0");
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -202,14 +203,14 @@ TEST(RunIntegrationTest, Basic) {
 
 TEST(RunIntegrationTest, Batch) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
-  auto server = bp::child(exe, "--port=8080");
-  auto result = WaitForServerReady("localhost", "8080");
+  auto server = bp::child(exe, "--port=8020");
+  auto result = WaitForServerReady("localhost", "8020");
   ASSERT_EQ(result, 0);
 
-  auto actual = HttpPutBatch("localhost", "8080", "hello");
+  auto actual = HttpPutBatch("localhost", "8020", "hello");
   EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
   try {
-    (void)HttpPost("localhost", "8080", "/quit/program/0");
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -218,14 +219,14 @@ TEST(RunIntegrationTest, Batch) {
 
 TEST(RunIntegrationTest, Binary) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
-  auto server = bp::child(exe, "--port=8080");
-  auto result = WaitForServerReady("localhost", "8080");
+  auto server = bp::child(exe, "--port=8020");
+  auto result = WaitForServerReady("localhost", "8020");
   ASSERT_EQ(result, 0);
 
-  auto actual = HttpGetBinary("localhost", "8080");
+  auto actual = HttpGetBinary("localhost", "8020");
   EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
   try {
-    (void)HttpPost("localhost", "8080", "/quit/program/0");
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -235,11 +236,11 @@ TEST(RunIntegrationTest, Binary) {
 TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
-  auto server = bp::child(exe, "--port=8080", bp::std_err > child_stderr);
-  auto result = WaitForServerReady("localhost", "8080");
+  auto server = bp::child(exe, "--port=8020", bp::std_err > child_stderr);
+  auto result = WaitForServerReady("localhost", "8020");
   ASSERT_EQ(result, 0);
 
-  auto actual = HttpPost("localhost", "8080", "/exception/test-string");
+  auto actual = HttpPost("localhost", "8020", "/exception/test-string");
   EXPECT_THAT(actual.result_int(),
               functions::HttpResponse::kInternalServerError);
 
@@ -249,7 +250,7 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   EXPECT_THAT(line, HasSubstr("/exception/test-string"));
 
   try {
-    (void)HttpPost("localhost", "8080", "/quit/program/0");
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -260,27 +261,27 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
   auto const exe = bfs::path(argv0).parent_path() / kServer;
   bp::ipstream child_stderr;
   bp::ipstream child_stdout;
-  auto server = bp::child(exe, "--port=8080", bp::std_err > child_stderr,
+  auto server = bp::child(exe, "--port=8020", bp::std_err > child_stderr,
                           bp::std_out > child_stdout);
-  auto result = WaitForServerReady("localhost", "8080");
+  auto result = WaitForServerReady("localhost", "8020");
   ASSERT_EQ(result, 0);
 
   std::string line;
 
-  auto actual = HttpPost("localhost", "8080", "/buffered-stdout/test-string");
+  auto actual = HttpPost("localhost", "8020", "/buffered-stdout/test-string");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kOkay);
   EXPECT_TRUE(std::getline(child_stdout, line));
   EXPECT_THAT(line, HasSubstr("stdout:"));
   EXPECT_THAT(line, HasSubstr("/buffered-stdout/test-string"));
 
-  actual = HttpPost("localhost", "8080", "/buffered-stderr/test-string");
+  actual = HttpPost("localhost", "8020", "/buffered-stderr/test-string");
   EXPECT_THAT(actual.result_int(), functions::HttpResponse::kOkay);
   EXPECT_TRUE(std::getline(child_stderr, line));
   EXPECT_THAT(line, HasSubstr("stderr:"));
   EXPECT_THAT(line, HasSubstr("/buffered-stderr/test-string"));
 
   try {
-    (void)HttpPost("localhost", "8080", "/quit/program/0");
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -289,12 +290,12 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
 
 TEST(RunIntegrationTest, ConformanceSmokeTest) {
   auto const exe = bfs::path(argv0).parent_path() / kConformanceServer;
-  auto server = bp::child(exe, "--port=8080");
-  auto result = WaitForServerReady("localhost", "8080");
+  auto server = bp::child(exe, "--port=8020");
+  auto result = WaitForServerReady("localhost", "8020");
   ASSERT_EQ(result, 0);
 
   try {
-    (void)HttpPost("localhost", "8080", "/quit/program/0");
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
