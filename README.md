@@ -30,7 +30,9 @@ https://cloud.google.com/run/docs/quickstarts/build-and-deploy
 [Google App Engine]: https://cloud.google.com/appengine/docs/go/
 [Google Cloud Functions]: https://cloud.google.com/functions/
 [Knative]: https://github.com/knative/
-[quickstart]: examples/site/howto_local_development/README.md
+[quickstart-local]: /examples/site/howto_local_development/README.md
+[quickstart-container]: /examples/site/howto_create_container/README.md
+[quickstart-cloud-run]: /examples/site/howto_deploy_to_cloud_run/README.md
 
 > :warning: This is not ready for production. Expect breaking changes.
 > We're sharing our progress with the developer community and appreciate
@@ -47,8 +49,10 @@ functions -- brought to you by Google.
 The Functions Framework lets you write lightweight functions that run in many
 different environments, including:
 
-- Your local development machine
-<!-- TODO(#202) - [Google Cloud Run] - see [quickstart] -->
+- Your local development machine - see how to build and run a function in
+  [local container][quickstart-container]
+- [Google Cloud Run] - see how to [deploy functions][quickstart-cloud-run]
+  to Cloud Run
 - [Knative]-based environments
 
 [Google Cloud Functions] does not currently provide an officially supported C++
@@ -59,7 +63,6 @@ Framework projects.
 The framework allows you to go from:
 
 [examples/hello_world/hello_world.cc]
-
 ```cc
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
