@@ -1,14 +1,21 @@
-# How-to Guide: Running your function as Docker container
+# How-to Guide: Deploy your function to Cloud Run
 
 [repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
+[howto-create-container]: /examples/site/howto_create_container/README.md
+[cloud-run-quickstarts]: https://cloud.google.com/run/docs/quickstarts
+[gcp-quickstarts]: https://cloud.google.com/gcp/getting-started
+[buildpacks]: https://buildpacks.io
 [docker-install]: https://store.docker.com/search?type=edition&offering=community
 [pack-install]: https://buildpacks.io/docs/install-pack/
 [hello-world-http]: /examples/site/hello_world_http/hello_world_http.cc
 
-This guide shows you how to create a container image for an example function,
-and how to run said image in a local container on your workstation.
-
 ## Pre-requisites
+
+This guide assumes you are familiar with Google Cloud, and that you have a GCP
+project with Cloud Run enabled. If needed, consult:
+* the [GCP quickstarts][gcp-quickstarts] to setup a GCP project
+* the [cloud run quickstarts][cloud-run-quickstarts] to setup Cloud Run in your
+  project
 
 This guide also assumes that you have installed [Docker][docker-install] and
 the [pack tool][pack-install] on your workstation.
@@ -73,45 +80,70 @@ pack set-default-builder gcf-cpp-builder:bionic
 
 ## Building a Docker image
 
-Build a Docker image from your function using this buildpack:
+Set the `GOOGLE_CLOUD_PROJECT` shell variable to the project id of your GCP
+project, and create a docker image with your function:
 
 ```shell
+GOOGLE_CLOUD_PROJECT=... # put the right value here
 pack build \
-    --builder gcf-cpp-builder:bionic \
-    --env FUNCTION_SIGNATURE_TYPE=http \
-    --env TARGET_FUNCTION=hello_world_http \
-    --path examples/site/hello_world_http \
-    gcf-cpp-hello-world-http
+   --builder gcf-cpp-builder:bionic \
+   --env FUNCTION_SIGNATURE_TYPE=http \
+   --env TARGET_FUNCTION=hello_world_http \
+   --path examples/site/hello_world_http \
+   "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-http"
 ```
 
-## Starting a local container
-
-Start a Docker container in the background the image you just created:
+Push this new container image to Google Container Registry:
 
 ```shell
-ID=$(docker run --detach --rm -p 8080:8080 gcf-cpp-hello-world-http)
+docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-http:latest"
+```
+
+## Deploy to Cloud Run
+
+To deploy this image in Cloud Run use this command. You need to select
+a Cloud Run region for your deployment. We will use `us-central1` in this
+guide:
+
+```sh
+gcloud run deploy gcf-cpp-hello-world-http \
+    --project="${GOOGLE_CLOUD_PROJECT}" \
+    --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-http:latest" \
+    --region="us-central1" \
+    --platform="managed" \
+    --allow-unauthenticated
 ```
 
 ## Send a request to your function
 
-You can use `curl` (or a similar HTTP client) to send requests to your
-function:
+Find out what URL was assigned to your function, and use `curl` to send a request:
 
 ```shell
-curl http://localhost:8080
-# Output: Hello, World!
+HTTP_SERVICE_URL=$(gcloud run services describe \
+    --project="${GOOGLE_CLOUD_PROJECT}" \
+    --platform="managed" \
+    --region="us-central1" \
+    --format="value(status.url)" \
+    gcf-cpp-hello-world-http)
+
+curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" "${HTTP_SERVICE_URL}"
+# Output: Hello World!
 ```
 
 ## Cleanup
 
-Stop the background container:
+Delete the Cloud Run deployment:
 
-```shell
-docker kill "${ID}"
+```sh
+gcloud run services delete gcf-cpp-hello-world-http \
+    --project="${GOOGLE_CLOUD_PROJECT}" \
+    --region="us-central1" \
+    --platform="managed"
 ```
 
-And delete the local image:
+And the container image:
 
 ```shell
-docker image rm gcf-cpp-hello-world-http
+gcloud container images delete \
+    "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-http:latest"
 ```
