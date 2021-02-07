@@ -27,6 +27,7 @@ if (BUILD_TESTING)
         string(REPLACE "/" "_" target "${fname}")
         string(REPLACE ".cc" "" target "${target}")
         add_executable("${target}" ${fname})
+        functions_framework_cpp_add_common_options(${target})
         target_link_libraries(
             ${target}
             PRIVATE functions_framework_examples

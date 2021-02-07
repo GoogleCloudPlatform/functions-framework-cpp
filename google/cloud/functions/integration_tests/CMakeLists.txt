@@ -28,6 +28,12 @@ foreach (fname ${functions_framework_cpp_integration_tests})
     target_link_libraries(
         ${target} PRIVATE functions-framework-cpp::framework GTest::gmock
                           GTest::gtest Boost::filesystem)
+    functions_framework_cpp_add_common_options(${target})
+    # I (coryan) am not sure why this is needed, but it only affects the tests,
+    # so I am more willing to tolerate it. I think normally Boost header-only
+    # libraries automatically declare when they need additional libraries with
+    # MSVC, but it does not seem to work here.
+    target_compile_definitions("${target}" PRIVATE BOOST_UUID_FORCE_AUTO_LINK)
     add_test(NAME ${target} COMMAND ${target})
 endforeach ()
 
@@ -41,4 +47,5 @@ foreach (fname ${functions_framework_cpp_integration_programs})
     string(REPLACE ".cc" "" target "${target}")
     add_executable("${target}" ${fname})
     target_link_libraries(${target} PRIVATE functions-framework-cpp::framework)
+    functions_framework_cpp_add_common_options(${target})
 endforeach ()
