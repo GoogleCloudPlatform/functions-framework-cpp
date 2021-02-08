@@ -53,7 +53,8 @@ jobs:
 
     - name: coverage-upload
       run: >
-        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
+        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov \
+            -s "${{github.workspace}}/build"
 
     - name: Setup Go
       uses: actions/setup-go@v2
@@ -66,7 +67,7 @@ jobs:
         functionType: 'cloudevent'
         useBuildpacks: false
         validateMapping: false
-        cmd: '${{runner.temp}}/build/google/cloud/functions/integration_tests/cloud_event_conformance'
+        cmd: '${{github.workspace}}/build/google/cloud/functions/integration_tests/cloud_event_conformance'
 
     - name: Run HTTP conformance tests
       uses: GoogleCloudPlatform/functions-framework-conformance/action@v0.3.2
@@ -74,4 +75,4 @@ jobs:
         functionType: 'http'
         useBuildpacks: false
         validateMapping: false
-        cmd: '${{runner.temp}}/build/google/cloud/functions/integration_tests/http_conformance'
+        cmd: '${{github.workspace}}/build/google/cloud/functions/integration_tests/http_conformance'
