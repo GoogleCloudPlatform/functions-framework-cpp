@@ -43,12 +43,24 @@ jobs:
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_BUILD_TYPE=Debug
         -DCMAKE_CXX_FLAGS=--coverage
+        -DCMAKE_CC_FLAGS=--coverage
         -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
     - name: build
       run: cmake --build ${{runner.temp}}/build
     - name: test
       working-directory: ${{runner.temp}}/build
       run: ctest --output-on-failure --timeout=60s
+
+    - name: coverage-debug
+      run: |
+        find "${{runner.temp}}/build" -name '*.gcda'
+        find "${{runner.temp}}/build" -name '*.gcno'
+        find "${{runner.temp}}/build" -name '*.gcov'
+        find "${{runner.temp}}/build" -name '*.o'
+    - name: coverage-upload
+      run: >
+        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov \
+            -s "${{runner.temp}}/build"
 
     - name: Setup Go
       uses: actions/setup-go@v2
@@ -71,7 +83,3 @@ jobs:
         validateMapping: false
         cmd: '${{runner.temp}}/build/google/cloud/functions/integration_tests/http_conformance'
 
-    - name: coverage-upload
-      run: >
-        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov \
-            -s "${{runner.temp}}/build"
