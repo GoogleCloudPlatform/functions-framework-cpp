@@ -14,8 +14,8 @@
 
 #include "google/cloud/functions/internal/setenv.h"
 // We need _putenv_s() on WIN32 and setenv()/unsetenv() on Posix. clang-tidy
-// recommends including <cstdlib>. That seems wrong, <cstdlib> is not guaranteed
-// to define the Posix/WIN32 functions.
+// recommends including <cstdlib>. That seems wrong, as <cstdlib> is not
+// guaranteed to define the Posix/WIN32 functions.
 #include <stdlib.h>  // NOLINT(modernize-deprecated-headers)
 
 namespace google::cloud::functions_internal {
