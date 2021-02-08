@@ -114,7 +114,8 @@ TEST(FrameworkTest, Http) {
         argc, argv, std::move(f), [&shutdown]() { return shutdown.load(); },
         [&port_p](int port) mutable { port_p.set_value(port); });
   };
-  auto done = std::async(std::launch::async, run, kTestArgc, kTestArgv, hello);
+  auto done = std::async(std::launch::async, run, static_cast<int>(kTestArgc),
+                         kTestArgv, hello);
 
   auto port = port_f.get();
   auto actual = HttpGet("localhost", std::to_string(port), "/say/hello");
@@ -146,7 +147,8 @@ TEST(FrameworkTest, CloudEvent) {
         argc, argv, std::move(f), [&shutdown]() { return shutdown.load(); },
         [&port_p](int port) mutable { port_p.set_value(port); });
   };
-  auto done = std::async(std::launch::async, run, kTestArgc, kTestArgv, hello);
+  auto done = std::async(std::launch::async, run, static_cast<int>(kTestArgc),
+                         kTestArgv, hello);
 
   auto port = port_f.get();
   auto actual = CloudEventGet("localhost", std::to_string(port), "/");
@@ -163,7 +165,8 @@ TEST(FrameworkTest, CloudEvent) {
 
 TEST(FrameworkTest, CloudEventInvalidPort) {
   auto const exit_code = ::google::cloud::functions::Run(
-      kTestInvalidArgc, kTestInvalidArgv, functions::UserCloudEventFunction{});
+      static_cast<int>(kTestInvalidArgc), kTestInvalidArgv,
+      functions::UserCloudEventFunction{});
   EXPECT_NE(exit_code, 0);
 }
 

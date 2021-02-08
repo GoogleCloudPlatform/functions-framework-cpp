@@ -51,6 +51,12 @@ add_library(
     site/tips_retry/tips_retry.cc
     site/tips_scopes/tips_scopes.cc)
 functions_framework_cpp_add_common_options(functions_framework_examples)
+if (MSVC)
+    set_property(
+        SOURCE site/tips_gcp_apis/tips_gcp_apis.cc site/env_vars/env_vars.cc
+        APPEND
+        PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
+endif ()
 target_link_libraries(
     functions_framework_examples fmt::fmt functions-framework-cpp::framework
     google-cloud-cpp::pubsub google-cloud-cpp::storage)

@@ -38,6 +38,12 @@ HttpResponse HttpGet(std::string const& url, std::string const& payload);
 
 char const* argv0 = nullptr;
 
+auto ExePath(bfs::path const& filename) {
+  static auto const kPath = std::vector<bfs::path>{
+      bfs::canonical(argv0).make_preferred().parent_path()};
+  return bp::search_path(filename, kPath);
+}
+
 class HttpIntegrationTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -47,8 +53,7 @@ class HttpIntegrationTest : public ::testing::Test {
       return;
     }
     curl_global_init(CURL_GLOBAL_ALL);
-    auto const exe = bfs::path(argv0).parent_path() / "http_integration_server";
-    auto server = bp::child(exe, "--port=8030");
+    auto server = bp::child(ExePath("http_integration_server"), "--port=8030");
     url_ = "http://localhost:8030";
     ASSERT_TRUE(WaitForServerReady(url_));
     process_ = std::move(server);

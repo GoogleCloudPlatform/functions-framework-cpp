@@ -38,15 +38,20 @@ HttpResponse HttpEvent(std::string const& url, std::string const& payload);
 
 char const* argv0 = nullptr;
 
+auto ExePath(bfs::path const& filename) {
+  static auto const kPath = std::vector<bfs::path>{
+      bfs::canonical(argv0).make_preferred().parent_path()};
+  return bp::search_path(filename, kPath);
+}
+
 class StorageIntegrationTest : public ::testing::Test {
  protected:
   void SetUp() override {
     curl_global_init(CURL_GLOBAL_ALL);
 
-    auto const exe =
-        bfs::path(argv0).parent_path() / "storage_integration_server";
     auto server =
-        bp::child(exe, "--port=8050", (bp::std_out & bp::std_err) > child_log_);
+        bp::child(ExePath("storage_integration_server"), "--port=8050",
+                  (bp::std_out & bp::std_err) > child_log_);
     ASSERT_TRUE(WaitForServerReady("http://localhost:8050/"));
     process_ = std::move(server);
   }
