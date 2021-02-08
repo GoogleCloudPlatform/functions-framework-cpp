@@ -5,7 +5,9 @@
 [cloud-run-quickstarts]: https://cloud.google.com/run/docs/quickstarts
 [gcp-quickstarts]: https://cloud.google.com/gcp/getting-started
 [buildpacks]: https://buildpacks.io
+[docker]: https://docker.com/
 [docker-install]: https://store.docker.com/search?type=edition&offering=community
+[sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
 [pack-install]: https://buildpacks.io/docs/install-pack/
 [hello-world-pubsub]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
 [gcloud-eventarc-create]: https://cloud.google.com/sdk/gcloud/reference/beta/eventarc/triggers/create
@@ -18,8 +20,23 @@ project with Cloud Run enabled. If needed, consult:
 * the [cloud run quickstarts][cloud-run-quickstarts] to setup Cloud Run in your
   project
 
-This guide also assumes that you have installed [Docker][docker-install] and
-the [pack tool][pack-install] on your workstation.
+Verify the [docker tool][docker] is functional on your workstation:
+
+```shell
+docker run hello-world
+# Output: Hello from Docker! and then some more informational messages.
+```
+
+If needed, ise the [online instructions][docker-install] to download and install
+this tool. This guide assumes that you have configured [sudoless docker], if
+you prefer replace all `docker` commands below with `sudo docker`.
+
+Verify the [pack tool][pack-install] is functional on our workstation:
+
+```shell
+pack version
+# Output: a version number, e.g., 0.15.1+git-79adc30.build-1660
+```
 
 In this guide we will be using the [Pub/Sub hello word][hello-world-pubsub] function:
 
@@ -43,7 +60,7 @@ void hello_world_pubsub(gcf::CloudEvent event) {  // NOLINT
 ## Getting the code for this example
 
 This example is included in the Functions Framework for C++
-[source code repository][repository]. Download this code as usual:
+[source code repository][repository-gh]. Download this code as usual:
 
 ```shell
 cd $HOME
