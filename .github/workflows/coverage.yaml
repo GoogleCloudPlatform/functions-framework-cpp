@@ -75,4 +75,4 @@ jobs:
       working-directory: "${{runner.temp}}/build"
       run: >
         /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov \
-            -s "${{github.workspace}}" -s "${{runner.temp}}/build"
+            -s "${{github.workspace}}" -p "${{github.workspace}}" -X fix
