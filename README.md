@@ -33,6 +33,7 @@ https://cloud.google.com/run/docs/quickstarts/build-and-deploy
 [quickstart-local]: /examples/site/howto_local_development/README.md
 [quickstart-container]: /examples/site/howto_create_container/README.md
 [quickstart-cloud-run]: /examples/site/howto_deploy_to_cloud_run/README.md
+[quickstart-pubsub]: /examples/site/howto_deploy_cloud_event/README.md
 
 > :warning: This is not ready for production. Expect breaking changes.
 > We're sharing our progress with the developer community and appreciate
