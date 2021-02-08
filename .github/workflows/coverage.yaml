@@ -60,7 +60,7 @@ jobs:
     - name: coverage-upload
       run: >
         /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov \
-            -s "${{runner.temp}}/build"
+            -s "${{runner.temp}}/build" -a '-o "${{runner.temp}}/build"'
 
     - name: Setup Go
       uses: actions/setup-go@v2
