@@ -20,7 +20,7 @@ docker run hello-world
 # Output: Hello from Docker! and then some more informational messages.
 ```
 
-If needed, ise the [online instructions][docker-install] to download and install
+If needed, use the [online instructions][docker-install] to download and install
 this tool. This guide assumes that you have configured [sudoless docker], if
 you prefer replace all `docker` commands below with `sudo docker`.
 
