@@ -32,13 +32,9 @@ development. Follow the [vcpkg install instructions][vcpkg-install] to get
 vcpkg installed on your development environment. For example, on Linux you
 would use:
 
-> :warning: As of 2020-02-08 `functions-framework-cpp` is not published in the
-> main branch for vcpkg. Until it is, you need to use a branch.
-
 ```shell
 cd $HOME
-# Soon: git clone https://github.com/microsoft/vcpkg
-git clone https://github.com/coryan/vcpkg -b new-port-functions-framework-cpp
+git clone https://github.com/microsoft/vcpkg
 (cd vcpkg && ./bootstrap.sh)
 ```
 
