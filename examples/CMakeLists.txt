@@ -14,10 +14,11 @@
 # limitations under the License.
 # ~~~
 
-find_package(google_cloud_cpp_storage REQUIRED)
-find_package(google_cloud_cpp_pubsub REQUIRED)
-find_package(fmt REQUIRED)
 find_package(Boost REQUIRED COMPONENTS log)
+find_package(fmt REQUIRED)
+find_package(google_cloud_cpp_bigtable REQUIRED)
+find_package(google_cloud_cpp_pubsub REQUIRED)
+find_package(google_cloud_cpp_storage REQUIRED)
 
 add_library(
     functions_framework_examples # cmake-format: sort
@@ -49,7 +50,8 @@ add_library(
     site/tips_infinite_retries/tips_infinite_retries.cc
     site/tips_lazy_globals/tips_lazy_globals.cc
     site/tips_retry/tips_retry.cc
-    site/tips_scopes/tips_scopes.cc)
+    site/tips_scopes/tips_scopes.cc
+    site/tutorial_cloud_bigtable/tutorial_cloud_bigtable.cc)
 functions_framework_cpp_add_common_options(functions_framework_examples)
 if (MSVC)
     set_property(
@@ -59,7 +61,8 @@ if (MSVC)
 endif ()
 target_link_libraries(
     functions_framework_examples fmt::fmt functions-framework-cpp::framework
-    google-cloud-cpp::pubsub google-cloud-cpp::storage)
+    google-cloud-cpp::bigtable google-cloud-cpp::pubsub
+    google-cloud-cpp::storage)
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
