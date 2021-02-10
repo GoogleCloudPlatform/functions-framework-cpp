@@ -68,38 +68,46 @@ RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/65e5ea1df685a5362e70367
     tar -xzf - --strip-components=1 && \
     ./bootstrap-vcpkg.sh -disableMetrics -useSystemBinaries && \
     rm -fr toolsrc/build.rel downloads/*
+# TODO(#249) - for now duplicate this code from /pack/bin/build, this should go away once we
+#   split the "production" vs. "development" builders.
+RUN { \
+    echo 'set(VCPKG_BUILD_TYPE release)'; \
+    echo 'set(VCPKG_CMAKE_SYSTEM_NAME Linux)'; \
+    echo 'set(VCPKG_CRT_LINKAGE dynamic)'; \
+    echo 'set(VCPKG_LIBRARY_LINKAGE static)'; \
+    echo 'set(VCPKG_TARGET_ARCHITECTURE x64)'; \
+} >triplets/x64-linux-nodebug.cmake
 
 WORKDIR /var/cache/vcpkg-cache
 ENV VCPKG_DEFAULT_BINARY_CACHE=/var/cache/vcpkg-cache
 
 # These are needed by the Functions Framework, do them one at a time, easier to
 # rebuild the Docker image if one of them fails to download or something.
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build abseil
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build boost-core
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build openssl
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build boost-program-options
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build boost-asio
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build boost-beast
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build boost-serialization
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build nlohmann-json
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug abseil
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-core
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug openssl
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-program-options
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-asio
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-beast
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-serialization
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug nlohmann-json
 
 # The following are not needed by the Functions Framework, but are used often
 # enough that it is a good idea to make them part of the base development
 # environment. Note that this automatically pulls abseil, grpc, protobuf, curl,
 # and a few other libraries.
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build curl
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build protobuf
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build grpc
-RUN /usr/local/vcpkg/vcpkg install --clean-after-build google-cloud-cpp
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug curl
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug protobuf
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug grpc
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug google-cloud-cpp
 
-# TODO(#41) - switch to the actual vcpkg package once created.
 COPY . /usr/local/share/gcf
 RUN find /usr/local/share/gcf -type f | xargs chmod 644
 RUN find /usr/local/share/gcf -type d | xargs chmod 755
 RUN chmod 755 /usr/local/share/gcf/build_scripts/generate-wrapper.sh
 
-RUN VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/build_scripts/vcpkg-overlays /usr/local/vcpkg/vcpkg install functions-framework-cpp
-RUN /usr/local/vcpkg/vcpkg list | awk '{print $1}' | xargs /usr/local/vcpkg/vcpkg remove --recurse
+RUN VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/build_scripts/vcpkg-overlays \
+    /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug functions-framework-cpp
 
 FROM parent AS gcf-cpp-develop
 RUN apt-get update \

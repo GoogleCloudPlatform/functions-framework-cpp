@@ -18,7 +18,7 @@ uri = "buildpack"
 [[order]]
     [[order.group]]
     id = "com.google.buildpack.cpp"
-    version = "0.0.1"
+    version = "0.0.2"
 
 # Stack that will be used by the builder
 [stack]
