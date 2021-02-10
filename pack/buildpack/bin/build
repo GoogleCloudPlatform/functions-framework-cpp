@@ -21,6 +21,7 @@ layers="$1"
 
 echo "-----> Setup vcpkg"
 export VCPKG_DEFAULT_BINARY_CACHE="${layers}/vcpkg-cache"
+export VCPKG_DEFAULT_TRIPLET=x64-linux-nodebug
 export VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/build_scripts/vcpkg-overlays
 export VCPKG_ROOT="${layers}/vcpkg"
 
@@ -29,6 +30,13 @@ if [[ ! -d "${VCPKG_ROOT}" ]]; then
   mkdir -p "${VCPKG_ROOT}"
   curl -sSL https://github.com/Microsoft/vcpkg/archive/65e5ea1df685a5362e70367bef4dbf827addff31.tar.gz | \
     tar -C "${VCPKG_ROOT}" -xzf - --strip-components=1
+  cat >"${VCPKG_ROOT}/triplets/x64-linux-nodebug.cmake" <<_EOF_
+set(VCPKG_BUILD_TYPE release)
+set(VCPKG_CMAKE_SYSTEM_NAME Linux)
+set(VCPKG_CRT_LINKAGE dynamic)
+set(VCPKG_LIBRARY_LINKAGE static)
+set(VCPKG_TARGET_ARCHITECTURE x64)
+_EOF_
   cp -r /usr/local/bin/vcpkg "${VCPKG_ROOT}"
 cat >"${layers}/vcpkg.toml" <<EOL
 build = true
@@ -47,8 +55,6 @@ launch = false
 EOL
 fi
 
-"${layers}/vcpkg/vcpkg" install functions-framework-cpp
-
 echo "-----> Setup build directory"
 cat >"${layers}/source.toml" <<EOL
 build = true
@@ -59,6 +65,14 @@ EOL
 cp -r /usr/local/share/gcf/build_scripts/cmake "${layers}/source"
 if [[ -r vcpkg.json ]]; then
   cp vcpkg.json "${layers}/source"
+else
+  cat >"${layers}/source/vcpkg.json" <<_EOF_
+{
+  "name": "auto-generated-vcpkg-json",
+  "version-string": "unversioned",
+  "dependencies": [ "functions-framework-cpp" ]
+}
+_EOF_
 fi
 /usr/local/share/gcf/build_scripts/generate-wrapper.sh \
     "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE:-http}" >"${layers}/source/main.cc"
@@ -74,8 +88,8 @@ EOL
   -DCNB_APP_DIR="${PWD}" \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="${layers}/local" \
-  -DCMAKE_TOOLCHAIN_FILE="${layers}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-echo "-----> Compile and Install Function"
+  -DVCPKG_TARGET_TRIPLET="${VCPKG_DEFAULT_TRIPLET}" \
+  -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 /usr/local/bin/cmake --build "${layers}/binary" --target install
 
 cat >"${layers}/local.toml" <<EOL

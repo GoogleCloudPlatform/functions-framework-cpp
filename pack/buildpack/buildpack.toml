@@ -15,7 +15,7 @@ api = "0.2"
 
 [buildpack]
 id = "com.google.buildpack.cpp"
-version = "0.0.1"
+version = "0.0.2"
 name = "Functions Framework C++ Buildpack"
 
 [[stacks]]
