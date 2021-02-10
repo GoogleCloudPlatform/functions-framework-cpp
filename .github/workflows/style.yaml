@@ -120,3 +120,14 @@ jobs:
           xargs -P 2 -n 1 -0 /home/runner/.local/bin/cmake-format -i
       - name: check-diff
         run: git diff --ignore-submodules=all --color --exit-code .
+
+  generated-files:
+    name: generated-files
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: regenerate-build-examples
+        run: >
+          ./ci/generate-build-examples.sh >ci/build-examples.yaml
+      - name: check-diff
+        run: git diff --ignore-submodules=all --color --exit-code .
