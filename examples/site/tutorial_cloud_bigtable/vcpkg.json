@@ -1,0 +1,9 @@
+{
+  "name": "tutorial-cloud-bigtable",
+  "version-string": "unversioned",
+  "dependencies": [
+    "fmt",
+    "functions-framework-cpp",
+    "google-cloud-cpp"
+  ]
+}

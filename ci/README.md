@@ -252,7 +252,7 @@ gcloud logging read \
     "resource.type=cloud_run_revision AND resource.labels.service_name=gcf-hello-world-storage AND logName:stdout"
 ```
 
-## Run the Cloud Build
+## Run the Cloud Build script
 
 Finally verify this works by running the Cloud Build:
 
@@ -261,4 +261,59 @@ gcloud builds submit \
     "--project=${GOOGLE_CLOUD_PROJECT}" \
     "--substitutions=SHORT_SHA=$(git rev-parse --short HEAD)" \
     "--config=ci/build-examples.yaml"
+```
+
+## Testing the Tutorials
+
+There are a small number of code examples used in more advanced tutorials,
+showing how to use functions with other services, e.g. Bigtable or Spanner.
+
+### Bigtable
+
+Create a bigtable instance:
+
+```shell
+cbt -project "${GOOGLE_CLOUD_PROJECT}" createinstance \
+    test-instance-0 "Test Instance for CI Builds" test-cluster-0 us-central1-f 1 HDD
+```
+
+Create a bigtable table:
+
+```shell
+cbt -project "${GOOGLE_CLOUD_PROJECT}" -instance test-instance-0 \
+    createtable test-table families=stats_summary
+```
+
+Populate some data in the table:
+
+```shell
+cbt -project "${GOOGLE_CLOUD_PROJECT}" -instance test-instance-0 \
+  set test-table "phone#555-1234#20210210" \
+  "stats_summary:os_build=PQ2A.190405.003" "stats_summary:os_name=android"
+cbt -project "${GOOGLE_CLOUD_PROJECT}" -instance test-instance-0 \
+  set test-table "phone#555-2345#20210210" \
+  "stats_summary:os_build=PQ2A.190405.003" "stats_summary:os_name=android"
+```
+
+Build & deploy the Bigtable tutorial function:
+
+```shell
+pack build -v \
+    --env TARGET_FUNCTION=tutorial_cloud_bigtable \
+    --path examples/site/tutorial_cloud_bigtable \
+    "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-bigtable"
+docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-bigtable"
+gcloud run deploy gcf-tutorial-cloud-bigtable \
+    --project="${GOOGLE_CLOUD_PROJECT}" \
+    --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-bigtable:latest" \
+    --region="us-central1" \
+    --platform="managed" \
+    --allow-unauthenticated
+BIGTABLE_SERVICE_URL=$(gcloud run services describe \
+    --project="${GOOGLE_CLOUD_PROJECT}" \
+    --platform="managed" \
+    --region="us-central1" \
+    --format="value(status.url)" \
+    gcf-tutorial-cloud-bigtable)
+curl -H "projectID: ${GOOGLE_CLOUD_PROJECT}" -H "instanceID: test-instance-0" -H "tableID: test-table" "${BIGTABLE_SERVICE_URL}"
 ```
