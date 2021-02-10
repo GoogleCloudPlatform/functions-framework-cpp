@@ -21,7 +21,7 @@
 #include <nlohmann/json.hpp>
 
 namespace gcf = ::google::cloud::functions;
-extern gcf::HttpResponse hello_world_content(gcf::HttpRequest request);
+extern gcf::HttpResponse http_content(gcf::HttpRequest request);
 extern gcf::HttpResponse hello_world_get(gcf::HttpRequest request);
 extern gcf::HttpResponse hello_world_http(gcf::HttpRequest request);
 extern gcf::HttpResponse http_cors(gcf::HttpRequest request);
@@ -55,19 +55,19 @@ TEST(ExamplesSiteTest, HelloWorldContent) {
         .add_header("content-type", std::move(content_type));
   };
 
-  auto actual = hello_world_content(
+  auto actual = http_content(
       make_request("application/json", R"js({ "name": "Foo" })js"));
   EXPECT_THAT(actual.payload(), "Hello Foo");
 
-  actual = hello_world_content(make_request("text/plain", "Bar"));
+  actual = http_content(make_request("text/plain", "Bar"));
   EXPECT_THAT(actual.payload(), "Hello Bar");
 
-  actual = hello_world_content(make_request("application/x-www-form-urlencoded",
-                                            "id=1&name=Baz%20Qux&value=x"));
+  actual = http_content(make_request("application/x-www-form-urlencoded",
+                                     "id=1&name=Baz%20Qux&value=x"));
   EXPECT_THAT(actual.payload(), "Hello Baz Qux");
 
-  actual = hello_world_content(make_request("application/x-www-form-urlencoded",
-                                            "id=1&name=Baz%Qux&value=x"));
+  actual = http_content(make_request("application/x-www-form-urlencoded",
+                                     "id=1&name=Baz%Qux&value=x"));
   EXPECT_THAT(actual.payload(), "Hello Baz%Qux");
 }
 

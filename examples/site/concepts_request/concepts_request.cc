@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START functions_concepts_request]
+// [START functions_concepts_requests]
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
 #include <boost/beast.hpp>
@@ -32,7 +32,7 @@ gcf::HttpResponse concepts_request(gcf::HttpRequest /*request*/) {  // NOLINT
                        host);
   return response;
 }
-// [END functions_concepts_request]
+// [END functions_concepts_requests]
 
 namespace {
 unsigned int make_http_request(std::string const& host) {

@@ -38,11 +38,11 @@ add_library(
     site/concepts_request/concepts_request.cc
     site/concepts_stateless/concepts_stateless.cc
     site/env_vars/env_vars.cc
-    site/hello_world_content/hello_world_content.cc
     site/hello_world_get/hello_world_get.cc
     site/hello_world_http/hello_world_http.cc
     site/hello_world_pubsub/hello_world_pubsub.cc
     site/hello_world_storage/hello_world_storage.cc
+    site/http_content/http_content.cc
     site/http_cors/http_cors.cc
     site/http_cors_auth/http_cors_auth.cc
     site/http_method/http_method.cc
