@@ -1,0 +1,8 @@
+{
+  "name": "tutorial-cloud-spanner",
+  "version-string": "unversioned",
+  "dependencies": [
+    "functions-framework-cpp",
+    "google-cloud-cpp"
+  ]
+}
