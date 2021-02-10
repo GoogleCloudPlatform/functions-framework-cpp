@@ -1,5 +1,5 @@
 {
-  "name": "hello-world-get",
+  "name": "http-content",
   "version-string": "unversioned",
   "dependencies": [
     "functions-framework-cpp",

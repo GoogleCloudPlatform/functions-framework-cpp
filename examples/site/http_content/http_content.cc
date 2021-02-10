@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START functions_helloworld_content]
+// [START functions_http_content]
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
 #include <nlohmann/json.hpp>
@@ -29,7 +29,7 @@ std::map<std::string, std::string> parse_www_form_urlencoded(
     std::string const& text);
 }  // namespace
 
-gcf::HttpResponse hello_world_content(gcf::HttpRequest request) {  // NOLINT
+gcf::HttpResponse http_content(gcf::HttpRequest request) {  // NOLINT
   std::string name;
   auto const& headers = request.headers();
   if (auto f = headers.find("content-type"); f != headers.end()) {
@@ -50,7 +50,7 @@ gcf::HttpResponse hello_world_content(gcf::HttpRequest request) {  // NOLINT
   response.set_header("content-type", "text/plain");
   return response;
 }
-// [END functions_helloworld_content]
+// [END functions_http_content]
 
 namespace {
 std::string urldecode(std::string const& encoded) {

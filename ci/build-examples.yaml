@@ -214,15 +214,6 @@ steps:
     ]
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
-    id: 'site-hello_world_content'
-    args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-      '--env', 'TARGET_FUNCTION=hello_world_content',
-      '--path', 'examples/site/hello_world_content',
-      'site-hello_world_content',
-    ]
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    waitFor: ['gcf-builder-ready']
     id: 'site-hello_world_get'
     args: ['build',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
@@ -256,6 +247,15 @@ steps:
       '--env', 'TARGET_FUNCTION=hello_world_storage',
       '--path', 'examples/site/hello_world_storage',
       'site-hello_world_storage',
+    ]
+  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
+    waitFor: ['gcf-builder-ready']
+    id: 'site-http_content'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'TARGET_FUNCTION=http_content',
+      '--path', 'examples/site/http_content',
+      'site-http_content',
     ]
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
