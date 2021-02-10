@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START functions_pubsub_publish]
 // [START functions_tips_gcp_apis]
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
@@ -65,3 +66,4 @@ gcf::HttpResponse tips_gcp_apis(gcf::HttpRequest request) {  // NOLINT
   return response;
 }
 // [END functions_tips_gcp_apis]
+// [END functions_pubsub_publish]
