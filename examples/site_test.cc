@@ -317,12 +317,6 @@ TEST(ExamplesSiteTest, TipsGcpApis) {
   EXPECT_THROW(
       tips_gcp_apis(gcf::HttpRequest{}.set_payload(nlohmann::json({}).dump())),
       std::runtime_error);
-
-  google::cloud::functions_internal::SetEnv("PUBSUB_EMULATOR_HOST",
-                                            "localhost:1");
-  auto const actual = tips_gcp_apis(gcf::HttpRequest{}.set_payload(
-      nlohmann::json({{"topic", "test-unused"}}).dump()));
-  EXPECT_EQ(actual.result(), gcf::HttpResponse::kInternalServerError);
 }
 
 TEST(ExamplesSiteTest, TipsInfiniteRetries) {
