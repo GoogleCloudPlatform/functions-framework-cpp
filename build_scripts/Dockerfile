@@ -64,7 +64,7 @@ RUN curl -sSL https://github.com/ninja-build/ninja/releases/download/v1.10.2/nin
     funzip >/usr/local/bin/ninja && \
     chmod 755 /usr/local/bin/ninja
 WORKDIR /usr/local/vcpkg
-RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/5214a247018b3bf2d793cea188ea2f2c150daddd.tar.gz | \
+RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/65e5ea1df685a5362e70367bef4dbf827addff31.tar.gz | \
     tar -xzf - --strip-components=1 && \
     ./bootstrap-vcpkg.sh -disableMetrics -useSystemBinaries && \
     rm -fr toolsrc/build.rel downloads/*
@@ -112,8 +112,8 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
 COPY --from=gcf-cpp-incremental /usr/local/bin/cmake   /usr/local/bin/cmake
 COPY --from=gcf-cpp-incremental /usr/local/bin/ctest   /usr/local/bin/ctest
 COPY --from=gcf-cpp-incremental /usr/local/bin/ninja   /usr/local/bin/ninja
+COPY --from=gcf-cpp-incremental /usr/local/vcpkg/vcpkg /usr/local/bin/vcpkg
 COPY --from=gcf-cpp-incremental /usr/local/share /usr/local/share
-COPY --from=gcf-cpp-incremental /usr/local/vcpkg /usr/local/vcpkg
 COPY --from=gcf-cpp-incremental /var/cache/vcpkg-cache /var/cache/vcpkg-cache
 
 USER cnb

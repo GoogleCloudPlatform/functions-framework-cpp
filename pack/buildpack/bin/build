@@ -26,7 +26,10 @@ export VCPKG_ROOT="${layers}/vcpkg"
 
 if [[ ! -d "${VCPKG_ROOT}" ]]; then
   echo "-----> Install vcpkg"
-  cp -r /usr/local/vcpkg "${VCPKG_ROOT}"
+  mkdir -p "${VCPKG_ROOT}"
+  curl -sSL https://github.com/Microsoft/vcpkg/archive/65e5ea1df685a5362e70367bef4dbf827addff31.tar.gz | \
+    tar -C "${VCPKG_ROOT}" -xzf - --strip-components=1
+  cp -r /usr/local/bin/vcpkg "${VCPKG_ROOT}"
 cat >"${layers}/vcpkg.toml" <<EOL
 build = true
 cache = true

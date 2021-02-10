@@ -157,7 +157,7 @@ steps:
       'hello-world-rooted',
     ]
 
-  # Build the cloud site examples, these are more amenable to a for loop by design.
+  # Build the cloud site examples.
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
     id: 'site-concepts_after_response'
@@ -337,6 +337,24 @@ steps:
       '--env', 'TARGET_FUNCTION=tips_scopes',
       '--path', 'examples/site/tips_scopes',
       'site-tips_scopes',
+    ]
+  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
+    waitFor: ['gcf-builder-ready']
+    id: 'site-tutorial_cloud_bigtable'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'TARGET_FUNCTION=tutorial_cloud_bigtable',
+      '--path', 'examples/site/tutorial_cloud_bigtable',
+      'site-tutorial_cloud_bigtable',
+    ]
+  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
+    waitFor: ['gcf-builder-ready']
+    id: 'site-tutorial_cloud_spanner'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'TARGET_FUNCTION=tutorial_cloud_spanner',
+      '--path', 'examples/site/tutorial_cloud_spanner',
+      'site-tutorial_cloud_spanner',
     ]
 
   # Verify generated images are deployable
