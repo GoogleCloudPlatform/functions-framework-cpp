@@ -18,12 +18,9 @@
 #include <google/cloud/functions/http_response.h>
 #include <algorithm>
 #include <cctype>
-#include <iostream>
 #include <mutex>
-#include <optional>
 #include <sstream>
 #include <string>
-#include <string_view>
 
 namespace gcf = ::google::cloud::functions;
 namespace cbt = ::google::cloud::bigtable;
