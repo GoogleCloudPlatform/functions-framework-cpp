@@ -18,6 +18,7 @@ find_package(Boost REQUIRED COMPONENTS log)
 find_package(fmt REQUIRED)
 find_package(google_cloud_cpp_bigtable REQUIRED)
 find_package(google_cloud_cpp_pubsub REQUIRED)
+find_package(google_cloud_cpp_spanner REQUIRED)
 find_package(google_cloud_cpp_storage REQUIRED)
 
 add_library(
@@ -51,7 +52,8 @@ add_library(
     site/tips_lazy_globals/tips_lazy_globals.cc
     site/tips_retry/tips_retry.cc
     site/tips_scopes/tips_scopes.cc
-    site/tutorial_cloud_bigtable/tutorial_cloud_bigtable.cc)
+    site/tutorial_cloud_bigtable/tutorial_cloud_bigtable.cc
+    site/tutorial_cloud_spanner/tutorial_cloud_spanner.cc)
 functions_framework_cpp_add_common_options(functions_framework_examples)
 if (MSVC)
     set_property(

@@ -317,3 +317,49 @@ BIGTABLE_SERVICE_URL=$(gcloud run services describe \
     gcf-tutorial-cloud-bigtable)
 curl -H "projectID: ${GOOGLE_CLOUD_PROJECT}" -H "instanceID: test-instance-0" -H "tableID: test-table" "${BIGTABLE_SERVICE_URL}"
 ```
+
+### Spanner
+
+Create the instance:
+
+```shell
+gcloud --project="${GOOGLE_CLOUD_PROJECT}" spanner instances create test-instance-0 \
+    --config="regional-us-central1" \
+    --description="Test instance for CI builds" \
+    --nodes=1
+```
+
+To populate the database, use the spanner examples from the C++ client library:
+
+```shell
+(
+    cd $HOME/google-cloud-cpp
+    bazel build //google/cloud/spanner/samples:samples
+    bazel run //google/cloud/spanner/samples:samples -- \
+        create-database "${GOOGLE_CLOUD_PROJECT}" test-instance-0 test-db
+    bazel run //google/cloud/spanner/samples:samples -- \
+        insert-data "${GOOGLE_CLOUD_PROJECT}" test-instance-0 test-db
+)
+```
+
+```shell
+pack build -v \
+    --env TARGET_FUNCTION=tutorial_cloud_spanner \
+    --path examples/site/tutorial_cloud_spanner \
+    "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-spanner"
+docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-spanner"
+gcloud run deploy gcf-tutorial-cloud-spanner \
+    --project="${GOOGLE_CLOUD_PROJECT}" \
+    --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-spanner:latest" \
+    --region="us-central1" \
+    --platform="managed" \
+    --set-env-vars=GOOGLE_CLOUD_PROJECT="${GOOGLE_CLOUD_PROJECT}",SPANNER_INSTANCE=test-instance-0,SPANNER_DATABASE=test-db \
+    --allow-unauthenticated
+SPANNER_SERVICE_URL=$(gcloud run services describe \
+    --project="${GOOGLE_CLOUD_PROJECT}" \
+    --platform="managed" \
+    --region="us-central1" \
+    --format="value(status.url)" \
+    gcf-tutorial-cloud-spanner)
+curl "${SPANNER_SERVICE_URL}"
+```
