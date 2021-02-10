@@ -334,7 +334,6 @@ To populate the database, use the spanner examples from the C++ client library:
 ```shell
 (
     cd $HOME/google-cloud-cpp
-    bazel build //google/cloud/spanner/samples:samples
     bazel run //google/cloud/spanner/samples:samples -- \
         create-database "${GOOGLE_CLOUD_PROJECT}" test-instance-0 test-db
     bazel run //google/cloud/spanner/samples:samples -- \
