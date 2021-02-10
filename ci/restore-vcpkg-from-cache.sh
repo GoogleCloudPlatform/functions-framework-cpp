@@ -29,5 +29,3 @@ else
   mkdir -p "${HOME}/.cache/bin"
   cp "${VCPKG_ROOT}/vcpkg" "${HOME}/.cache/bin/vcpkg"
 fi
-sha256sum "${VCPKG_ROOT}/vcpkg" || true
-sha256sum "${HOME}/.cache/bin/vcpkg" || true
