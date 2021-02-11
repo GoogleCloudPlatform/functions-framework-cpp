@@ -115,7 +115,7 @@ site_example() {
   local function
   function="$(basename "${example}")"
   local signature="http"
-  if grep -q gcf::CloudEvent ${example}/*; then
+  if grep -E -q 'gcf::CloudEvent|google::cloud::functions::CloudEvent' ${example}/*; then
     signature="cloudevent"
   fi
   local container="site-${function}"

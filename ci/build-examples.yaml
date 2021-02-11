@@ -295,6 +295,15 @@ steps:
     ]
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
     waitFor: ['gcf-builder-ready']
+    id: 'site-pubsub_subscribe'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
+      '--env', 'TARGET_FUNCTION=pubsub_subscribe',
+      '--path', 'examples/site/pubsub_subscribe',
+      'site-pubsub_subscribe',
+    ]
+  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
+    waitFor: ['gcf-builder-ready']
     id: 'site-tips_gcp_apis'
     args: ['build',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
