@@ -33,7 +33,7 @@ jobs:
           Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) done:"
           dir .
           Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) extrating:"
-          &7z x -r -o. ${{env.vcpkg_SHA}}.zip
+          &7z x -r ${{env.vcpkg_SHA}}.zip
           if ($LastExitCode -ne 0) { throw "7z failed with exit code $LastExitCode"; }
           Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) done:"
           dir .
