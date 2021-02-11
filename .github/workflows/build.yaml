@@ -26,15 +26,25 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) downloading:"
           (New-Object System.Net.WebClient).Downloadfile( `
               'https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.zip', `
               '${{env.vcpkg_SHA}}.zip')
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) done:"
           dir .
-          &7z e -r -ovcpkg ${{env.vcpkg_SHA}}.zip
-          dir .
-          dir vcpkg
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) extrating:"
+          &7z x -r -ovcpkg ${{env.vcpkg_SHA}}.zip
           if ($LastExitCode -ne 0) { throw "7z failed with exit code $LastExitCode"; }
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) done:"
           dir .
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) vcpkg contents:"
+          dir vcpkg
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) downloading exe:"
+          (New-Object System.Net.WebClient).Downloadfile( `
+                  'https://github.com/microsoft/vcpkg-tool/releases/download/2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35/vcpkg.exe', `
+                  'vcpkg\vcpkg.exe')
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) vcpkg contents:"
+          dir vcpkg
       - name: cache-vcpkg
         id: cache-vcpkg
         uses: actions/cache@v2
@@ -49,9 +59,6 @@ jobs:
       - name: download-vcpkg
         run: |
           $ErrorActionPreference = "Stop"
-          (New-Object System.Net.WebClient).Downloadfile( `
-                  'https://github.com/microsoft/vcpkg-tool/releases/download/2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35/vcpkg.exe', `
-                  '${{runner.temp}}/vcpkg/vcpkg.exe')
       - name: triplet=${{matrix.triplet}} / configure
         shell: cmd
         run: |
