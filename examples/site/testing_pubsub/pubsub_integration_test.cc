@@ -169,6 +169,7 @@ bool PubsubIntegrationTest::WaitForServerReady(std::string const& url) {
   using namespace std::chrono_literals;
   auto constexpr kOkay = 200;
   for (auto delay : {100ms, 200ms, 400ms, 800ms, 1600ms}) {  // NOLINT
+    std::cout << "Waiting for server to start [" << delay.count() << "ms]\n";
     std::this_thread::sleep_for(delay);
     auto constexpr kPing = R"js({
       "specversion": "1.0",
@@ -180,10 +181,17 @@ bool PubsubIntegrationTest::WaitForServerReady(std::string const& url) {
         "message": { "data": "" }
       }
     })js";
-    auto r = HttpEvent(url, kPing);
-    auto line = NextChildLine();
-    if (r.code == kOkay) return true;
-    std::cerr << "... [" << r.code << "] " << line << std::endl;
+    try {
+      auto const r = HttpEvent(url, kPing);
+      auto line = NextChildLine();
+      if (r.code == kOkay) return true;
+      std::cerr << "... [" << r.code << "] " << line << std::endl;
+    } catch (std::exception const& ex) {
+      // The HttpEvent() function may fail with an exception until the server is
+      // ready. Log it to ease troubleshooting in the CI builds.
+      std::cerr << "WaitForServerReady[" << delay.count()
+                << "ms]: server ping failed with " << ex.what() << std::endl;
+    }
   }
   return false;
 }

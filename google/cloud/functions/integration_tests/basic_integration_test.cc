@@ -61,17 +61,16 @@ http_response HttpGet(std::string const& host, std::string const& port,
 }
 
 int WaitForServerReady(std::string const& host, std::string const& port) {
-  auto constexpr kInitialDelay = std::chrono::milliseconds(100);
-  auto constexpr kAttempts = 5;
-  auto delay = kInitialDelay;
-  for (int i = 0; i != kAttempts; ++i) {
+  using namespace std::chrono_literals;
+  for (auto delay : {100ms, 200ms, 400ms, 800ms, 1600ms, 3200ms}) {  // NOLINT
+    std::cout << "Waiting for server to start [" << delay.count() << "ms]\n";
     std::this_thread::sleep_for(delay);
     try {
       (void)HttpGet(host, port, "/ok");
       return 0;
     } catch (std::exception const& ex) {
-      std::cerr << "WaitForServerReady[" << i << "]: failed with " << ex.what()
-                << std::endl;
+      std::cerr << "WaitForServerReady[" << delay.count() << "ms]: failed with "
+                << ex.what() << std::endl;
     }
     delay *= 2;
   }

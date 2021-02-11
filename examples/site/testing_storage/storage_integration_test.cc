@@ -183,6 +183,7 @@ bool StorageIntegrationTest::WaitForServerReady(std::string const& url) {
   using namespace std::chrono_literals;
   auto constexpr kOkay = 200;
   for (auto delay : {100ms, 200ms, 400ms, 800ms, 1600ms}) {  // NOLINT
+    std::cout << "Waiting for server to start [" << delay.count() << "ms]\n";
     std::this_thread::sleep_for(delay);
     auto constexpr kPing = R"js({
       "specversion": "1.0",
@@ -200,8 +201,16 @@ bool StorageIntegrationTest::WaitForServerReady(std::string const& url) {
         "updated": "2020-04-23T07:38:57.230Z"
       }
     })js";
-    auto r = HttpEvent(url, kPing);
-    if (r.code != kOkay) continue;
+    try {
+      auto const r = HttpEvent(url, kPing);
+      if (r.code != kOkay) continue;
+    } catch (std::exception const& ex) {
+      // The HttpEvent() function may fail with an exception until the server is
+      // ready. Log it to ease troubleshooting in the CI builds.
+      std::cerr << "WaitForServerReady[" << delay.count()
+                << "ms]: server ping failed with " << ex.what() << std::endl;
+      continue;
+    }
     for (auto line = NextChildLine(); !line.empty(); line = NextChildLine()) {
       if (line.find("Updated: ") != std::string::npos) return true;
     }
