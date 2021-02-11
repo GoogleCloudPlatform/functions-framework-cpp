@@ -36,12 +36,16 @@ would use:
 cd $HOME
 git clone -q https://github.com/microsoft/vcpkg
 # Expected output: none
-./vcpkg/bootstrap-vcpkg.sh --disableMetrics --useSystemBinaries
+./vcpkg/bootstrap-vcpkg.sh --disableMetrics
 ```
 
 You should see output like this:
 
 ```console
+Downloading cmake...
+...
+Downloading ninja...
+...
 Downloading vcpkg tool sources
 ...
 ..
@@ -91,6 +95,7 @@ You should see output like this:
 -- Running vcpkg install - done
 -- Configuring done
 -- Generating done
+-- Build files have been written to: .../site/howto_local_development/.build
 ```
 
 If you have previously built the dependencies with vcpkg the output may include
