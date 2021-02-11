@@ -36,7 +36,7 @@ would use:
 cd $HOME
 git clone -q https://github.com/microsoft/vcpkg
 # Expected output: none
-(cd vcpkg && ./bootstrap-vcpkg.sh --disableMetrics --useSystemBinaries)
+./vcpkg/bootstrap-vcpkg.sh --disableMetrics --useSystemBinaries
 ```
 
 You should see output like this:
