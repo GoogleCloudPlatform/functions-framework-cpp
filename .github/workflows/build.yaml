@@ -9,124 +9,57 @@ env:
   vcpkg_SHA: "65e5ea1df685a5362e70367bef4dbf827addff31"
 
 jobs:
-  build-ubuntu-focal:
-    name: ubuntu-20.04
-    runs-on: ubuntu-20.04
-    steps:
-    - name: install ninja
-      run: sudo apt install ninja-build
-    - uses: actions/checkout@v2
-    - name: clone-vcpkg
-      working-directory: "${{runner.temp}}"
-      run: >
-        mkdir -p vcpkg &&
-        curl -sSL "https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.tar.gz" |
-        tar -C vcpkg --strip-components=1 -zxf -
-    - name: cache-vcpkg
-      id: cache-vcpkg
-      uses: actions/cache@v2
-      with:
-        # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
-        path: |
-          ~/.cache/vcpkg
-          ~/.cache/bin
-        key: |
-          vcpkg-${{ env.vcpkg_SHA }}-build-ubuntu-focal-${{ hashFiles('vcpkg.json') }}
-        restore-keys: |
-          vcpkg-${{ env.vcpkg_SHA }}-build-ubuntu-focal-
-    - name: boostrap-vcpkg
-      run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
 
-    - name: configure
-      run: >
-        cmake -S . -B "${{runner.temp}}/build" -GNinja
-        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-        -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-    - name: build
-      run: cmake --build "${{runner.temp}}/build"
-    - name: test
-      working-directory: "${{runner.temp}}/build"
-      run: ctest --output-on-failure --timeout=60s
-
-  # Verify the howto guides compile correctly, they need a special setup to use the
-  # current version of `functions-framework-cpp` through vcpkg.
-  build-ubuntu-focal-howto:
-    name: ubuntu-20.04
-    runs-on: ubuntu-20.04
+  msvc-2019:
+    # Using a blank name produces better output on
+    # the web UI (e.g. "sanitize /  (address)") than
+    # any other alternative we tried.
+    name: msvc-2019
+    runs-on: windows-2019
+    strategy:
+      matrix:
+        triplet: ["x64-windows"]
     steps:
-      - name: install ninja
-        run: sudo apt install ninja-build
-      - uses: actions/checkout@v2
-      - name: cache-vcpkg
-        id: cache-vcpkg
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/vcpkg
-          key: |
-            vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles(
-                '/usr/local/share/vcpkg/**/vcpkg.json',
-                '/usr/local/share/vcpkg/**/CONTROL',
-                'vcpkg.json') }}
-          restore-keys: |
-            vcpkg-${{ runner.os }}-${{ github.job }}-
-            vcpkg-${{ runner.os }}-
-      - name: create-overlay
-        # We want to test with the *current* version of
-        # `functions-framework-cpp`, not with the version published by vcpkg.
-        # One can do that by creating an vcpkg overlay.
-        run: >
-          mkdir -p "${{runner.temp}}/quickstart/vcpkg-overlays" &&
-          cp build_scripts/vcpkg-overlays/* "${{runner.temp}}/quickstart/vcpkg-overlays" &&
-          sed -i -e "s;/usr/local/share/gcf;${{github.workspace}};" \
-            ${{runner.temp}}/quickstart/vcpkg-overlays/portfile.cmake
-      - name: configure-local-development
-        env:
-          VCPKG_OVERLAY_PORTS: "${{runner.temp}}/quickstart/vcpkg-overlays"
-        run: >
-          cmake -S examples/site/howto_local_development -B "${{runner.temp}}/howto_local_development/build" -GNinja
-          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
-      - name: build-local-development
-        env:
-          VCPKG_OVERLAY_PORTS: "${{runner.temp}}/quickstart/vcpkg-overlays"
-        run: >
-          cmake --build "${{runner.temp}}/howto_local_development/build"
-
-  build-macos:
-    name: macos-10
-    runs-on: macos-10.15
-    steps:
-      - name: install ninja
-        run: brew install ninja
       - uses: actions/checkout@v2
       - name: clone-vcpkg
         working-directory: "${{runner.temp}}"
+        shell: powershell
         run: >
-          mkdir -p vcpkg &&
-          curl -sSL "https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.tar.gz" |
-          tar -C vcpkg --strip-components=1 -zxf -
+          New-Object System.Net.WebClient).Downloadfile( `
+              'https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.zip', `
+              "${env:KOKORO_GFILE_DIR}/roots.pem"
+          7z e -r -o vcpkg vcpkg.zip
+          dir
       - name: cache-vcpkg
         id: cache-vcpkg
         uses: actions/cache@v2
         with:
           # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
           path: |
-            ~/.cache/vcpkg
-            ~/.cache/bin
+            ~/AppData/vcpkg/archives
           key: |
-            vcpkg-${{ env.vcpkg_SHA }}-build-macos-10-${{ hashFiles('vcpkg.json') }}
+            vcpkg-${{ env.vcpkg_SHA }}-msvc-2019-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ env.vcpkg_SHA }}-build-macos-10-
-      - name: boostrap-vcpkg
-        run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
-
-      - name: configure
+            vcpkg-${{ env.vcpkg_SHA }}-msvc-2019-${{ matrix.triplet }}-
+      - name: download-vcpkg
         run: >
-          cmake -S . -B "${{runner.temp}}/build" -GNinja
-          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      - name: build
-        run: cmake --build "${{runner.temp}}/build"
-      - name: test
-        working-directory: "${{runner.temp}}/build"
-        run: ctest --output-on-failure --timeout=60s
+          (New-Object System.Net.WebClient).Downloadfile(
+                  'https://github.com/microsoft/vcpkg-tool/releases/download/2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35/vcpkg.exe',
+                  '${{runner.temp}}/vcpkg/vcpkg.exe')
+          "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+      - name: triplet=${{matrix.triplet}} / configure
+        shell: cmd
+        run: >
+          call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          set PATH=%PATH%;${{runner.temp}}\vcpkg
+          vcpkg install boost-core
+#          cmake -S . -B "${{runner.temp}}/build" -GNinja `
+#          -DCMAKE_BUILD_TYPE=Debug `
+#          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
+#          -DCMAKE_TARGET_TRIPLET="${{matrix.triplet}}" `
+#          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake" `
+#      - name: triplet=${{matrix.triplet}} / build
+#        run: cmake --build "${{runner.temp}}/build"
+#      - name: triplet=${{matrix.triplet}} / test
+#        working-directory: "${{runner.temp}}/build"
+#        run: ctest --output-on-failure --timeout=60s -C Debug
