@@ -28,9 +28,9 @@ jobs:
           $ErrorActionPreference = "Stop"
           (New-Object System.Net.WebClient).Downloadfile( `
               'https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.zip', `
-              "${env:KOKORO_GFILE_DIR}/roots.pem"
-          7z e -r -o vcpkg vcpkg.zip
-          if ($LastExitCode -ne 0) throw "7z failed with exit code $LastExitCode"
+              '${{env.vcpkg_SHA}}.zip')
+          &7z e -r -o vcpkg vcpkg.zip
+          if ($LastExitCode -ne 0) { throw "7z failed with exit code $LastExitCode"; }
           dir .
       - name: cache-vcpkg
         id: cache-vcpkg
