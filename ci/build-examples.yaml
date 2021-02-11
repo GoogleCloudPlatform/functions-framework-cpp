@@ -297,7 +297,7 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-pubsub_subscribe'
     args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'TARGET_FUNCTION=pubsub_subscribe',
       '--path', 'examples/site/pubsub_subscribe',
       'site-pubsub_subscribe',
