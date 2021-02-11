@@ -59,7 +59,7 @@ unsigned int make_http_request(std::string const& host) {
   http::read(stream, buffer, res);
   boost::system::error_code ec;
   stream.socket().shutdown(tcp::socket::shutdown_both, ec);
-  (void)ec; // ignore errors during shutdown()
+  (void)ec;  // ignore errors during shutdown()
 
   return res.result_int();
 }
