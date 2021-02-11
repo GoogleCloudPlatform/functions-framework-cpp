@@ -170,7 +170,12 @@ HttpResponse HttpEvent(std::string const& url, std::string const& payload) {
   setopt(CURLOPT_HTTPHEADER, headers.get());
 
   auto e = curl_easy_perform(easy.get());
-  if (e != CURLE_OK) throw std::runtime_error("Error in curl_easy_perform");
+  if (e != CURLE_OK) {
+    std::ostringstream os;
+    os << "Error in curl_easy_perform [" << e << "] - "
+       << curl_easy_strerror(e);
+    throw std::runtime_error(std::move(os).str());
+  }
   return HttpResponse{get_response_code(), std::move(buffer)};
 }
 
