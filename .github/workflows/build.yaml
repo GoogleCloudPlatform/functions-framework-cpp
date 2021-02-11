@@ -33,23 +33,23 @@ jobs:
           Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) done:"
           dir .
           Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) extrating:"
-          &7z x -r -ovcpkg ${{env.vcpkg_SHA}}.zip
+          &7z x -r -o. ${{env.vcpkg_SHA}}.zip
           if ($LastExitCode -ne 0) { throw "7z failed with exit code $LastExitCode"; }
           Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) done:"
           dir .
           Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) vcpkg contents:"
-          dir vcpkg
+          dir vcpkg-${{env.vcpkg_SHA}}
           Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) downloading exe:"
           (New-Object System.Net.WebClient).Downloadfile( `
                   'https://github.com/microsoft/vcpkg-tool/releases/download/2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35/vcpkg.exe', `
-                  'vcpkg\vcpkg.exe')
+                  'vcpkg-${{env.vcpkg_SHA}}\vcpkg.exe')
           Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) vcpkg contents:"
-          dir vcpkg
+          dir vcpkg-${{env.vcpkg_SHA}}
       - name: cache-vcpkg
         id: cache-vcpkg
         uses: actions/cache@v2
         with:
-          # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
+          # Preserve the vcpkg binary cache in the build cache
           path: |
             ~/AppData/vcpkg/archives
           key: |
@@ -63,12 +63,12 @@ jobs:
         shell: cmd
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-          ${{runner.temp}}\vcpkg\vcpkg.exe install boost-core
+          ${{runner.temp}}\vcpkg-${{env.vcpkg_SHA}}\vcpkg.exe install boost-core
 #          cmake -S . -B "${{runner.temp}}/build" -GNinja `
 #          -DCMAKE_BUILD_TYPE=Debug `
 #          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
 #          -DCMAKE_TARGET_TRIPLET="${{matrix.triplet}}" `
-#          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake" `
+#          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg-${{env.vcpkg_SHA}}/scripts/buildsystems/vcpkg.cmake" `
 #      - name: triplet=${{matrix.triplet}} / build
 #        run: cmake --build "${{runner.temp}}/build"
 #      - name: triplet=${{matrix.triplet}} / test
