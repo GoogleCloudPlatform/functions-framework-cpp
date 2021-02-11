@@ -41,6 +41,7 @@ extern gcf::HttpResponse tips_scopes(gcf::HttpRequest request);
 extern void tips_retry(gcf::CloudEvent event);
 extern void hello_world_pubsub(gcf::CloudEvent event);
 extern void hello_world_storage(gcf::CloudEvent event);
+extern void pubsub_subscribe(gcf::CloudEvent event);
 
 namespace {
 
@@ -293,6 +294,37 @@ TEST(ExamplesSiteTest, EnvVars) {
   google::cloud::functions_internal::SetEnv("FOO", "test-value");
   actual = env_vars(gcf::HttpRequest{});
   EXPECT_THAT(actual.payload(), HasSubstr("test-value"));
+}
+
+TEST(ExamplesSiteTest, PubsubSubscribe) {
+  // We need some input data, and this was available from:
+  //   https://github.com/GoogleCloudPlatform/functions-framework-conformance
+  auto const base = nlohmann::json::parse(R"js({
+    "specversion": "1.0",
+    "type": "google.cloud.pubsub.topic.v1.messagePublished",
+    "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
+    "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+    "time": "2020-09-29T11:32:00.000Z",
+    "datacontenttype": "application/json",
+    "data": {
+      "subscription": "projects/sample-project/subscriptions/sample-subscription",
+      "message": {
+        "@type": "type.googleapis.com/google.pubsub.v1.PubsubMessage",
+        "attributes": {
+           "attr1":"attr1-value"
+        },
+        "data": ""
+      }
+    }
+  })js");
+
+  // Test with different values for data.message.data
+  for (auto const* data : {"dGVzdCBtZXNzYWdlIDM=", "YWJjZA==", ""}) {
+    auto json = base;
+    json["data"]["message"]["data"] = data;
+    EXPECT_NO_THROW(pubsub_subscribe(
+        google::cloud::functions_internal::ParseCloudEventJson(json.dump())));
+  }
 }
 
 TEST(ExamplesSiteTest, TipsLazyGlobals) {
