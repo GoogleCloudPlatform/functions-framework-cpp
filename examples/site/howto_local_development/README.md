@@ -34,24 +34,85 @@ would use:
 
 ```shell
 cd $HOME
-git clone https://github.com/microsoft/vcpkg
-(cd vcpkg && ./bootstrap.sh)
+git clone -q https://github.com/microsoft/vcpkg
+# Expected output: none
+(cd vcpkg && ./bootstrap-vcpkg.sh --disableMetrics --useSystemBinaries)
 ```
+
+You should see output like this:
+
+```console
+Downloading vcpkg tool sources
+...
+..
+Building vcpkg-tool...
+...
+..
+[88/88] Linking CXX executable vcpkg
+```
+
+This will create a `vcpkg` executable in the `$HOME/vcpkg` directory.
 
 ## Compiling a function
 
-Once vcpkg is compiled you can build the example using:
-
-> :warning: the first time you build the framework it might take several
-> minutes, maybe as much as 1/2 hour, depending on your workstation
-> performance. Future builds, even in different directories, should be
-> faster as `vcpkg` caches binary artifacts in `$HOME/.cache/vcpkg`.
+Once vcpkg is compiled you can build the example. If you have not cloned
+the `functions-framework-cpp` repository yet, you need to do so now:
 
 ```shell
-cd $HOME/functions-framework-cpp/examples/site/howto_local_development
-cmake -H. -B.build -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
-cmake --build .build -- -j $(nproc)
+cd $HOME
+git clone -q https://github.com/GoogleCloudPlatform/functions-framework-cpp.git
+# Expected output: none
 ```
+
+Then go to the directory hosting this example and use CMake to build
+the example:
+
+```shell
+cd functions-framework-cpp/examples/site/howto_local_development
+```
+
+Run the CMake configure step. If needed, this will download and build any
+dependencies for your function:
+
+```shell
+cmake -H. -B.build -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
+```
+
+You should see output like this:
+
+> :warning: the first time you use or build the framework it might take several
+> minutes, maybe as much as 1/2 hour, depending on your workstation
+> performance. Future builds, even in different directories, should be faster
+> as `vcpkg` caches binary artifacts in `$HOME/.cache/vcpkg`.
+
+```console
+-- Running vcpkg install
+...
+-- Running vcpkg install - done
+-- Configuring done
+-- Generating done
+```
+
+If you have previously built the dependencies with vcpkg the output may include
+informational messages about reusing these binary artifacts. With some versions
+of CMake you may see a warning about your version of Boost, something like:
+
+```console
+CMake Warning at /usr/share/cmake-3.16/Modules/FindBoost.cmake:1161 (message):
+       New Boost version may have incorrect or missing dependencies and imported
+       targets
+```
+
+You can safely ignore this warning.
+
+With the dependencies built and CMake configured you can now build the code:
+
+```shell
+cmake --build .build
+```
+
+This will output some informational messages about the build progress, and will
+create a binary called `local_server` in the .build subdirectory.
 
 ## Running the function locally
 
@@ -67,8 +128,4 @@ Test this program using `curl`. In a separate terminal window run:
 curl http://localhost:8080
 ```
 
-And terminate the program gracefully using:
-
-```shell
-curl http://localhost:8080/quit/program/0
-```
+You can just interrupt (`Ctrl-C`) the program to terminate it.

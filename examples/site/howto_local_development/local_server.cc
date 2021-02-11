@@ -20,8 +20,6 @@ namespace gcf = ::google::cloud::functions;
 namespace {
 
 gcf::HttpResponse HelloWithShutdown(gcf::HttpRequest const& request) {
-  // Add a way to gracefully shutdown this service, mostly for testing.
-  if (request.target() == "/quit/program") std::exit(0);
   gcf::HttpResponse response;
   response.set_header("Content-Type", "text/plain");
   response.set_payload("Hello World\n");
