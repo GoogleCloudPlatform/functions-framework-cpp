@@ -29,7 +29,10 @@ jobs:
           (New-Object System.Net.WebClient).Downloadfile( `
               'https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.zip', `
               '${{env.vcpkg_SHA}}.zip')
-          &7z e -r -ovcpkg vcpkg.zip
+          dir .
+          &7z e -r -ovcpkg ${{env.vcpkg_SHA}}.zip
+          dir .
+          dir vcpkg
           if ($LastExitCode -ne 0) { throw "7z failed with exit code $LastExitCode"; }
           dir .
       - name: cache-vcpkg
