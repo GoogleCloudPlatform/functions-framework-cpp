@@ -66,8 +66,9 @@ int WaitForServerReady(std::string const& host, std::string const& port) {
     std::cout << "Waiting for server to start [" << delay.count() << "ms]\n";
     std::this_thread::sleep_for(delay);
     try {
-      (void)HttpGet(host, port, "/ok");
-      return 0;
+      auto const r = HttpGet(host, port, "/ok");
+      if (r.result() == beast::http::status::ok) return 0;
+      std::cerr << "... [" << r.result_int() << "]" << std::endl;
     } catch (std::exception const& ex) {
       std::cerr << "WaitForServerReady[" << delay.count() << "ms]: failed with "
                 << ex.what() << std::endl;

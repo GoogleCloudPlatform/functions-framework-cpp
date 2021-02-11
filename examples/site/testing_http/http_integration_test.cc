@@ -140,6 +140,7 @@ bool WaitForServerReady(std::string const& url) {
     try {
       auto r = HttpGet(url, "{}");
       if (r.code == kOkay) return true;
+      std::cerr << "... [" << r.code << "]" << std::endl;
     } catch (std::exception const& ex) {
       // The HttpEvent() function may fail with an exception until the server is
       // ready. Log it to ease troubleshooting in the CI builds.

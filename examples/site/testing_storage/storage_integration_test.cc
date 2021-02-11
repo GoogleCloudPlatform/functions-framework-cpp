@@ -203,7 +203,10 @@ bool StorageIntegrationTest::WaitForServerReady(std::string const& url) {
     })js";
     try {
       auto const r = HttpEvent(url, kPing);
-      if (r.code != kOkay) continue;
+      if (r.code != kOkay) {
+        std::cerr << "... [" << r.code << "]" << std::endl;
+        continue;
+      }
     } catch (std::exception const& ex) {
       // The HttpEvent() function may fail with an exception until the server is
       // ready. Log it to ease troubleshooting in the CI builds.
