@@ -25,11 +25,13 @@ jobs:
         working-directory: "${{runner.temp}}"
         shell: powershell
         run: >
-          New-Object System.Net.WebClient).Downloadfile( `
+          $ErrorActionPreference = "Stop"
+          (New-Object System.Net.WebClient).Downloadfile( `
               'https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.zip', `
               "${env:KOKORO_GFILE_DIR}/roots.pem"
           7z e -r -o vcpkg vcpkg.zip
-          dir
+          if ($LastExitCode -ne 0) throw "7z failed with exit code $LastExitCode"
+          dir .
       - name: cache-vcpkg
         id: cache-vcpkg
         uses: actions/cache@v2
@@ -43,6 +45,7 @@ jobs:
             vcpkg-${{ env.vcpkg_SHA }}-msvc-2019-${{ matrix.triplet }}-
       - name: download-vcpkg
         run: >
+          $ErrorActionPreference = "Stop"
           (New-Object System.Net.WebClient).Downloadfile(
                   'https://github.com/microsoft/vcpkg-tool/releases/download/2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35/vcpkg.exe',
                   '${{runner.temp}}/vcpkg/vcpkg.exe')
