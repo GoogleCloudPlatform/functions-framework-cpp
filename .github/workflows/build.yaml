@@ -24,7 +24,7 @@ jobs:
       - name: clone-vcpkg
         working-directory: "${{runner.temp}}"
         shell: powershell
-        run: >
+        run: |
           $ErrorActionPreference = "Stop"
           (New-Object System.Net.WebClient).Downloadfile( `
               'https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.zip', `
@@ -44,18 +44,16 @@ jobs:
           restore-keys: |
             vcpkg-${{ env.vcpkg_SHA }}-msvc-2019-${{ matrix.triplet }}-
       - name: download-vcpkg
-        run: >
+        run: |
           $ErrorActionPreference = "Stop"
-          (New-Object System.Net.WebClient).Downloadfile(
-                  'https://github.com/microsoft/vcpkg-tool/releases/download/2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35/vcpkg.exe',
+          (New-Object System.Net.WebClient).Downloadfile( `
+                  'https://github.com/microsoft/vcpkg-tool/releases/download/2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35/vcpkg.exe', `
                   '${{runner.temp}}/vcpkg/vcpkg.exe')
-          "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
       - name: triplet=${{matrix.triplet}} / configure
         shell: cmd
-        run: >
+        run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-          set PATH=%PATH%;${{runner.temp}}\vcpkg
-          vcpkg install boost-core
+          ${{runner.temp}}\vcpkg\vcpkg.exe install boost-core
 #          cmake -S . -B "${{runner.temp}}/build" -GNinja `
 #          -DCMAKE_BUILD_TYPE=Debug `
 #          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
