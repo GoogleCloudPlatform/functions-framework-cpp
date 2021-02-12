@@ -38,15 +38,15 @@ jobs:
       run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
     - name: configure
       run: >
-        cmake -S . -B .build -GNinja
+        cmake -S . -B ${{runner.workspace}}/build -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_BUILD_TYPE=Debug
         -DCMAKE_CXX_FLAGS=--coverage
         -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
     - name: build
-      run: cmake --build .build
+      run: cmake --build ${{runner.workspace}}/build
     - name: test
-      working-directory: "${{github.workspace}}/.build"
+      working-directory: ${{runner.workspace}}/build
       run: ctest --output-on-failure --timeout=60s
 
     - name: Setup Go
@@ -60,7 +60,7 @@ jobs:
         functionType: 'cloudevent'
         useBuildpacks: false
         validateMapping: false
-        cmd: '${{github.workspace}}/.build/google/cloud/functions/integration_tests/cloud_event_conformance'
+        cmd: '${{runner.workspace}}/build/google/cloud/functions/integration_tests/cloud_event_conformance'
 
     - name: Run HTTP conformance tests
       uses: GoogleCloudPlatform/functions-framework-conformance/action@v0.3.2
@@ -68,9 +68,9 @@ jobs:
         functionType: 'http'
         useBuildpacks: false
         validateMapping: false
-        cmd: '${{github.workspace}}/.build/google/cloud/functions/integration_tests/http_conformance'
+        cmd: '${{runner.workspace}}/build/google/cloud/functions/integration_tests/http_conformance'
 
     - name: coverage-upload
-      working-directory: "${{github.workspace}}"
+      working-directory: ${{runner.workspace}}
       run: >
         /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
