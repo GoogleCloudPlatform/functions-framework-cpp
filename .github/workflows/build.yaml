@@ -64,6 +64,7 @@ jobs:
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           "${{runner.temp}}/vcpkg-${{env.vcpkg_SHA}}/vcpkg.exe" install --triplet "${{matrix.triplet}}-nodebug" --clean-after-build grpc
+          "${{runner.temp}}/vcpkg-${{env.vcpkg_SHA}}/vcpkg.exe" install --triplet "${{matrix.triplet}}-nodebug" --clean-after-build google-cloud-cpp
 #          cmake -S . -B "${{runner.temp}}/build" -GNinja ^
 #              -DCMAKE_BUILD_TYPE=Release ^
 #              -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
