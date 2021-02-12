@@ -18,7 +18,7 @@ jobs:
     runs-on: windows-2019
     strategy:
       matrix:
-        triplet: ["x64-windows"]
+        triplet: ["x64-windows-static"]
     steps:
       - uses: actions/checkout@v2
       - name: clone-vcpkg
@@ -55,7 +55,6 @@ jobs:
         shell: cmd
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-          ${{runner.temp}}\vcpkg-${{env.vcpkg_SHA}}\vcpkg.exe install boost-core
           cmake -S . -B "${{runner.temp}}/build" -GNinja ^
               -DCMAKE_BUILD_TYPE=Debug ^
               -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
