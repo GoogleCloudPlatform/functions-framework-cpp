@@ -26,39 +26,47 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
-          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) downloading:"
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) downloading vpkg..."
           (New-Object System.Net.WebClient).Downloadfile( `
               'https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.zip', `
               '${{env.vcpkg_SHA}}.zip')
-          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) extrating:"
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) downloading vpkg... DONE"
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) extrating vcpkg..."
           &7z x -r ${{env.vcpkg_SHA}}.zip
           if ($LastExitCode -ne 0) { throw "7z failed with exit code $LastExitCode"; }
-          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) downloading exe:"
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) extrating vcpkg... DONE"
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) downloading vcpkg exe..."
           (New-Object System.Net.WebClient).Downloadfile( `
                   'https://github.com/microsoft/vcpkg-tool/releases/download/2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35/vcpkg.exe', `
                   'vcpkg-${{env.vcpkg_SHA}}\vcpkg.exe')
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) downloading vcpkg exe... DONE"
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) creating custom triplet..."
+          Copy-Item -Path 'vcpkg-${{env.vcpkg_SHA}}\triplets\${{matrix.triplet}}.cmake' `
+            -Destination 'vcpkg-${{env.vcpkg_SHA}}\triplets\${{matrix.triplet}}-nodebug.cmake'
+          $line = "set(VCPKG_BUILD_TYPE release)"
+          $line | Out-File -Append -Encoding ascii -FilePath 'vcpkg-${{env.vcpkg_SHA}}\triplets\${{matrix.triplet}}-nodebug.cmake'
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) creating custom triplet... DONE"
+          Get-Content -Path 'vcpkg-${{env.vcpkg_SHA}}\triplets\${{matrix.triplet}}-nodebug.cmake'
+          Write-Host -ForegroundColor Yellow "`n$(Get-Date -Format o) END"
       - name: cache-vcpkg
         id: cache-vcpkg
         uses: actions/cache@v2
         with:
           # Preserve the vcpkg binary cache in the build cache
           path: |
-            ~/AppData/vcpkg/archives
+            ~/AppData/Local/vcpkg/archives
           key: |
-            vcpkg-${{ env.vcpkg_SHA }}-msvc-2019-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
+            vcpkg-${{ env.vcpkg_SHA }}-msvc-2019-v2-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ env.vcpkg_SHA }}-msvc-2019-${{ matrix.triplet }}-
-      - name: download-vcpkg
-        run: |
-          $ErrorActionPreference = "Stop"
+            vcpkg-${{ env.vcpkg_SHA }}-msvc-2019-v2-${{ matrix.triplet }}-
       - name: triplet=${{matrix.triplet}} / configure
         shell: cmd
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           cmake -S . -B "${{runner.temp}}/build" -GNinja ^
-              -DCMAKE_BUILD_TYPE=Debug ^
+              -DCMAKE_BUILD_TYPE=Release ^
               -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
-              -DVCPKG_TARGET_TRIPLET="${{matrix.triplet}}" ^
+              -DVCPKG_TARGET_TRIPLET="${{matrix.triplet}}-nodebug" ^
               -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg-${{env.vcpkg_SHA}}/scripts/buildsystems/vcpkg.cmake"
 #      - name: triplet=${{matrix.triplet}} / build
 #        run: cmake --build "${{runner.temp}}/build"
