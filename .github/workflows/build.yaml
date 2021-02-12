@@ -63,11 +63,12 @@ jobs:
         shell: cmd
         run: |
           call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-          cmake -S . -B "${{runner.temp}}/build" -GNinja ^
-              -DCMAKE_BUILD_TYPE=Release ^
-              -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
-              -DVCPKG_TARGET_TRIPLET="${{matrix.triplet}}-nodebug" ^
-              -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg-${{env.vcpkg_SHA}}/scripts/buildsystems/vcpkg.cmake"
+          "${{runner.temp}}/vcpkg-${{env.vcpkg_SHA}}/vcpkg.exe" install --triplet "${{matrix.triplet}}-nodebug" --clean-after-build grpc
+#          cmake -S . -B "${{runner.temp}}/build" -GNinja ^
+#              -DCMAKE_BUILD_TYPE=Release ^
+#              -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
+#              -DVCPKG_TARGET_TRIPLET="${{matrix.triplet}}-nodebug" ^
+#              -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg-${{env.vcpkg_SHA}}/scripts/buildsystems/vcpkg.cmake"
 #      - name: triplet=${{matrix.triplet}} / build
 #        run: cmake --build "${{runner.temp}}/build"
 #      - name: triplet=${{matrix.triplet}} / test
