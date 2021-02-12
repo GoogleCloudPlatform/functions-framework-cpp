@@ -58,7 +58,7 @@ jobs:
           cmake -S . -B "${{runner.temp}}/build" -GNinja ^
               -DCMAKE_BUILD_TYPE=Debug ^
               -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
-              -DCMAKE_TARGET_TRIPLET="${{matrix.triplet}}" ^
+              -DVCPKG_TARGET_TRIPLET="${{matrix.triplet}}" ^
               -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg-${{env.vcpkg_SHA}}/scripts/buildsystems/vcpkg.cmake"
 #      - name: triplet=${{matrix.triplet}} / build
 #        run: cmake --build "${{runner.temp}}/build"
