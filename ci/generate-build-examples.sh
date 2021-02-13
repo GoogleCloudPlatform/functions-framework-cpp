@@ -54,23 +54,23 @@ steps:
         "--dockerfile=build_scripts/Dockerfile",
         "--cache=true",
         "--cache-repo=gcr.io/${PROJECT_ID}/ci/cache",
-        "--target=gcf-cpp-develop",
-        "--destination=gcr.io/${PROJECT_ID}/ci/gcf-cpp-develop:${BUILD_ID}",
+        "--target=gcf-cpp-ci",
+        "--destination=gcr.io/${PROJECT_ID}/ci/gcf-cpp-ci:${BUILD_ID}",
     ]
     waitFor: ['-']
     timeout: 1800s
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['pull', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-develop:${BUILD_ID}']
+    args: ['pull', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-ci:${BUILD_ID}']
 
     # Setup local names for the builder images.
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['tag', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-develop:${BUILD_ID}', 'gcf-cpp-develop:latest']
+    args: ['tag', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-ci:${BUILD_ID}', 'gcf-cpp-ci:latest']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['tag', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-runtime:${BUILD_ID}', 'gcf-cpp-runtime:latest']
 
   # Create the buildpacks builder, and make it the default.
   - name: 'pack'
-    args: ['builder', 'create', 'gcf-cpp-builder:bionic', '--config', 'pack/builder.toml', ]
+    args: ['builder', 'create', 'gcf-cpp-builder:bionic', '--config', 'ci/pack/builder.toml', ]
   - name: 'pack'
     args: ['config', 'trusted-builders', 'add', 'gcf-cpp-builder:bionic', ]
   - name: 'pack'
@@ -208,6 +208,7 @@ cat <<_EOF_
         set +e
         gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/gcf-cpp-runtime:\${BUILD_ID}
         gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/gcf-cpp-develop:\${BUILD_ID}
+        gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/gcf-cpp-ci:\${BUILD_ID}
         gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/hello-world:\${BUILD_ID}
         exit 0
 
@@ -222,7 +223,7 @@ cat <<_EOF_
       - '-c'
       - |
         set +e
-        for image in hello-world gcf-cpp-runtime gcf-cpp-develop cache; do
+        for image in hello-world gcf-cpp-runtime gcf-cpp-ci gcf-cpp-develop cache; do
           gcloud --project=\${PROJECT_ID} container images list-tags gcr.io/\${PROJECT_ID}/ci/\$\${image} \\
               --format='get(digest)' --filter='timestamp.datetime < -P4W' | \\
           xargs printf "gcr.io/\${PROJECT_ID}/\$\${image}@\$\$1\n"

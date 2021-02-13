@@ -48,13 +48,21 @@ FROM parent AS gcf-cpp-runtime
 ENV PORT 8080
 USER cnb
 
-FROM parent AS gcf-cpp-incremental
+# Install the system tools needed to compile C++. This needs to go into the
+# `build-image` of the buildpack.
+FROM parent AS gcf-cpp-incremental-0
 RUN apt-get update \
     && apt install -y  --no-install-recommends \
        build-essential g++-8 gcc-8 git libstdc++-8-dev pkg-config tar unzip zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100
+
+# Install cmake, ninja and vcpkg. The first two are build systems for C++, the
+# latter is the package manager we use. In an open source builder these would
+# get downloaded dynamically, for builders created by the user they can be
+# part of the builder to speed up the first build of each function.
+FROM gcf-cpp-incremental-0 AS gcf-cpp-incremental-1
 
 WORKDIR /usr/local
 RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.19.4/cmake-3.19.4-Linux-x86_64.tar.gz | \
@@ -63,6 +71,7 @@ RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.19.4/cmake-3
 RUN curl -sSL https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip | \
     funzip >/usr/local/bin/ninja && \
     chmod 755 /usr/local/bin/ninja
+
 WORKDIR /usr/local/vcpkg
 RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/65e5ea1df685a5362e70367bef4dbf827addff31.tar.gz | \
     tar -xzf - --strip-components=1 && \
@@ -78,8 +87,12 @@ RUN { \
     echo 'set(VCPKG_TARGET_ARCHITECTURE x64)'; \
 } >triplets/x64-linux-nodebug.cmake
 
+# Warm up the vcpkg cache with all the dependencies for `functions-framework-cpp` and some
+# commonly use packages, like `google-cloud-cpp`.
 WORKDIR /var/cache/vcpkg-cache
 ENV VCPKG_DEFAULT_BINARY_CACHE=/var/cache/vcpkg-cache
+
+FROM gcf-cpp-incremental-1 AS gcf-cpp-incremental-2
 
 # These are needed by the Functions Framework, do them one at a time, easier to
 # rebuild the Docker image if one of them fails to download or something.
@@ -101,27 +114,60 @@ RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug protobuf
 RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug grpc
 RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug google-cloud-cpp
 
+# Warmup the vcpkg cache for `functions-framework-cpp` using the release version
+# of the framework, this is the recommended path for users of the framework.
+FROM gcf-cpp-incremental-2 AS gcf-cpp-incremental-3
+
+RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug functions-framework-cpp
+
+# This is the development image we recommend users create in their workstation.
+# It includes all the development tools, including cmake, ninja and vcpkg, as
+# well as binary caches for the latest release of `functions-framework-cpp` and
+# its dependencies, as well as for `google-cloud-cpp`.
+FROM gcf-cpp-incremental-1 AS gcf-cpp-develop
+
+# Copy the framework to /usr/local/share/gcf, that is just a lazy way to
+# get all the scripts we need for both the CI and regular builds.
 COPY . /usr/local/share/gcf
 RUN find /usr/local/share/gcf -type f | xargs chmod 644
 RUN find /usr/local/share/gcf -type d | xargs chmod 755
 RUN chmod 755 /usr/local/share/gcf/build_scripts/generate-wrapper.sh
 
+COPY --from=gcf-cpp-incremental-3 /usr/local/bin/cmake   /usr/local/bin/cmake
+COPY --from=gcf-cpp-incremental-3 /usr/local/bin/ctest   /usr/local/bin/ctest
+COPY --from=gcf-cpp-incremental-3 /usr/local/bin/ninja   /usr/local/bin/ninja
+COPY --from=gcf-cpp-incremental-3 /usr/local/vcpkg/vcpkg /usr/local/bin/vcpkg
+COPY --from=gcf-cpp-incremental-3 /var/cache/vcpkg-cache /var/cache/vcpkg-cache
+
+USER cnb
+
+# Warmup the vcpkg cache for `functions-framework-cpp` using the *current*
+# version of the framework, this is used in the CI build.
+FROM gcf-cpp-incremental-2 AS gcf-cpp-ci-0
+
+COPY . /usr/local/share/gcf
+RUN find /usr/local/share/gcf -type f | xargs chmod 644
+RUN find /usr/local/share/gcf -type d | xargs chmod 755
+RUN chmod 755 /usr/local/share/gcf/build_scripts/generate-wrapper.sh
 RUN VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/build_scripts/vcpkg-overlays \
     /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug functions-framework-cpp
 
-FROM parent AS gcf-cpp-develop
-RUN apt-get update \
-    && apt install -y  --no-install-recommends \
-       build-essential g++-8 gcc-8 git libstdc++-8-dev pkg-config tar unzip zip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
-    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100
+# This is the image used for the CI builds, includes a binary cache of the
+# *current* version of `functions-framework-cpp`, as well as binary caches of
+# its dependencies and other packages used in the examples.
+FROM gcf-cpp-incremental-1 AS gcf-cpp-ci
 
-COPY --from=gcf-cpp-incremental /usr/local/bin/cmake   /usr/local/bin/cmake
-COPY --from=gcf-cpp-incremental /usr/local/bin/ctest   /usr/local/bin/ctest
-COPY --from=gcf-cpp-incremental /usr/local/bin/ninja   /usr/local/bin/ninja
-COPY --from=gcf-cpp-incremental /usr/local/vcpkg/vcpkg /usr/local/bin/vcpkg
-COPY --from=gcf-cpp-incremental /usr/local/share /usr/local/share
-COPY --from=gcf-cpp-incremental /var/cache/vcpkg-cache /var/cache/vcpkg-cache
+# Copy the framework to /usr/local/share/gcf, that is just a lazy way to
+# get all the scripts we need for both the CI and regular builds.
 
+COPY --from=gcf-cpp-ci-0 /usr/local/bin/cmake   /usr/local/bin/cmake
+COPY --from=gcf-cpp-ci-0 /usr/local/bin/ctest   /usr/local/bin/ctest
+COPY --from=gcf-cpp-ci-0 /usr/local/bin/ninja   /usr/local/bin/ninja
+COPY --from=gcf-cpp-ci-0 /usr/local/vcpkg/vcpkg /usr/local/bin/vcpkg
+COPY --from=gcf-cpp-ci-0 /usr/local/share /usr/local/share
+COPY --from=gcf-cpp-ci-0 /var/cache/vcpkg-cache /var/cache/vcpkg-cache
+
+USER cnb
+
+FROM gcf-cpp-incremental-0 AS gcf-cpp-minimal
 USER cnb
