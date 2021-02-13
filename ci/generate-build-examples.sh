@@ -21,56 +21,59 @@ cat <<'_EOF_'
 timeout: 3600s
 options:
   machineType: 'N1_HIGHCPU_32'
-  diskSizeGb: 512
+  diskSizeGb: '512'
 
 steps:
+  # Generally we prefer to create container images with local names, to avoid
+  # polluting the repository and/or having conflicts with other builds. The
+  # exception are images created by kaniko and any images pushed to GCR
+  # to deploy on Cloud Run.
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'pack', '-f', 'build_scripts/pack.Dockerfile', 'build_scripts']
+
   # Workaround a kaniko bug using the "edge" builder:
   #     https://github.com/GoogleContainerTools/kaniko/issues/1058
-  - name: 'gcr.io/kaniko-project/executor:edge'
-    args: [
-        "--context=dir:///workspace/build_scripts",
-        "--dockerfile=build_scripts/pack.Dockerfile",
-        "--destination=gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}",
-        "--cache=true",
-        "--cache-ttl=48h"
-    ]
-
   # Create the docker images for the buildpacks builder.
   - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
         "--context=dir:///workspace/",
         "--dockerfile=build_scripts/Dockerfile",
-        "--destination=gcr.io/${PROJECT_ID}/functions-framework-cpp/runtime:${SHORT_SHA}",
-        "--target=gcf-cpp-runtime",
         "--cache=true",
+        "--cache-repo=gcr.io/${PROJECT_ID}/ci/cache",
+        "--target=gcf-cpp-runtime",
+        "--destination=gcr.io/${PROJECT_ID}/ci/gcf-cpp-runtime:${BUILD_ID}",
     ]
     waitFor: ['-']
     timeout: 1800s
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['pull', 'gcr.io/${PROJECT_ID}/functions-framework-cpp/runtime:${SHORT_SHA}']
+    args: ['pull', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-runtime:${BUILD_ID}']
+
   - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
         "--context=dir:///workspace/",
         "--dockerfile=build_scripts/Dockerfile",
-        "--destination=gcr.io/${PROJECT_ID}/functions-framework-cpp/develop:${SHORT_SHA}",
         "--cache=true",
+        "--cache-repo=gcr.io/${PROJECT_ID}/ci/cache",
+        "--target=gcf-cpp-develop",
+        "--destination=gcr.io/${PROJECT_ID}/ci/gcf-cpp-develop:${BUILD_ID}",
     ]
     waitFor: ['-']
     timeout: 1800s
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['pull', 'gcr.io/${PROJECT_ID}/functions-framework-cpp/develop:${SHORT_SHA}']
+    args: ['pull', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-develop:${BUILD_ID}']
+
     # Setup local names for the builder images.
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['tag', 'gcr.io/${PROJECT_ID}/functions-framework-cpp/develop:${SHORT_SHA}', 'gcf-cpp-develop']
+    args: ['tag', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-develop:${BUILD_ID}', 'gcf-cpp-develop:latest']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['tag', 'gcr.io/${PROJECT_ID}/functions-framework-cpp/runtime:${SHORT_SHA}', 'gcf-cpp-runtime']
+    args: ['tag', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-runtime:${BUILD_ID}', 'gcf-cpp-runtime:latest']
 
   # Create the buildpacks builder, and make it the default.
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
+  - name: 'pack'
     args: ['builder', 'create', 'gcf-cpp-builder:bionic', '--config', 'pack/builder.toml', ]
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
+  - name: 'pack'
     args: ['config', 'trusted-builders', 'add', 'gcf-cpp-builder:bionic', ]
-  - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
+  - name: 'pack'
     args: ['config', 'default-builder', 'gcf-cpp-builder:bionic', ]
     id: 'gcf-builder-ready'
 
@@ -87,7 +90,7 @@ generic_example() {
   fi
 
   cat <<_EOF_
-  - name: 'gcr.io/\${PROJECT_ID}/pack:\${SHORT_SHA}'
+  - name: 'pack'
     waitFor: ['gcf-builder-ready']
     id: '${container}'
     args: ['build',
@@ -110,7 +113,7 @@ site_example() {
   fi
   local container="site-${function}"
   cat <<_EOF_
-  - name: 'gcr.io/\${PROJECT_ID}/pack:\${SHORT_SHA}'
+  - name: 'pack'
     waitFor: ['gcf-builder-ready']
     id: '${container}'
     args: ['build',
@@ -159,9 +162,9 @@ cat <<_EOF_
   # Verify generated images are deployable
   - name: 'gcr.io/cloud-builders/docker'
     waitFor: ['hello-world']
-    args: ['tag', 'hello-world', 'gcr.io/\${PROJECT_ID}/hello-world-\${BUILD_ID}:latest']
+    args: ['tag', 'hello-world', 'gcr.io/\${PROJECT_ID}/ci/hello-world:\${BUILD_ID}']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/\${PROJECT_ID}/hello-world-\${BUILD_ID}:latest']
+    args: ['push', 'gcr.io/\${PROJECT_ID}/ci/hello-world:\${BUILD_ID}']
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args: [
@@ -170,7 +173,7 @@ cat <<_EOF_
       '--platform', 'managed',
       '--project', '\${PROJECT_ID}',
       '--region', 'us-central1',
-      '--image', 'gcr.io/\${PROJECT_ID}/hello-world-\${BUILD_ID}:latest',
+      '--image', 'gcr.io/\${PROJECT_ID}/ci/hello-world:\${BUILD_ID}',
       '--allow-unauthenticated',
     ]
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -195,4 +198,35 @@ cat <<_EOF_
       '--region', 'us-central1',
       '--quiet',
     ]
+
+  # Remove the images created by this build.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set +e
+        gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/gcf-cpp-runtime:\${BUILD_ID}
+        gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/gcf-cpp-develop:\${BUILD_ID}
+        gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/hello-world:\${BUILD_ID}
+        exit 0
+
+  # The previous step may not run if the build fails. Garbage collect any
+  # images created by this script more than 4 weeks ago. This step should
+  # not break the build on error, and it can start running as soon as the
+  # build does.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    waitFor: ['-']
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set +e
+        for image in hello-world gcf-cpp-runtime gcf-cpp-develop cache; do
+          gcloud --project=\${PROJECT_ID} container images list-tags gcr.io/\${PROJECT_ID}/ci/\$\${image} \\
+              --format='get(digest)' --filter='timestamp.datetime < -P4W' | \\
+          xargs printf "gcr.io/\${PROJECT_ID}/\$\${image}@\$\$1\n"
+        done | \\
+        xargs -P 4 -L 32 gcloud container images delete -q --force-delete-tags
+        exit 0
 _EOF_
