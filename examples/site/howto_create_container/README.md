@@ -84,8 +84,8 @@ several minutes, maybe as long as an hour, depending on your workstation's
 performance.
 
 ```sh
-docker build -t gcf-cpp-develop -f build_scripts/Dockerfile .
 docker build -t gcf-cpp-runtime --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
+docker build -t gcf-cpp-develop --target gcf-cpp-develop -f build_scripts/Dockerfile .
 pack builder create gcf-cpp-builder:bionic --config pack/builder.toml
 pack config trusted-builders add gcf-cpp-builder:bionic
 pack config default-builder gcf-cpp-builder:bionic

@@ -11,7 +11,7 @@ To compile the examples you will need a Docker image with the development tools 
 To create this image run this command:
 
 ```sh
-docker build -t gcf-cpp-develop -f build_scripts/Dockerfile .
+docker build -t gcf-cpp-develop --target gcf-cpp-develop -f build_scripts/Dockerfile .
 ```
 
 The runtime image is contains just the minimal components to execute a program using the framework:

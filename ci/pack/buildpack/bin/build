@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ layers="$1"
 echo "-----> Setup vcpkg"
 export VCPKG_DEFAULT_BINARY_CACHE="${layers}/vcpkg-cache"
 export VCPKG_DEFAULT_TRIPLET=x64-linux-nodebug
+export VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/build_scripts/vcpkg-overlays
 export VCPKG_ROOT="${layers}/vcpkg"
 
 if [[ ! -d "${VCPKG_ROOT}" ]]; then
