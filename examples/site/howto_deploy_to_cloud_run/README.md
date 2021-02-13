@@ -30,11 +30,14 @@ If needed, use the [online instructions][docker-install] to download and install
 this tool. This guide assumes that you have configured [sudoless docker], if
 you prefer replace all `docker` commands below with `sudo docker`.
 
-Verify the [pack tool][pack-install] is functional on our workstation:
+
+Verify the [pack tool][pack-install] is functional on our workstation. These
+instructions were tested with v0.17.0, they should work with newer versions.
+Some commands may not work with older versions.
 
 ```shell
 pack version
-# Output: a version number, e.g., 0.15.1+git-79adc30.build-1660
+# Output: a version number, e.g., 0.17.0+git-d9cb4e7.build-2045
 ```
 
 In this guide we will be using the [HTTP hello word][hello-world-http] function:
@@ -90,9 +93,9 @@ performance.
 ```sh
 docker build -t gcf-cpp-develop -f build_scripts/Dockerfile .
 docker build -t gcf-cpp-runtime --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
-pack create-builder gcf-cpp-builder:bionic --config pack/builder.toml
-pack trust-builder gcf-cpp-builder:bionic
-pack set-default-builder gcf-cpp-builder:bionic
+pack builder create gcf-cpp-builder:bionic --config pack/builder.toml
+pack config trusted-builders add gcf-cpp-builder:bionic
+pack config default-builder gcf-cpp-builder:bionic
 ```
 
 ## Building a Docker image

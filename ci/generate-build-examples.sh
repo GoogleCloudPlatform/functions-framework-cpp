@@ -24,26 +24,16 @@ options:
   diskSizeGb: 512
 
 steps:
-  # Create a docker image for the buildpacks `pack` tool
-  - name: 'gcr.io/cloud-builders/git'
-    args: [
-      'clone', '--depth=1',
-      'https://github.com/GoogleCloudPlatform/cloud-builders-community',
-      'third_party/cloud-builders-community',
-    ]
-    waitFor: ['-']
-    id: 'clone-cloud-builders-community'
   # Workaround a kaniko bug using the "edge" builder:
   #     https://github.com/GoogleContainerTools/kaniko/issues/1058
   - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
-        "--context=dir:///workspace/third_party/cloud-builders-community/pack/",
-        "--dockerfile=Dockerfile",
+        "--context=dir:///workspace/build_scripts",
+        "--dockerfile=build_scripts/pack.Dockerfile",
         "--destination=gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}",
         "--cache=true",
         "--cache-ttl=48h"
     ]
-    waitFor: ['clone-cloud-builders-community']
 
   # Create the docker images for the buildpacks builder.
   - name: 'gcr.io/kaniko-project/executor:edge'
@@ -77,11 +67,11 @@ steps:
 
   # Create the buildpacks builder, and make it the default.
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    args: ['create-builder', 'gcf-cpp-builder:bionic', '--builder-config', 'pack/builder.toml', ]
+    args: ['builder', 'create', 'gcf-cpp-builder:bionic', '--config', 'pack/builder.toml', ]
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    args: ['trust-builder', 'gcf-cpp-builder:bionic', ]
+    args: ['config', 'trusted-builders', 'add', 'gcf-cpp-builder:bionic', ]
   - name: 'gcr.io/${PROJECT_ID}/pack:${SHORT_SHA}'
-    args: ['set-default-builder', 'gcf-cpp-builder:bionic', ]
+    args: ['config', 'default-builder', 'gcf-cpp-builder:bionic', ]
     id: 'gcf-builder-ready'
 
   # Build the examples using the builder. Keep these in alphabetical order.
