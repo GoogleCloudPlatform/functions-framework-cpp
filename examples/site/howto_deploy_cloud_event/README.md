@@ -3,7 +3,7 @@
 [repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
 [howto-create-container]: /examples/site/howto_create_container/README.md
 [cloud-run-quickstarts]: https://cloud.google.com/run/docs/quickstarts
-[gcp-quickstarts]: https://cloud.google.com/gcp/getting-started
+[gcp-quickstarts]: https://cloud.google.com/resource-manager/docs/creating-managing-projects
 [buildpacks]: https://buildpacks.io
 [docker]: https://docker.com/
 [docker-install]: https://store.docker.com/search?type=edition&offering=community
@@ -28,13 +28,12 @@ docker run hello-world
 ```
 
 If needed, use the [online instructions][docker-install] to download and install
-this tool. This guide assumes that you have configured [sudoless docker], if
+this tool. This guide assumes that you have configured [sudoless docker]. If
 you prefer replace all `docker` commands below with `sudo docker`.
 
-
 Verify the [pack tool][pack-install] is functional on our workstation. These
-instructions were tested with v0.17.0, they should work with newer versions.
-Some commands may not work with older versions.
+instructions were tested with v0.17.0, although they should work with newer
+versions. Some commands may not work with older versions.
 
 ```shell
 pack version

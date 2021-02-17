@@ -31,7 +31,7 @@ uri = "buildpack"
 
 [[order]]
     [[order.group]]
-    id = "com.google.buildpack.cpp.project"
+    id = "com.google.buildpack.cpp"
     version = "0.4.0"
 
 # Stack that will be used by the builder
@@ -45,7 +45,7 @@ cat >"${DEST}/buildpack/buildpack.toml" <<_EOF_
 api = "0.2"
 
 [buildpack]
-id = "com.google.buildpack.cpp.project"
+id = "com.google.buildpack.cpp"
 version = "0.4.0"
 name = "Functions Framework C++ Buildpack for GCP Project ${PROJECT_ID}"
 
@@ -67,11 +67,10 @@ fi
 
 exit 0
 _EOF_
+chmod 755 "${DEST}/buildpack/bin/detect"
 
 cat >"${DEST}/buildpack/bin/build" <<'_SCRIPT_EOF_'
 #!/bin/bash
-
-set -eu
 
 set -eu
 
@@ -97,29 +96,29 @@ set(VCPKG_LIBRARY_LINKAGE static)
 set(VCPKG_TARGET_ARCHITECTURE x64)
 _EOF_
   cp -r /usr/local/bin/vcpkg "${VCPKG_ROOT}"
-cat >"${layers}/vcpkg.toml" <<EOL
+cat >"${layers}/vcpkg.toml" <<_EOF_
 build = true
 cache = true
 launch = false
-EOL
+_EOF_
 fi
 
 if [[ ! -d "${layers}/vcpkg-cache" ]]; then
   echo "-----> Restore cache from build image"
   cp -r /var/cache/vcpkg-cache "${layers}/vcpkg-cache"
-cat >"${layers}/vcpkg-cache.toml" <<EOL
+cat >"${layers}/vcpkg-cache.toml" <<_EOF_
 build = true
 cache = true
 launch = false
-EOL
+_EOF_
 fi
 
 echo "-----> Setup build directory"
-cat >"${layers}/source.toml" <<EOL
+cat >"${layers}/source.toml" <<_EOF_
 build = true
 cache = false
 launch = false
-EOL
+_EOF_
 
 cp -r /usr/local/share/gcf/build_scripts/cmake "${layers}/source"
 if [[ -r vcpkg.json ]]; then
@@ -137,11 +136,11 @@ fi
     "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE:-http}" >"${layers}/source/main.cc"
 
 echo "-----> Configure Function"
-cat >"${layers}/binary.toml" <<EOL
+cat >"${layers}/binary.toml" <<_EOF_
 build = true
 cache = true
 launch = false
-EOL
+_EOF_
 
 /usr/local/bin/cmake -S "${layers}/source" -B "${layers}/binary" -GNinja -DCMAKE_MAKE_PROGRAM=/usr/local/bin/ninja \
   -DCNB_APP_DIR="${PWD}" \
@@ -151,15 +150,17 @@ EOL
   -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 /usr/local/bin/cmake --build "${layers}/binary" --target install
 
-cat >"${layers}/local.toml" <<EOL
+cat >"${layers}/local.toml" <<_EOF_
 launch = true
 cache = false
 build = false
-EOL
+_EOF_
 
-cat >"${layers}/launch.toml" <<EOL
+cat >"${layers}/launch.toml" <<_EOF_
 [[processes]]
 type = "web"
 command = "${layers}/local/bin/function"
-EOL
+_EOF_
 _SCRIPT_EOF_
+
+chmod 755 "${DEST}/buildpack/bin/build"
