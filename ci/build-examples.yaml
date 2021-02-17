@@ -23,12 +23,12 @@ steps:
         "--cache=true",
         "--cache-repo=gcr.io/${PROJECT_ID}/ci/cache",
         "--target=gcf-cpp-runtime",
-        "--destination=gcr.io/${PROJECT_ID}/ci/gcf-cpp-runtime:${BUILD_ID}",
+        "--destination=gcr.io/${PROJECT_ID}/ci/run-image:${BUILD_ID}",
     ]
     waitFor: ['-']
     timeout: 1800s
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['pull', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-runtime:${BUILD_ID}']
+    args: ['pull', 'gcr.io/${PROJECT_ID}/ci/run-image:${BUILD_ID}']
 
   - name: 'gcr.io/kaniko-project/executor:edge'
     args: [
@@ -37,18 +37,18 @@ steps:
         "--cache=true",
         "--cache-repo=gcr.io/${PROJECT_ID}/ci/cache",
         "--target=gcf-cpp-ci",
-        "--destination=gcr.io/${PROJECT_ID}/ci/gcf-cpp-ci:${BUILD_ID}",
+        "--destination=gcr.io/${PROJECT_ID}/ci/build-image:${BUILD_ID}",
     ]
     waitFor: ['-']
     timeout: 1800s
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['pull', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-ci:${BUILD_ID}']
+    args: ['pull', 'gcr.io/${PROJECT_ID}/ci/build-image:${BUILD_ID}']
 
     # Setup local names for the builder images.
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['tag', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-ci:${BUILD_ID}', 'gcf-cpp-ci:latest']
+    args: ['tag', 'gcr.io/${PROJECT_ID}/ci/build-image:${BUILD_ID}', 'ci-build-image:latest']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['tag', 'gcr.io/${PROJECT_ID}/ci/gcf-cpp-runtime:${BUILD_ID}', 'gcf-cpp-runtime:latest']
+    args: ['tag', 'gcr.io/${PROJECT_ID}/ci/run-image:${BUILD_ID}', 'ci-run-image:latest']
 
   # Create the buildpacks builder, and make it the default.
   - name: 'pack'
@@ -406,9 +406,8 @@ steps:
       - '-c'
       - |
         set +e
-        gcloud container images delete -q gcr.io/${PROJECT_ID}/ci/gcf-cpp-runtime:${BUILD_ID}
-        gcloud container images delete -q gcr.io/${PROJECT_ID}/ci/gcf-cpp-develop:${BUILD_ID}
-        gcloud container images delete -q gcr.io/${PROJECT_ID}/ci/gcf-cpp-ci:${BUILD_ID}
+        gcloud container images delete -q gcr.io/${PROJECT_ID}/ci/run-image:${BUILD_ID}
+        gcloud container images delete -q gcr.io/${PROJECT_ID}/ci/build-image:${BUILD_ID}
         gcloud container images delete -q gcr.io/${PROJECT_ID}/ci/hello-world:${BUILD_ID}
         exit 0
 
@@ -423,7 +422,7 @@ steps:
       - '-c'
       - |
         set +e
-        for image in hello-world gcf-cpp-runtime gcf-cpp-ci gcf-cpp-develop cache; do
+        for image in hello-world build-image run-image cache; do
           gcloud --project=${PROJECT_ID} container images list-tags gcr.io/${PROJECT_ID}/ci/$${image} \
               --format='get(digest)' --filter='timestamp.datetime < -P4W' | \
           xargs printf "gcr.io/${PROJECT_ID}/$${image}@$$1\n"
