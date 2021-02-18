@@ -14,6 +14,7 @@
 
 #include "google/cloud/functions/internal/parse_cloud_event_json.h"
 #include "google/cloud/functions/internal/base64_decode.h"
+#include "google/cloud/functions/internal/parse_cloud_event_storage.h"
 #include <nlohmann/json.hpp>
 #include <algorithm>
 
@@ -59,7 +60,7 @@ functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
 /// Parse @p json_string as a Cloud Event
 functions::CloudEvent ParseCloudEventJson(std::string_view json_string) {
   auto json = nlohmann::json::parse(json_string);
-  return ParseCloudEventJson(json);
+  return ParseCloudEventStorage(ParseCloudEventJson(json));
 }
 
 std::vector<functions::CloudEvent> ParseCloudEventJsonBatch(
