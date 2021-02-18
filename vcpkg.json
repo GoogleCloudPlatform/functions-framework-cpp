@@ -14,6 +14,7 @@
     "boost-property-tree",
     "boost-serialization",
     "boost-uuid",
+    "cppcodec",
     "fmt",
     "google-cloud-cpp",
     "gtest",

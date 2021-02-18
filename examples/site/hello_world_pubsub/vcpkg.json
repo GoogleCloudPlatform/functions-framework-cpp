@@ -3,7 +3,7 @@
   "version-string": "unversioned",
   "dependencies": [
     "boost-log",
-    "boost-serialization",
+    "cppcodec",
     "functions-framework-cpp",
     "nlohmann-json"
   ]

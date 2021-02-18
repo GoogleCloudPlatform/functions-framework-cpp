@@ -21,18 +21,21 @@ We will use this function throughput this guide:
 
 [/examples/site/hello_world_pubsub/hello_world_pubsub.cc]
 ```cc
-namespace gcf = ::google::cloud::functions;
+#include <google/cloud/functions/cloud_event.h>
+#include <boost/log/trivial.hpp>
+#include <cppcodec/base64_rfc4648.hpp>
+#include <nlohmann/json.hpp>
 
-// Use Boost.Archive to decode Pub/Sub message payload
-std::string decode_base64(std::string const& base64);
+namespace gcf = ::google::cloud::functions;
 
 void hello_world_pubsub(gcf::CloudEvent event) {
   if (event.data_content_type().value_or("") != "application/json") {
-    std::cerr << "Error: expected application/json data\n";
+    BOOST_LOG_TRIVIAL(error) << "expected application/json data";
     return;
   }
   auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
-  auto name = decode_base64(payload["message"]["data"].get<std::string>());
+  auto const name = cppcodec::base64_rfc4648::decode<std::string>(
+      payload["message"]["data"].get<std::string>());
   BOOST_LOG_TRIVIAL(info) << "Hello " << (name.empty() ? "World" : name);
 }
 ```
@@ -73,19 +76,19 @@ This guide assumes that you have:
   [Howto Guide][container-guide] for more information,
 
 ```shell
-pack build pack build \
+pack build \
     --builder gcf-cpp-builder:bionic \
     --env "FUNCTION_SIGNATURE_TYPE=cloudevent" \
     --env "TARGET_FUNCTION=hello_world_pubsub" \
     --path "examples/site/hello_world_pubsub" \
-    "gcr.io/${GOOGLE_CLOUD_PROJECT}/hello_world_pubsub"
+    "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-pubsub"
 ```
 
 Deploy this function to Cloud Run:
 
 ```shell
-docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/hello_world_pubsub"
-gcloud run deploy gcf-hello-world-pubsub \
+docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-pubsub"
+gcloud run deploy gcf-hello-world-storage \
     --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-pubsub:latest" \
     --region="us-central1" \
