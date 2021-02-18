@@ -128,7 +128,8 @@ FROM gcf-cpp-incremental-1 AS gcf-cpp-develop
 
 # Copy the framework to /usr/local/share/gcf, that is just a lazy way to
 # get all the scripts we need for both the CI and regular builds.
-COPY . /usr/local/share/gcf
+COPY build_scripts/cmake /usr/local/share/gcf/build_scripts/cmake
+COPY build_scripts/generate-wrapper.sh /usr/local/share/gcf/build_scripts/generate-wrapper.sh
 RUN find /usr/local/share/gcf -type f | xargs chmod 644
 RUN find /usr/local/share/gcf -type d | xargs chmod 755
 RUN chmod 755 /usr/local/share/gcf/build_scripts/generate-wrapper.sh

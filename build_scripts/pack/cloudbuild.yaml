@@ -58,7 +58,7 @@ steps:
     volumes:
       - name: 'builder-spec'
         path: '/builder'
-    args: ['build_scripts/pack/generate-builder-for-project.sh', '${PROJECT_ID}', '/builder']
+    args: ['build_scripts/pack/generate-builder.sh', '2021', 'gcr.io/${PROJECT_ID}/functions-framework-cpp/', '/builder']
 
   - name: 'pack'
     volumes:

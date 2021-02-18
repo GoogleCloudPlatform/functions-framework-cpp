@@ -109,8 +109,8 @@ Create the buildpack builder:
 
 ```sh
 cd functions-framework-cpp
-docker build -t gcf-cpp-runtime --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
-docker build -t gcf-cpp-develop --target gcf-cpp-ci -f build_scripts/Dockerfile .
+docker build -t gcf-cpp-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
+docker build -t gcf-cpp-build-image --target gcf-cpp-ci -f build_scripts/Dockerfile .
 pack builder create gcf-cpp-builder:bionic --config ci/pack/builder.toml
 pack config trusted-builders add gcf-cpp-builder:bionic
 pack config default-builder gcf-cpp-builder:bionic
