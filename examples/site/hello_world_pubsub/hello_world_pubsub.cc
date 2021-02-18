@@ -17,13 +17,12 @@
 #include <boost/log/trivial.hpp>
 #include <cppcodec/base64_rfc4648.hpp>
 #include <nlohmann/json.hpp>
-#include <iostream>
 
 namespace gcf = ::google::cloud::functions;
 
 void hello_world_pubsub(gcf::CloudEvent event) {  // NOLINT
   if (event.data_content_type().value_or("") != "application/json") {
-    std::cerr << "Error: expected application/json data\n";
+    BOOST_LOG_TRIVIAL(error) << "expected application/json data";
     return;
   }
   auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
