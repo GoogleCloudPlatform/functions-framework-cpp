@@ -19,9 +19,6 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
-using ::testing::ElementsAre;
-using ::testing::IsEmpty;
-
 struct TestData {
   std::string encoded_data;
   std::string expected_data;
