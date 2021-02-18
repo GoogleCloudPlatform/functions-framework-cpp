@@ -16,12 +16,12 @@
 
 if (BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
+    find_package(fmt CONFIG REQUIRED)
+    find_package(google_cloud_cpp_storage REQUIRED)
+
     set(functions_framework_cpp_examples_unit_tests
         # cmake-format: sort
         storage_integration_test.cc storage_unit_test.cc)
-
-    set(functions_framework_cpp_examples_programs # cmake-format: sort
-                                                  storage_integration_server.cc)
 
     foreach (fname ${functions_framework_cpp_examples_unit_tests})
         string(REPLACE "/" "_" target "${fname}")
@@ -40,15 +40,13 @@ if (BUILD_TESTING)
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
 
-    foreach (fname ${functions_framework_cpp_examples_programs})
-        string(REPLACE "/" "_" target "${fname}")
-        string(REPLACE ".cc" "" target "${target}")
-        add_executable("${target}" ${fname})
-        functions_framework_cpp_add_common_options(${target})
-        target_link_libraries(
-            ${target}
-            PRIVATE functions_framework_examples
-                    functions-framework-cpp::framework Boost::filesystem
-                    Boost::log)
-    endforeach ()
+    add_executable(storage_integration_server storage_integration_server.cc)
+    target_link_libraries(
+            storage_integration_server
+            PRIVATE functions_framework_examples functions-framework-cpp::framework
+            Boost::filesystem Boost::log)
+    add_executable(storage_system_test storage_system_test.cc)
+    target_link_libraries(
+            storage_system_test PRIVATE google-cloud-cpp::storage fmt::fmt Boost::log
+            GTest::gmock_main GTest::gmock GTest::gtest)
 endif ()
