@@ -33,6 +33,8 @@ add_library(
     http_request.h
     http_response.cc
     http_response.h
+    internal/base64_decode.cc
+    internal/base64_decode.h
     internal/build_info.h
     internal/call_user_function.cc
     internal/call_user_function.h
@@ -87,6 +89,7 @@ if (BUILD_TESTING)
         cloud_event_test.cc
         http_request_test.cc
         http_response_test.cc
+        internal/base64_decode_test.cc
         internal/call_user_function_test.cc
         internal/compiler_info_test.cc
         internal/framework_impl_test.cc
