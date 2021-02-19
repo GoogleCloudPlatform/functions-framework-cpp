@@ -42,11 +42,12 @@ if (BUILD_TESTING)
 
     add_executable(storage_integration_server storage_integration_server.cc)
     target_link_libraries(
-            storage_integration_server
-            PRIVATE functions_framework_examples functions-framework-cpp::framework
-            Boost::filesystem Boost::log)
+        storage_integration_server
+        PRIVATE functions_framework_examples functions-framework-cpp::framework
+                Boost::filesystem Boost::log)
     add_executable(storage_system_test storage_system_test.cc)
     target_link_libraries(
-            storage_system_test PRIVATE google-cloud-cpp::storage fmt::fmt Boost::log
-            GTest::gmock_main GTest::gmock GTest::gtest)
+        storage_system_test
+        PRIVATE google-cloud-cpp::storage fmt::fmt Boost::log GTest::gmock_main
+                GTest::gmock GTest::gtest)
 endif ()
