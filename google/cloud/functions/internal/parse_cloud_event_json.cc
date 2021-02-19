@@ -13,15 +13,14 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/parse_cloud_event_json.h"
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
+#include "google/cloud/functions/internal/base64_decode.h"
 #include <nlohmann/json.hpp>
 #include <algorithm>
-#include <iterator>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
+
 functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
   auto event = functions::CloudEvent(
       json.at("id").get<std::string>(), json.at("source").get<std::string>(),
@@ -47,29 +46,9 @@ functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
       event.set_data(d.get<std::string>());
     }
   } else if (json.count("data_base64") != 0) {
-    auto base64 = json.at("data_base64").get<std::string>();
-    namespace bai = boost::archive::iterators;
-    auto constexpr kBase64RawBits = 6;
-    auto constexpr kBase64EncodedBits = 8;
-    using Decoder =
-        bai::transform_width<bai::binary_from_base64<std::string::iterator>,
-                             kBase64EncodedBits, kBase64RawBits>;
-    // Pad the raw string if needed.
-    base64.append((4 - base64.size() % 4) % 4, '=');
-    // While we know how much padding we added, there may have been some padding
-    // there, just not enough. We need to determine the actual number of `=`
-    // characters at the end of the string.
-    auto pad_count = std::distance(
-        base64.rbegin(), std::find_if(base64.rbegin(), base64.rend(),
-                                      [](auto c) { return c != '='; }));
-    if (pad_count > 2) {
-      throw std::invalid_argument("Invalid base64 string <" + base64 + ">");
-    }
-
-    std::string data{Decoder(base64.begin()), Decoder(base64.end())};
-    for (; pad_count != 0; --pad_count) data.pop_back();
     // TODO(#117) - consider storing as std::vector<std::uint8_t>
-    event.set_data(std::move(data));
+    event.set_data(
+        Base64Decode(json.at("data_base64").get_ref<std::string const&>()));
   }
 
   return event;
