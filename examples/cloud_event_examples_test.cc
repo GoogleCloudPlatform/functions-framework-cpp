@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/internal/parse_cloud_event_json.h"
-#include "google/cloud/functions/cloud_event.h"
+#include <google/cloud/functions/internal/parse_cloud_event_json.h>
+#include <google/cloud/functions/cloud_event.h>
 #include <gmock/gmock.h>
 
 namespace gcf = ::google::cloud::functions;
