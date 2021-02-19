@@ -49,14 +49,14 @@ void hello_world_storage(gcf::CloudEvent event) {  // NOLINT
 }
 ```
 
-This test receives storage events and lots a few of the fields in these
+This test receives storage events and logs a few of the fields in these
 events.
 
 ## Writing a Unit Test
 
 This function uses the [Boost.Log][boost-log-gh] library to facilitate unit
 testing. Logging can be captured and examined using the usual testing
-assertions, see [storage_unit_test.cc] for more details.
+assertions. See [storage_unit_test.cc] for more details.
 
 ## Writing an Integration Test
 
@@ -101,7 +101,7 @@ BUCKET_NAME=... # assign a valid bucket name
 gsutil mb -p "${GOOGLE_CLOUD_PROJECT}" "gs://${BUCKET_NAME}"
 ```
 
-Then change the bucket to publish all changes to a Cloud Pub/Sub topic, this
+Then change the bucket to publish all changes to a Cloud Pub/Sub topic. This
 command will create the topic if needed, and assign the right permissions:
 
 ```shell
