@@ -307,6 +307,11 @@ TEST(ExamplesSiteTest, LogStackdriver) {
 
   EXPECT_NO_THROW(log_stackdriver(
       google::cloud::functions_internal::ParseCloudEventJson(envelope.dump())));
+
+  // This is just to fix the code coverage nit.
+  envelope.erase("datacontenttype");
+  EXPECT_NO_THROW(log_stackdriver(
+      google::cloud::functions_internal::ParseCloudEventJson(envelope.dump())));
 }
 
 TEST(ExamplesSiteTest, ConceptsAfterResponse) {
