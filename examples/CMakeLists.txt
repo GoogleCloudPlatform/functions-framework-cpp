@@ -32,6 +32,7 @@ add_library(
     hello_multiple_sources/hello_multiple_sources.cc
     hello_with_third_party/hello_with_third_party.cc
     hello_world/hello_world.cc
+    site/bearer_token/bearer_token.cc
     site/concepts_after_response/concepts_after_response.cc
     site/concepts_after_timeout/concepts_after_timeout.cc
     site/concepts_filesystem/concepts_filesystem.cc
