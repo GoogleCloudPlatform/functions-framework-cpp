@@ -14,6 +14,7 @@
 
 #include "google/cloud/functions/internal/parse_cloud_event_http.h"
 #include "google/cloud/functions/internal/parse_cloud_event_json.h"
+#include "google/cloud/functions/internal/parse_cloud_event_storage.h"
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
@@ -60,7 +61,7 @@ functions::CloudEvent ParseCloudEventHttpBinary(BeastRequest const& request) {
 std::vector<functions::CloudEvent> ParseCloudEventHttp(
     BeastRequest const& request) {
   if (request.count("content-type") == 0) {
-    return {ParseCloudEventHttpBinary(request)};
+    return {ParseCloudEventStorage(ParseCloudEventHttpBinary(request))};
   }
   auto content_type = request["content-type"];
   if (content_type.rfind("application/cloudevents-batch+json", 0) == 0) {
@@ -69,7 +70,7 @@ std::vector<functions::CloudEvent> ParseCloudEventHttp(
   if (content_type.rfind("application/cloudevents+json", 0) == 0) {
     return {ParseCloudEventJson(request.body())};
   }
-  return {ParseCloudEventHttpBinary(request)};
+  return {ParseCloudEventStorage(ParseCloudEventHttpBinary(request))};
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS

@@ -13,7 +13,9 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/parse_cloud_event_http.h"
+#include <cppcodec/base64_rfc4648.hpp>
 #include <gmock/gmock.h>
+#include <nlohmann/json.hpp>
 #include <algorithm>
 #include <iterator>
 
@@ -138,6 +140,69 @@ TEST(ParseCloudEventHttp, Json) {
   EXPECT_EQ(ce.source(), "/mycontext");
   EXPECT_EQ(ce.type(), "com.example.someevent");
   EXPECT_EQ(ce.spec_version(), functions::CloudEvent::kDefaultSpecVersion);
+}
+
+TEST(ParseCloudEventJson, EmulateStorage) {
+  auto const data = nlohmann::json::parse(R"js({
+    "bucket": "some-bucket",
+    "contentType": "text/plain",
+    "crc32c": "rTVTeQ==",
+    "etag": "CNHZkbuF/ugCEAE=",
+    "generation": "1587627537231057",
+    "id": "some-bucket/folder/Test.cs/1587627537231057",
+    "kind": "storage#object",
+    "md5Hash": "kF8MuJ5+CTJxvyhHS1xzRg==",
+    "mediaLink": "https://www.googleapis.com/download/storage/v1/b/some-bucket/o/folder%2FTest.cs?generation=1587627537231057\u0026alt=media",
+    "metageneration": "1",
+    "name": "folder/Test.cs",
+    "selfLink": "https://www.googleapis.com/storage/v1/b/some-bucket/o/folder/Test.cs",
+    "size": "352",
+    "storageClass": "MULTI_REGIONAL",
+    "timeCreated": "2020-04-23T07:38:57.230Z",
+    "timeStorageClassUpdated": "2020-04-23T07:38:57.230Z",
+    "updated": "2020-04-23T07:38:57.230Z"
+  })js");
+  auto const data_base64 = cppcodec::base64_rfc4648::encode(data.dump());
+  auto const attributes = nlohmann::json{
+      {"notificationConfig",
+       "projects/_/buckets/some-bucket/notificationConfigs/3"},
+      {"eventType", "OBJECT_FINALIZE"},
+      {"payloadFormat", "JSON_API_V1"},
+      {"bucketId", "some-bucket"},
+      {"objectId", "folder/Test.cs"},
+      {"objectGeneration", "1587627537231057"},
+  };
+  auto const payload = nlohmann::json{{
+      "message",
+      nlohmann::json{
+          {"attributes", attributes},
+          {"data", data_base64},
+      },
+  }};
+
+  auto request = BeastRequest();
+  request.insert("ce-type", "google.cloud.pubsub.topic.v1.messagePublished");
+  request.insert(
+      "ce-source",
+      "//pubsub.googleapis.com/projects/sample-project/topics/storage");
+  request.insert("ce-id", "A234-1234-1234");
+  request.insert("content-type", "application/json");
+  request.body() = payload.dump();
+  request.prepare_payload();
+
+  auto events = ParseCloudEventHttp(request);
+  ASSERT_THAT(events.size(), 1);
+  auto const& ce = events[0];
+  EXPECT_EQ(ce.id(), "A234-1234-1234");
+  EXPECT_EQ(ce.source(),
+            "//storage.googleapis.com/projects/_/buckets/some-bucket");
+  EXPECT_EQ(ce.type(), "google.cloud.storage.object.v1.finalized");
+  EXPECT_EQ(ce.spec_version(), functions::CloudEvent::kDefaultSpecVersion);
+  ASSERT_EQ(ce.data_content_type().value_or(""), "application/json");
+  auto const actual_storage_data =
+      nlohmann::json::parse(ce.data().value_or("{}"));
+  auto const delta = nlohmann::json::diff(data, actual_storage_data);
+  EXPECT_EQ(data, actual_storage_data) << "delta=" << delta;
 }
 
 TEST(ParseCloudEventHttp, JsonBatch) {
