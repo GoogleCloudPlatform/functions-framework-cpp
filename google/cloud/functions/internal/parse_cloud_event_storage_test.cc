@@ -38,24 +38,24 @@ TEST(ParseCloudEventJson, EmulateStorageBase) {
   for (auto const& test : test_cases) {
     SCOPED_TRACE("Testing for " + test.event_type);
     auto const data = nlohmann::json::parse(R"js({
-    "bucket": "some-bucket",
-    "contentType": "text/plain",
-    "crc32c": "rTVTeQ==",
-    "etag": "CNHZkbuF/ugCEAE=",
-    "generation": "1587627537231057",
-    "id": "some-bucket/folder/Test.cs/1587627537231057",
-    "kind": "storage#object",
-    "md5Hash": "kF8MuJ5+CTJxvyhHS1xzRg==",
-    "mediaLink": "https://www.googleapis.com/download/storage/v1/b/some-bucket/o/folder%2FTest.cs?generation=1587627537231057\u0026alt=media",
-    "metageneration": "1",
-    "name": "folder/Test.cs",
-    "selfLink": "https://www.googleapis.com/storage/v1/b/some-bucket/o/folder/Test.cs",
-    "size": "352",
-    "storageClass": "MULTI_REGIONAL",
-    "timeCreated": "2020-04-23T07:38:57.230Z",
-    "timeStorageClassUpdated": "2020-04-23T07:38:57.230Z",
-    "updated": "2020-04-23T07:38:57.230Z"
-  })js");
+      "bucket": "some-bucket",
+      "contentType": "text/plain",
+      "crc32c": "rTVTeQ==",
+      "etag": "CNHZkbuF/ugCEAE=",
+      "generation": "1587627537231057",
+      "id": "some-bucket/folder/Test.cs/1587627537231057",
+      "kind": "storage#object",
+      "md5Hash": "kF8MuJ5+CTJxvyhHS1xzRg==",
+      "mediaLink": "https://www.googleapis.com/download/storage/v1/b/some-bucket/o/folder%2FTest.cs?generation=1587627537231057\u0026alt=media",
+      "metageneration": "1",
+      "name": "folder/Test.cs",
+      "selfLink": "https://www.googleapis.com/storage/v1/b/some-bucket/o/folder/Test.cs",
+      "size": "352",
+      "storageClass": "MULTI_REGIONAL",
+      "timeCreated": "2020-04-23T07:38:57.230Z",
+      "timeStorageClassUpdated": "2020-04-23T07:38:57.230Z",
+      "updated": "2020-04-23T07:38:57.230Z"
+    })js");
     auto const data_base64 = cppcodec::base64_rfc4648::encode(data.dump());
     auto const attributes = nlohmann::json{
         {"notificationConfig",
@@ -220,24 +220,24 @@ TEST(ParseCloudEventJson, EmulateStorageMissingAttributeField) {
   for (auto const& test : test_cases) {
     SCOPED_TRACE("Testing for " + test.field_name);
     auto const data = nlohmann::json::parse(R"js({
-    "bucket": "some-bucket",
-    "contentType": "text/plain",
-    "crc32c": "rTVTeQ==",
-    "etag": "CNHZkbuF/ugCEAE=",
-    "generation": "1587627537231057",
-    "id": "some-bucket/folder/Test.cs/1587627537231057",
-    "kind": "storage#object",
-    "md5Hash": "kF8MuJ5+CTJxvyhHS1xzRg==",
-    "mediaLink": "https://www.googleapis.com/download/storage/v1/b/some-bucket/o/folder%2FTest.cs?generation=1587627537231057\u0026alt=media",
-    "metageneration": "1",
-    "name": "folder/Test.cs",
-    "selfLink": "https://www.googleapis.com/storage/v1/b/some-bucket/o/folder/Test.cs",
-    "size": "352",
-    "storageClass": "MULTI_REGIONAL",
-    "timeCreated": "2020-04-23T07:38:57.230Z",
-    "timeStorageClassUpdated": "2020-04-23T07:38:57.230Z",
-    "updated": "2020-04-23T07:38:57.230Z"
-  })js");
+      "bucket": "some-bucket",
+      "contentType": "text/plain",
+      "crc32c": "rTVTeQ==",
+      "etag": "CNHZkbuF/ugCEAE=",
+      "generation": "1587627537231057",
+      "id": "some-bucket/folder/Test.cs/1587627537231057",
+      "kind": "storage#object",
+      "md5Hash": "kF8MuJ5+CTJxvyhHS1xzRg==",
+      "mediaLink": "https://www.googleapis.com/download/storage/v1/b/some-bucket/o/folder%2FTest.cs?generation=1587627537231057\u0026alt=media",
+      "metageneration": "1",
+      "name": "folder/Test.cs",
+      "selfLink": "https://www.googleapis.com/storage/v1/b/some-bucket/o/folder/Test.cs",
+      "size": "352",
+      "storageClass": "MULTI_REGIONAL",
+      "timeCreated": "2020-04-23T07:38:57.230Z",
+      "timeStorageClassUpdated": "2020-04-23T07:38:57.230Z",
+      "updated": "2020-04-23T07:38:57.230Z"
+    })js");
     auto const data_base64 = cppcodec::base64_rfc4648::encode(data.dump());
     auto attributes = nlohmann::json{
         {"notificationConfig",
@@ -281,24 +281,24 @@ TEST(ParseCloudEventJson, EmulateStorageMissingInvalidAttributeField) {
   for (auto const& test : test_cases) {
     SCOPED_TRACE("Testing for " + test.field_name);
     auto const data = nlohmann::json::parse(R"js({
-    "bucket": "some-bucket",
-    "contentType": "text/plain",
-    "crc32c": "rTVTeQ==",
-    "etag": "CNHZkbuF/ugCEAE=",
-    "generation": "1587627537231057",
-    "id": "some-bucket/folder/Test.cs/1587627537231057",
-    "kind": "storage#object",
-    "md5Hash": "kF8MuJ5+CTJxvyhHS1xzRg==",
-    "mediaLink": "https://www.googleapis.com/download/storage/v1/b/some-bucket/o/folder%2FTest.cs?generation=1587627537231057\u0026alt=media",
-    "metageneration": "1",
-    "name": "folder/Test.cs",
-    "selfLink": "https://www.googleapis.com/storage/v1/b/some-bucket/o/folder/Test.cs",
-    "size": "352",
-    "storageClass": "MULTI_REGIONAL",
-    "timeCreated": "2020-04-23T07:38:57.230Z",
-    "timeStorageClassUpdated": "2020-04-23T07:38:57.230Z",
-    "updated": "2020-04-23T07:38:57.230Z"
-  })js");
+      "bucket": "some-bucket",
+      "contentType": "text/plain",
+      "crc32c": "rTVTeQ==",
+      "etag": "CNHZkbuF/ugCEAE=",
+      "generation": "1587627537231057",
+      "id": "some-bucket/folder/Test.cs/1587627537231057",
+      "kind": "storage#object",
+      "md5Hash": "kF8MuJ5+CTJxvyhHS1xzRg==",
+      "mediaLink": "https://www.googleapis.com/download/storage/v1/b/some-bucket/o/folder%2FTest.cs?generation=1587627537231057\u0026alt=media",
+      "metageneration": "1",
+      "name": "folder/Test.cs",
+      "selfLink": "https://www.googleapis.com/storage/v1/b/some-bucket/o/folder/Test.cs",
+      "size": "352",
+      "storageClass": "MULTI_REGIONAL",
+      "timeCreated": "2020-04-23T07:38:57.230Z",
+      "timeStorageClassUpdated": "2020-04-23T07:38:57.230Z",
+      "updated": "2020-04-23T07:38:57.230Z"
+    })js");
     auto const data_base64 = cppcodec::base64_rfc4648::encode(data.dump());
     auto attributes = nlohmann::json{
         {"notificationConfig",
