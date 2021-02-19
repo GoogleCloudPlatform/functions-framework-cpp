@@ -277,10 +277,10 @@ TEST(ExamplesSiteTest, LogStackdriver) {
       {"methodName", "foo"},
       {"resourceName", "projects/sample-project/something/something-name"},
       {"authenticationInfo",
-          {
-                         {"principalEmail", "service-account@example.com"},
-                         {"moreInfo", "butUnused"},
-                     }},
+       {
+           {"principalEmail", "service-account@example.com"},
+           {"moreInfo", "butUnused"},
+       }},
   };
   auto pubsub_message = nlohmann::json{
       {"data", cppcodec::base64_rfc4648::encode(stackdriver_payload.dump())},
@@ -293,16 +293,16 @@ TEST(ExamplesSiteTest, LogStackdriver) {
       {"specversion", "1.0"},
       {"type", "google.cloud.pubsub.topic.v1.messagePublished"},
       {"source",
-                      "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test"},
+       "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test"},
       {"id", "aaaaaa-1111-bbbb-2222-cccccccccccc"},
       {"datacontenttype", "application/json"},
       {"time", "2020-09-29T11:32:00.000Z"},
       {"data",
-          {
-                          {"subscription",
-                              "projects/sample-project/subscriptions/sample-subscription"},
-                          {"message", std::move(pubsub_message)},
-                      }},
+       {
+           {"subscription",
+            "projects/sample-project/subscriptions/sample-subscription"},
+           {"message", std::move(pubsub_message)},
+       }},
   };
 
   EXPECT_NO_THROW(log_stackdriver(
