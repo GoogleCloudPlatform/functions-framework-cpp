@@ -15,7 +15,6 @@
 // [START functions_helloworld_get]
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
-#include <nlohmann/json.hpp>
 
 namespace gcf = ::google::cloud::functions;
 
