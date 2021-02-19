@@ -16,6 +16,7 @@
 #include "google/cloud/functions/internal/parse_cloud_event_http.h"
 #include "google/cloud/functions/internal/wrap_request.h"
 #include "google/cloud/functions/internal/wrap_response.h"
+#include <nlohmann/json.hpp>
 #include <iostream>
 #include <stdexcept>
 
@@ -32,6 +33,33 @@ struct UnwrapResponse {
   }
 };
 
+namespace {
+BeastResponse ApplicationError(nlohmann::json const& error) {
+  auto msg = error.dump();
+  std::cerr << msg << std::endl;
+  BeastResponse response;
+  response.result(be::http::status::internal_server_error);
+  response.insert("content-type", "application/json");
+  response.body() = std::move(msg);
+  return response;
+}
+
+BeastResponse ReportExceptionInFunction(std::exception const& ex) {
+  return ApplicationError(
+      {{"severity", "error"},
+       {"message",
+        std::string("standard C++ exception thrown by the function: ") +
+            ex.what()}});
+}
+
+BeastResponse ReportUnknownExceptionInFunction() {
+  return ApplicationError({
+      {"severity", "error"},
+      {"message", std::string("unknown C++ exception thrown by the function")},
+  });
+}
+}  // namespace
+
 BeastResponse CallUserFunction(functions::UserHttpFunction const& function,
                                BeastRequest request) try {
   if (request.target() == "/favicon.ico" || request.target() == "/robots.txt") {
@@ -42,15 +70,9 @@ BeastResponse CallUserFunction(functions::UserHttpFunction const& function,
   auto response = function(MakeHttpRequest(std::move(request)));
   return UnwrapResponse::unwrap(std::move(response));
 } catch (std::exception const& ex) {
-  std::cerr << "standard C++ exception thrown: " << ex.what() << std::endl;
-  BeastResponse response;
-  response.result(be::http::status::internal_server_error);
-  return response;
+  return ReportExceptionInFunction(ex);
 } catch (...) {
-  std::cerr << "unknown c++ exception thrown" << std::endl;
-  BeastResponse response;
-  response.result(be::http::status::internal_server_error);
-  return response;
+  return ReportUnknownExceptionInFunction();
 }
 
 BeastResponse CallUserFunction(
@@ -67,15 +89,9 @@ BeastResponse CallUserFunction(
   }
   return BeastResponse{};
 } catch (std::exception const& ex) {
-  std::cerr << "standard C++ exception thrown: " << ex.what() << std::endl;
-  BeastResponse response;
-  response.result(be::http::status::internal_server_error);
-  return response;
+  return ReportExceptionInFunction(ex);
 } catch (...) {
-  std::cerr << "unknown c++ exception thrown" << std::endl;
-  BeastResponse response;
-  response.result(be::http::status::internal_server_error);
-  return response;
+  return ReportUnknownExceptionInFunction();
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
