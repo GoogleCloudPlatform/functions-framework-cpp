@@ -17,6 +17,7 @@
 #include "google/cloud/functions/cloud_event.h"
 #include "google/cloud/functions/http_request.h"
 #include "google/cloud/functions/http_response.h"
+#include <cppcodec/base64_rfc4648.hpp>
 #include <gmock/gmock.h>
 #include <nlohmann/json.hpp>
 
@@ -29,6 +30,7 @@ extern gcf::HttpResponse http_cors_auth(gcf::HttpRequest request);
 extern gcf::HttpResponse http_method(gcf::HttpRequest request);
 extern gcf::HttpResponse http_xml(gcf::HttpRequest request);
 extern gcf::HttpResponse log_helloworld(gcf::HttpRequest request);
+extern void log_stackdriver(gcf::CloudEvent event);
 extern gcf::HttpResponse concepts_after_response(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_after_timeout(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_filesystem(gcf::HttpRequest request);
@@ -265,6 +267,46 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
 TEST(ExamplesSiteTest, LogHelloWorld) {
   auto actual = log_helloworld(gcf::HttpRequest{});
   EXPECT_EQ(actual.payload(), "Hello Logging!");
+}
+
+TEST(ExamplesSiteTest, LogStackdriver) {
+  // We need to generate a plausible Cloud Pub/Sub message carrying a Cloud
+  // Logging payload, all of that wrapped in a CloudEvent envelope. Build this
+  // bottom up:
+  auto const stackdriver_payload = nlohmann::json{
+      {"methodName", "foo"},
+      {"resourceName", "projects/sample-project/something/something-name"},
+      {"authenticationInfo",
+          {
+                         {"principalEmail", "service-account@example.com"},
+                         {"moreInfo", "butUnused"},
+                     }},
+  };
+  auto pubsub_message = nlohmann::json{
+      {"data", cppcodec::base64_rfc4648::encode(stackdriver_payload.dump())},
+      {"attributes", {{"someAttribute", "unused"}}},
+  };
+
+  // The Cloud Pub/Sub envelop is stolen from:
+  //   https://github.com/GoogleCloudPlatform/functions-framework-conformance
+  auto envelope = nlohmann::json{
+      {"specversion", "1.0"},
+      {"type", "google.cloud.pubsub.topic.v1.messagePublished"},
+      {"source",
+                      "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test"},
+      {"id", "aaaaaa-1111-bbbb-2222-cccccccccccc"},
+      {"datacontenttype", "application/json"},
+      {"time", "2020-09-29T11:32:00.000Z"},
+      {"data",
+          {
+                          {"subscription",
+                              "projects/sample-project/subscriptions/sample-subscription"},
+                          {"message", std::move(pubsub_message)},
+                      }},
+  };
+
+  EXPECT_NO_THROW(log_stackdriver(
+      google::cloud::functions_internal::ParseCloudEventJson(envelope.dump())));
 }
 
 TEST(ExamplesSiteTest, ConceptsAfterResponse) {

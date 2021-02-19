@@ -297,6 +297,15 @@ steps:
     ]
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
+    id: 'site-log_stackdriver'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
+      '--env', 'TARGET_FUNCTION=log_stackdriver',
+      '--path', 'examples/site/log_stackdriver',
+      'site-log_stackdriver',
+    ]
+  - name: 'pack'
+    waitFor: ['gcf-builder-ready']
     id: 'site-pubsub_subscribe'
     args: ['build',
       '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',
