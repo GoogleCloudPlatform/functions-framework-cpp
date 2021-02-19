@@ -288,6 +288,15 @@ steps:
     ]
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
+    id: 'site-log_helloworld'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'TARGET_FUNCTION=log_helloworld',
+      '--path', 'examples/site/log_helloworld',
+      'site-log_helloworld',
+    ]
+  - name: 'pack'
+    waitFor: ['gcf-builder-ready']
     id: 'site-pubsub_subscribe'
     args: ['build',
       '--env', 'FUNCTION_SIGNATURE_TYPE=cloudevent',

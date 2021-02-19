@@ -1,0 +1,8 @@
+{
+  "name": "http-content",
+  "version-string": "unversioned",
+  "dependencies": [
+    "functions-framework-cpp",
+    "nlohmann-json"
+  ]
+}
