@@ -29,10 +29,6 @@ void log_stackdriver(gcf::CloudEvent event) {  // NOLINT
   auto const data = cppcodec::base64_rfc4648::decode<std::string>(
       payload["message"]["data"].get<std::string>());
   auto const log_entry = nlohmann::json::parse(data);
-  std::cout << "Method: " << log_entry.value("methodName", "")
-            << "\nResource: " << log_entry.value("resourceName", "")
-            << "\nInitiation: "
-            << log_entry.at("authenticationInfo").value("principalEmail", "")
-            << "\n";
+  std::cout << "Log entry data: " << log_entry.dump(/*indent=*/2) << "\n";
 }
 // [END functions_log_stackdriver]
