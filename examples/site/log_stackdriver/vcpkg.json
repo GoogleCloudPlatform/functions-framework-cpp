@@ -1,0 +1,9 @@
+{
+  "name": "log-stackdriver",
+  "version-string": "unversioned",
+  "dependencies": [
+    "cppcodec",
+    "functions-framework-cpp",
+    "nlohmann-json"
+  ]
+}

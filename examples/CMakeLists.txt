@@ -48,6 +48,7 @@ add_library(
     site/http_method/http_method.cc
     site/http_xml/http_xml.cc
     site/log_helloworld/log_helloworld.cc
+    site/log_stackdriver/log_stackdriver.cc
     site/pubsub_subscribe/pubsub_subscribe.cc
     site/tips_gcp_apis/tips_gcp_apis.cc
     site/tips_infinite_retries/tips_infinite_retries.cc
