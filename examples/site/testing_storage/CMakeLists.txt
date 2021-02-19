@@ -55,5 +55,5 @@ if (BUILD_TESTING)
             SOURCE storage_system_test.cc
             APPEND
             PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
-    endif ()        
+    endif ()
 endif ()
