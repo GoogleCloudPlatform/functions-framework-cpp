@@ -153,6 +153,15 @@ steps:
   # Build the cloud site examples.
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
+    id: 'site-bearer_token'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'TARGET_FUNCTION=bearer_token',
+      '--path', 'examples/site/bearer_token',
+      'site-bearer_token',
+    ]
+  - name: 'pack'
+    waitFor: ['gcf-builder-ready']
     id: 'site-concepts_after_response'
     args: ['build',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
