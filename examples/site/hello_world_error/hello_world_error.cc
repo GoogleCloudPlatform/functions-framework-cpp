@@ -38,7 +38,7 @@ gcf::HttpResponse hello_world_error(gcf::HttpRequest request) {  // NOLINT
   }
 
   // Structured logs MAY create entries in Error Reporting depending on their
-  // severity, you can create structured logs manually (as shown here), or using
+  // severity. You can create structured logs manually (as shown here), or using
   // your favorite logging library with suitable formatting.
   std::cerr << nlohmann::json{{"severity", "info"},
                               {"message", "informational message"}}
