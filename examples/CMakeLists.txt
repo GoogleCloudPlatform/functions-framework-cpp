@@ -38,6 +38,7 @@ add_library(
     site/concepts_request/concepts_request.cc
     site/concepts_stateless/concepts_stateless.cc
     site/env_vars/env_vars.cc
+    site/hello_world_error/hello_world_error.cc
     site/hello_world_get/hello_world_get.cc
     site/hello_world_http/hello_world_http.cc
     site/hello_world_pubsub/hello_world_pubsub.cc

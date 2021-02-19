@@ -1,0 +1,8 @@
+{
+  "name": "hello-world-error",
+  "version-string": "unversioned",
+  "dependencies": [
+    "functions-framework-cpp",
+    "nlohmann-json"
+  ]
+}
