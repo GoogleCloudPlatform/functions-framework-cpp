@@ -36,6 +36,9 @@ struct UnwrapResponse {
 namespace {
 BeastResponse ApplicationError(nlohmann::json const& error) {
   auto msg = error.dump();
+  // Log the message to stderr. If the message is properly formatted, as it is
+  // done here, they are sent picked up and parsed by Cloud Logging:
+  //     https://cloud.google.com/functions/docs/monitoring/logging#writing_structured_logs
   std::cerr << msg << std::endl;
   BeastResponse response;
   response.result(be::http::status::internal_server_error);
