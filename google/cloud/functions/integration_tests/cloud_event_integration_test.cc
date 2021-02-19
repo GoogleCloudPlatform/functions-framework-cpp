@@ -249,8 +249,12 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
 
   std::string line;
   std::getline(child_stderr, line);
-  EXPECT_THAT(line, HasSubstr("standard C++ exception"));
-  EXPECT_THAT(line, HasSubstr("/exception/test-string"));
+  auto log = nlohmann::json::parse(line, /*cb=*/nullptr,
+                                   /*allow_exceptions=*/false);
+  ASSERT_TRUE(log.is_object());
+  EXPECT_EQ(log.value("severity", ""), "error");
+  EXPECT_THAT(log.value("message", ""), HasSubstr("standard C++ exception"));
+  EXPECT_THAT(log.value("message", ""), HasSubstr("/exception/test-string"));
 
   try {
     (void)HttpPost("localhost", "8020", "/quit/program/0");
