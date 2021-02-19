@@ -28,6 +28,7 @@
 namespace gcf = ::google::cloud::functions;
 extern gcf::HttpResponse bearer_token(gcf::HttpRequest request);
 extern gcf::HttpResponse http_content(gcf::HttpRequest request);
+extern gcf::HttpResponse hello_world_error(gcf::HttpRequest request);
 extern gcf::HttpResponse hello_world_get(gcf::HttpRequest request);
 extern gcf::HttpResponse hello_world_http(gcf::HttpRequest request);
 extern gcf::HttpResponse http_cors(gcf::HttpRequest request);
@@ -157,6 +158,17 @@ TEST(ExamplesSiteTest, HelloWorldContent) {
   actual = http_content(make_request("application/x-www-form-urlencoded",
                                      "id=1&name=Baz%Qux&value=x"));
   EXPECT_THAT(actual.payload(), "Hello Baz%Qux");
+}
+
+TEST(ExamplesSiteTest, HelloWorldError) {
+  auto actual = hello_world_error(gcf::HttpRequest{});
+  EXPECT_EQ(actual.payload(), "Hello World!");
+
+  EXPECT_THROW(
+      hello_world_error(gcf::HttpRequest{}.set_target("/throw/exception")),
+      std::exception);
+  auto error = hello_world_error(gcf::HttpRequest{}.set_target("/return500"));
+  EXPECT_EQ(error.result(), gcf::HttpResponse::kInternalServerError);
 }
 
 TEST(ExamplesSiteTest, HelloWorldGet) {

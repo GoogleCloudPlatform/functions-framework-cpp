@@ -216,6 +216,15 @@ steps:
     ]
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
+    id: 'site-hello_world_error'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'TARGET_FUNCTION=hello_world_error',
+      '--path', 'examples/site/hello_world_error',
+      'site-hello_world_error',
+    ]
+  - name: 'pack'
+    waitFor: ['gcf-builder-ready']
     id: 'site-hello_world_get'
     args: ['build',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',
