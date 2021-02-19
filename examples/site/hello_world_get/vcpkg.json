@@ -1,8 +1,0 @@
-{
-  "name": "hello-world-get",
-  "version-string": "unversioned",
-  "dependencies": [
-    "functions-framework-cpp",
-    "nlohmann-json"
-  ]
-}
