@@ -105,7 +105,9 @@ gcloud projects add-iam-policy-binding "${GOOGLE_CLOUD_PROJECT}" \
 
 ## Verify the Resources
 
-Create the buildpack builder:
+Create the buildpack builder. Note that this uses the *CI* image, because
+you (most likely) want to build with the current version of the framework,
+not with the last release:
 
 ```sh
 cd functions-framework-cpp

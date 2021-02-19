@@ -14,17 +14,14 @@
 
 // [START functions_helloworld_storage]
 #include <google/cloud/functions/cloud_event.h>
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
 #include <boost/log/trivial.hpp>
 #include <nlohmann/json.hpp>
-#include <iostream>
 
 namespace gcf = ::google::cloud::functions;
 
 void hello_world_storage(gcf::CloudEvent event) {  // NOLINT
   if (event.data_content_type().value_or("") != "application/json") {
-    std::cerr << "Error: expected application/json data\n";
+    BOOST_LOG_TRIVIAL(error) << "expected application/json data";
     return;
   }
   auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
