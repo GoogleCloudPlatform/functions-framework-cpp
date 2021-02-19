@@ -128,7 +128,7 @@ lUtj+/nH3HDQjM4ltYfTPUg=
   std::ofstream(filename) << keyfile.dump() << "\n";
 
   google::cloud::functions_internal::SetEnv("GOOGLE_APPLICATION_CREDENTIALS",
-                                            filename);
+                                            filename.string());
   EXPECT_THROW(bearer_token(gcf::HttpRequest{}), std::exception);
 
   EXPECT_NO_THROW(

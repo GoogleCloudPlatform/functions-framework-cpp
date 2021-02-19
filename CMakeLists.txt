@@ -16,6 +16,10 @@
 
 cmake_minimum_required(VERSION 3.10)
 
+if (NOT (CMAKE_VERSION VERSION_LESS "3.14"))
+    cmake_policy(SET CMP0091 NEW)
+endif ()
+
 set(PACKAGE_BUGREPORT
     "http://github.com/GoogleCloudPlatform/functions-framework-cpp")
 project(
@@ -29,6 +33,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+if (VCPKG_TARGET_TRIPLET MATCHES "-static$")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY
+        "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+else ()
+    set(CMAKE_MSVC_RUNTIME_LIBRARY
+        "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+endif ()
 
 include(CTest)
 include(FunctionsFrameworkCppHelpers)
