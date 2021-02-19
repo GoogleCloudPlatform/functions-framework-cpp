@@ -28,6 +28,7 @@ extern gcf::HttpResponse http_cors(gcf::HttpRequest request);
 extern gcf::HttpResponse http_cors_auth(gcf::HttpRequest request);
 extern gcf::HttpResponse http_method(gcf::HttpRequest request);
 extern gcf::HttpResponse http_xml(gcf::HttpRequest request);
+extern gcf::HttpResponse log_helloworld(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_after_response(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_after_timeout(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_filesystem(gcf::HttpRequest request);
@@ -259,6 +260,11 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
     "time": "2020-09-29T11:32:00.000Z",
     "datacontenttype": "application/json"
   })js")));
+}
+
+TEST(ExamplesSiteTest, LogHelloWorld) {
+  auto actual = log_helloworld(gcf::HttpRequest{});
+  EXPECT_EQ(actual.payload(), "Hello Logging!");
 }
 
 TEST(ExamplesSiteTest, ConceptsAfterResponse) {
