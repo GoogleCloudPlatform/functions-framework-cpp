@@ -1,6 +1,6 @@
 {
   "name": "functions-framework-cpp-local-development",
-  "version-string": "0.4.0-dev",
+  "version-string": "0.5.0-dev",
   "port-version": 1,
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
   "description": "How-to Guide: Local Development with the Functions Framework for C++.",
