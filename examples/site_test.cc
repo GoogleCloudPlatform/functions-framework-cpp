@@ -243,7 +243,7 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
   })js")));
 
   EXPECT_THROW(hello_world_pubsub(
-      google::cloud::functions_internal::ParseCloudEventJson(R"js({
+                   google::cloud::functions_internal::ParseCloudEventJson(R"js({
     "specversion": "1.0",
     "type": "google.cloud.pubsub.topic.v1.messagePublished",
     "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
