@@ -29,6 +29,7 @@
           "features": ["framework"]
         },
         "boost-filesystem",
+        "boost-log",
         "boost-process",
         "boost-uuid",
         "cppcodec",
@@ -44,7 +45,6 @@
           "default-features": false,
           "features": ["framework", "tests"]
         },
-        "boost-log",
         "boost-property-tree",
         "google-cloud-cpp"
       ]
