@@ -58,7 +58,7 @@ uri = "buildpack"
 [[order]]
     [[order.group]]
     id = "com.google.buildpack.cpp"
-    version = "0.4.0"
+    version = "0.5.0"
 
 # Stack that will be used by the builder
 [stack]
@@ -75,7 +75,7 @@ api = "0.2"
 
 [buildpack]
 id = "com.google.buildpack.cpp"
-version = "0.4.0"
+version = "0.5.0"
 name = "Functions Framework C++ Buildpack (prefix=${PREFIX})"
 
 [[stacks]]
