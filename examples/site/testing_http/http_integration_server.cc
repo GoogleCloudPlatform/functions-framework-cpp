@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/framework.h"
+#include <google/cloud/functions/framework.h>
 
 namespace gcf = ::google::cloud::functions;
 extern gcf::HttpResponse hello_world_http(gcf::HttpRequest request);

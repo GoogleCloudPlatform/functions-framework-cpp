@@ -13,8 +13,8 @@
 // limitations under the License.
 
 // [START functions_http_unit_test]
-#include "google/cloud/functions/http_request.h"
-#include "google/cloud/functions/http_response.h"
+#include <google/cloud/functions/http_request.h>
+#include <google/cloud/functions/http_response.h>
 #include <gtest/gtest.h>
 
 namespace gcf = ::google::cloud::functions;
