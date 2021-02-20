@@ -23,11 +23,6 @@
     "tests": {
       "description": "Unit and Integrations tests for functions-framework-cpp.",
       "dependencies": [
-        {
-          "name": "functions-framework-cpp-dev",
-          "default-features": false,
-          "features": ["framework"]
-        },
         "boost-filesystem",
         "boost-log",
         "boost-process",
@@ -40,11 +35,6 @@
     "examples": {
       "description": "Unit and Integration tests for the functions-framework-cpp examples.",
       "dependencies": [
-        {
-          "name": "functions-framework-cpp-dev",
-          "default-features": false,
-          "features": ["framework", "tests"]
-        },
         "boost-property-tree",
         "google-cloud-cpp"
       ]
