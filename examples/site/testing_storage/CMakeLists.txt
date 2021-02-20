@@ -50,4 +50,10 @@ if (BUILD_TESTING)
         storage_system_test
         PRIVATE google-cloud-cpp::storage fmt::fmt Boost::log GTest::gmock_main
                 GTest::gmock GTest::gtest)
+    if (MSVC)
+        set_property(
+            SOURCE storage_system_test.cc
+            APPEND
+            PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
+    endif ()
 endif ()

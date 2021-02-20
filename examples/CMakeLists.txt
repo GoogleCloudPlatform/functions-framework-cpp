@@ -63,6 +63,7 @@ functions_framework_cpp_add_common_options(functions_framework_examples)
 if (MSVC)
     set_property(
         SOURCE site/tips_gcp_apis/tips_gcp_apis.cc site/env_vars/env_vars.cc
+               site/tutorial_cloud_spanner/tutorial_cloud_spanner.cc
         APPEND
         PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
 endif ()

@@ -15,6 +15,7 @@
 #include "google/cloud/functions/internal/base64_decode.h"
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
+#include <stdexcept>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {

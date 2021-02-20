@@ -50,4 +50,10 @@ if (BUILD_TESTING)
     target_link_libraries(
         pubsub_system_test PRIVATE google-cloud-cpp::pubsub fmt::fmt Boost::log
                                    GTest::gmock_main GTest::gmock GTest::gtest)
+    if (MSVC)
+        set_property(
+            SOURCE pubsub_system_test.cc
+            APPEND
+            PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
+    endif ()
 endif ()
