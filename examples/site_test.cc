@@ -27,30 +27,30 @@
 
 namespace gcf = ::google::cloud::functions;
 extern gcf::HttpResponse bearer_token(gcf::HttpRequest request);
-extern gcf::HttpResponse http_content(gcf::HttpRequest request);
-extern gcf::HttpResponse hello_world_error(gcf::HttpRequest request);
-extern gcf::HttpResponse hello_world_get(gcf::HttpRequest request);
-extern gcf::HttpResponse hello_world_http(gcf::HttpRequest request);
-extern gcf::HttpResponse http_cors(gcf::HttpRequest request);
-extern gcf::HttpResponse http_cors_auth(gcf::HttpRequest request);
-extern gcf::HttpResponse http_method(gcf::HttpRequest request);
-extern gcf::HttpResponse http_xml(gcf::HttpRequest request);
-extern gcf::HttpResponse log_helloworld(gcf::HttpRequest request);
-extern void log_stackdriver(gcf::CloudEvent event);
 extern gcf::HttpResponse concepts_after_response(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_after_timeout(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_filesystem(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_request(gcf::HttpRequest request);
 extern gcf::HttpResponse concepts_stateless(gcf::HttpRequest request);
 extern gcf::HttpResponse env_vars(gcf::HttpRequest request);
+extern gcf::HttpResponse hello_world_error(gcf::HttpRequest request);
+extern gcf::HttpResponse hello_world_get(gcf::HttpRequest request);
+extern gcf::HttpResponse hello_world_http(gcf::HttpRequest request);
+extern void hello_world_pubsub(gcf::CloudEvent event);
+extern void hello_world_storage(gcf::CloudEvent event);
+extern gcf::HttpResponse http_content(gcf::HttpRequest request);
+extern gcf::HttpResponse http_cors(gcf::HttpRequest request);
+extern gcf::HttpResponse http_cors_auth(gcf::HttpRequest request);
+extern gcf::HttpResponse http_method(gcf::HttpRequest request);
+extern gcf::HttpResponse http_xml(gcf::HttpRequest request);
+extern gcf::HttpResponse log_helloworld(gcf::HttpRequest request);
+extern void log_stackdriver(gcf::CloudEvent event);
+extern void pubsub_subscribe(gcf::CloudEvent event);
 extern gcf::HttpResponse tips_gcp_apis(gcf::HttpRequest request);
 extern void tips_infinite_retries(gcf::CloudEvent event);
 extern gcf::HttpResponse tips_lazy_globals(gcf::HttpRequest request);
 extern gcf::HttpResponse tips_scopes(gcf::HttpRequest request);
 extern void tips_retry(gcf::CloudEvent event);
-extern void hello_world_pubsub(gcf::CloudEvent event);
-extern void hello_world_storage(gcf::CloudEvent event);
-extern void pubsub_subscribe(gcf::CloudEvent event);
 
 namespace {
 
@@ -137,27 +137,39 @@ lUtj+/nH3HDQjM4ltYfTPUg=
   std::filesystem::remove(filename);
 }
 
-TEST(ExamplesSiteTest, HelloWorldContent) {
-  auto make_request = [](std::string content_type, std::string payload) {
-    return gcf::HttpRequest{}
-        .set_payload(std::move(payload))
-        .add_header("content-type", std::move(content_type));
-  };
+TEST(ExamplesSiteTest, ConceptsAfterResponse) {
+  auto actual = concepts_after_response(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("Hello World!"));
+}
 
-  auto actual = http_content(
-      make_request("application/json", R"js({ "name": "Foo" })js"));
-  EXPECT_THAT(actual.payload(), "Hello Foo");
+TEST(ExamplesSiteTest, ConceptsAfterTimeout) {
+  auto actual = concepts_after_timeout(gcf::HttpRequest{}.set_verb("PUT"));
+  EXPECT_THAT(actual.payload(), HasSubstr("Function completed!"));
+}
 
-  actual = http_content(make_request("text/plain", "Bar"));
-  EXPECT_THAT(actual.payload(), "Hello Bar");
+TEST(ExamplesSiteTest, ConceptsFilesystem) {
+  auto actual = concepts_filesystem(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), Not(IsEmpty()));
+}
 
-  actual = http_content(make_request("application/x-www-form-urlencoded",
-                                     "id=1&name=Baz%20Qux&value=x"));
-  EXPECT_THAT(actual.payload(), "Hello Baz Qux");
+TEST(ExamplesSiteTest, ConceptsRequest) {
+  auto actual = concepts_request(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("Received code"));
+}
 
-  actual = http_content(make_request("application/x-www-form-urlencoded",
-                                     "id=1&name=Baz%Qux&value=x"));
-  EXPECT_THAT(actual.payload(), "Hello Baz%Qux");
+TEST(ExamplesSiteTest, ConceptsStateless) {
+  auto actual = concepts_stateless(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("Instance execution count: "));
+}
+
+TEST(ExamplesSiteTest, EnvVars) {
+  google::cloud::functions_internal::SetEnv("FOO", std::nullopt);
+  auto actual = env_vars(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), AllOf(HasSubstr("FOO"), HasSubstr("not set")));
+
+  google::cloud::functions_internal::SetEnv("FOO", "test-value");
+  actual = env_vars(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("test-value"));
 }
 
 TEST(ExamplesSiteTest, HelloWorldError) {
@@ -187,63 +199,6 @@ TEST(ExamplesSiteTest, HelloWorlHttp) {
 
   actual = hello_world_http(gcf::HttpRequest{}.set_payload("Bar"));
   EXPECT_EQ(actual.payload(), "Hello World!");
-}
-
-TEST(ExamplesSiteTest, HttpCors) {
-  auto actual = http_cors(gcf::HttpRequest{}.set_verb("OPTIONS"));
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Methods"), "GET");
-
-  actual = http_cors(gcf::HttpRequest{}.set_verb("GET"));
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Origin"), "*");
-  EXPECT_EQ(actual.payload(), "Hello World!");
-}
-
-TEST(ExamplesSiteTest, HttpCorsAuth) {
-  auto actual = http_cors_auth(gcf::HttpRequest{}.set_verb("OPTIONS"));
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Headers"),
-            "Authorization");
-
-  actual = http_cors_auth(gcf::HttpRequest{}.set_verb("GET"));
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Origin"),
-            "https://mydomain.com");
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Credentials"), "true");
-  EXPECT_EQ(actual.payload(), "Hello World!");
-}
-
-TEST(ExamplesSiteTest, HttpMethod) {
-  struct Test {
-    std::string verb;
-    int result;
-  } tests[] = {
-      {"GET", gcf::HttpResponse::kOkay},
-      {"POST", gcf::HttpResponse::kForbidden},
-      {"PUT", gcf::HttpResponse::kMethodNotAllowed},
-  };
-
-  for (auto const& test : tests) {
-    auto actual = http_method(gcf::HttpRequest{}.set_verb(test.verb));
-    EXPECT_EQ(actual.result(), test.result);
-  }
-}
-
-TEST(ExamplesSiteTest, HelloWorldXml) {
-  auto make_request = [](std::string payload) {
-    return gcf::HttpRequest{}.set_payload(std::move(payload));
-  };
-
-  auto actual = http_xml(make_request(R"xml(
-<name>Foo</name>
-<unused1>Bar</unused1>
-<unused2>Baz</unused2>
-)xml"));
-  EXPECT_EQ(actual.payload(), "Hello Foo");
-
-  actual = http_xml(make_request(R"xml(
-<unused>Foo</unused>
-<unused1>Bar</unused1>
-<unused2>Baz</unused2>
-)xml"));
-  EXPECT_EQ(actual.payload(), "Hello World");
 }
 
 TEST(ExamplesSiteTest, HelloWorldPubSub) {
@@ -288,7 +243,7 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
   })js")));
 
   EXPECT_THROW(hello_world_pubsub(
-                   google::cloud::functions_internal::ParseCloudEventJson(R"js({
+      google::cloud::functions_internal::ParseCloudEventJson(R"js({
     "specversion": "1.0",
     "type": "google.cloud.pubsub.topic.v1.messagePublished",
     "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
@@ -360,6 +315,86 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
   })js")));
 }
 
+TEST(ExamplesSiteTest, HttpContent) {
+  auto make_request = [](std::string content_type, std::string payload) {
+    return gcf::HttpRequest{}
+        .set_payload(std::move(payload))
+        .add_header("content-type", std::move(content_type));
+  };
+
+  auto actual = http_content(
+      make_request("application/json", R"js({ "name": "Foo" })js"));
+  EXPECT_THAT(actual.payload(), "Hello Foo");
+
+  actual = http_content(make_request("text/plain", "Bar"));
+  EXPECT_THAT(actual.payload(), "Hello Bar");
+
+  actual = http_content(make_request("application/x-www-form-urlencoded",
+                                     "id=1&name=Baz%20Qux&value=x"));
+  EXPECT_THAT(actual.payload(), "Hello Baz Qux");
+
+  actual = http_content(make_request("application/x-www-form-urlencoded",
+                                     "id=1&name=Baz%Qux&value=x"));
+  EXPECT_THAT(actual.payload(), "Hello Baz%Qux");
+}
+
+TEST(ExamplesSiteTest, HttpCors) {
+  auto actual = http_cors(gcf::HttpRequest{}.set_verb("OPTIONS"));
+  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Methods"), "GET");
+
+  actual = http_cors(gcf::HttpRequest{}.set_verb("GET"));
+  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Origin"), "*");
+  EXPECT_EQ(actual.payload(), "Hello World!");
+}
+
+TEST(ExamplesSiteTest, HttpCorsAuth) {
+  auto actual = http_cors_auth(gcf::HttpRequest{}.set_verb("OPTIONS"));
+  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Headers"),
+            "Authorization");
+
+  actual = http_cors_auth(gcf::HttpRequest{}.set_verb("GET"));
+  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Origin"),
+            "https://mydomain.com");
+  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Credentials"), "true");
+  EXPECT_EQ(actual.payload(), "Hello World!");
+}
+
+TEST(ExamplesSiteTest, HttpMethod) {
+  struct Test {
+    std::string verb;
+    int result;
+  } tests[] = {
+      {"GET", gcf::HttpResponse::kOkay},
+      {"POST", gcf::HttpResponse::kForbidden},
+      {"PUT", gcf::HttpResponse::kMethodNotAllowed},
+  };
+
+  for (auto const& test : tests) {
+    auto actual = http_method(gcf::HttpRequest{}.set_verb(test.verb));
+    EXPECT_EQ(actual.result(), test.result);
+  }
+}
+
+TEST(ExamplesSiteTest, HttpXml) {
+  auto make_request = [](std::string payload) {
+    return gcf::HttpRequest{}.set_payload(std::move(payload));
+  };
+
+  auto actual = http_xml(make_request(R"xml(
+<name>Foo</name>
+<unused1>Bar</unused1>
+<unused2>Baz</unused2>
+)xml"));
+  EXPECT_EQ(actual.payload(), "Hello Foo");
+
+  actual = http_xml(make_request(R"xml(
+<unused>Foo</unused>
+<unused1>Bar</unused1>
+<unused2>Baz</unused2>
+)xml"));
+  EXPECT_EQ(actual.payload(), "Hello World");
+}
+
 TEST(ExamplesSiteTest, LogHelloWorld) {
   auto actual = log_helloworld(gcf::HttpRequest{});
   EXPECT_EQ(actual.payload(), "Hello Logging!");
@@ -408,41 +443,6 @@ TEST(ExamplesSiteTest, LogStackdriver) {
   envelope.erase("datacontenttype");
   EXPECT_NO_THROW(log_stackdriver(
       google::cloud::functions_internal::ParseCloudEventJson(envelope.dump())));
-}
-
-TEST(ExamplesSiteTest, ConceptsAfterResponse) {
-  auto actual = concepts_after_response(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("Hello World!"));
-}
-
-TEST(ExamplesSiteTest, ConceptsAfterTimeout) {
-  auto actual = concepts_after_timeout(gcf::HttpRequest{}.set_verb("PUT"));
-  EXPECT_THAT(actual.payload(), HasSubstr("Function completed!"));
-}
-
-TEST(ExamplesSiteTest, ConceptsFilesystem) {
-  auto actual = concepts_filesystem(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), Not(IsEmpty()));
-}
-
-TEST(ExamplesSiteTest, ConceptsRequest) {
-  auto actual = concepts_request(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("Received code"));
-}
-
-TEST(ExamplesSiteTest, ConceptsStateless) {
-  auto actual = concepts_stateless(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("Instance execution count: "));
-}
-
-TEST(ExamplesSiteTest, EnvVars) {
-  google::cloud::functions_internal::SetEnv("FOO", std::nullopt);
-  auto actual = env_vars(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), AllOf(HasSubstr("FOO"), HasSubstr("not set")));
-
-  google::cloud::functions_internal::SetEnv("FOO", "test-value");
-  actual = env_vars(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("test-value"));
 }
 
 TEST(ExamplesSiteTest, PubsubSubscribe) {
