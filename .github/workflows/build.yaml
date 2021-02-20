@@ -7,6 +7,7 @@ on:
 
 env:
   vcpkg_SHA: "65e5ea1df685a5362e70367bef4dbf827addff31"
+  VCPKG_TOOL_VERSION: "2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35"
 
 jobs:
   build-ubuntu-focal:
@@ -91,6 +92,52 @@ jobs:
           VCPKG_OVERLAY_PORTS: "${{runner.temp}}/quickstart/vcpkg-overlays"
         run: >
           cmake --build "${{runner.temp}}/howto_local_development/build"
+
+  build-msvc-2019:
+    name: msvc-2019
+    runs-on: windows-2019
+    steps:
+      - name: install-ninja
+        run: choco install -y --no-progress ninja
+      - name: clone-vcpkg
+        working-directory: "${{runner.temp}}"
+        run: |
+          $ErrorActionPreference = "Stop"
+          (New-Object System.Net.WebClient).Downloadfile(
+                  'https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.zip',
+                  '${{env.vcpkg_SHA}}.zip')
+          7z x '${{env.vcpkg_SHA}}.zip' -aoa -bsp0
+          if ($LastExitCode) { Write-Host -ForegroundColor Red "error extracting vcpkg zipball: ${LastExitCode}"; Exit 1; }
+          Rename-Item 'vcpkg-${{env.vcpkg_SHA}}' 'vcpkg'
+          (New-Object System.Net.WebClient).Downloadfile(
+                  'https://github.com/microsoft/vcpkg-tool/releases/download/${{env.VCPKG_TOOL_VERSION}}/vcpkg.exe',
+                  'vcpkg/vcpkg.exe')
+
+      - name: cache-vcpkg
+        id: cache-vcpkg
+        uses: actions/cache@v2
+        with:
+          # Preserve the vcpkg binary cache
+          path: |
+            ~\AppData\Local\vcpkg\archives
+          key: |
+            vcpkg-${{ env.vcpkg_SHA }}-build-msvc-2019-2-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ env.vcpkg_SHA }}-build-msvc-2019-2-
+
+      - uses: actions/checkout@v2
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: configure
+        run: |
+          cmake -S . -B '${{runner.temp}}/build' -GNinja `
+            '-DBUILD_TESTING=ON' `
+            '-DFUNCTIONS_FRAMEWORK_CPP_TEST_EXAMPLES=OFF' `
+            '-DCMAKE_TOOLCHAIN_FILE=${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake'
+      - name: build
+        run: cmake --build "${{runner.temp}}/build"
+      - name: test
+        working-directory: "${{runner.temp}}/build"
+        run: ctest --output-on-failure --timeout=60s
 
   build-macos:
     name: macos-10
