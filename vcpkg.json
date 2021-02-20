@@ -1,5 +1,5 @@
 {
-  "name": "functions-framework-cpp",
+  "name": "functions-framework-cpp-dev",
   "version-string": "0.5.0",
   "port-version": 8,
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
@@ -24,7 +24,7 @@
       "description": "Unit and Integrations tests for functions-framework-cpp.",
       "dependencies": [
         {
-          "name": "functions-framework-cpp",
+          "name": "functions-framework-cpp-dev",
           "default-features": false,
           "features": ["framework"]
         },
@@ -41,7 +41,7 @@
       "description": "Unit and Integration tests for the functions-framework-cpp examples.",
       "dependencies": [
         {
-          "name": "functions-framework-cpp",
+          "name": "functions-framework-cpp-dev",
           "default-features": false,
           "features": ["framework", "tests"]
         },
