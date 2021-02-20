@@ -1,23 +1,53 @@
 {
-  "name": "functions-framework-cpp-dev",
-  "version-string": "0.5.0-dev",
+  "name": "functions-framework-cpp",
+  "version-string": "0.5.0",
   "port-version": 7,
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
-  "description": "Functions Framework for C++ -- Development",
-  "dependencies": [
-    "abseil",
-    "boost-beast",
-    "boost-filesystem",
-    "boost-log",
-    "boost-process",
-    "boost-program-options",
-    "boost-property-tree",
-    "boost-serialization",
-    "boost-uuid",
-    "cppcodec",
-    "fmt",
-    "google-cloud-cpp",
-    "gtest",
-    "nlohmann-json"
-  ]
+  "description": [
+    "A functions as a service (FaaS) framework for writing portable C++ functions.",
+    "Let's you write lightweight functions that run in many different environments,",
+    "including local development, local containers, Knative, and Cloud Run."
+  ],
+  "default-features": ["framework"],
+  "features": {
+    "framework": {
+      "description": "Everything needed to use the Functions Framework for C++",
+      "dependencies": [
+        "abseil",
+        "boost-beast",
+        "boost-program-options",
+        "boost-serialization",
+        "nlohmann-json"
+      ]
+    },
+    "tests": {
+      "description": "Unit and Integrations tests for functions-framework-cpp.",
+      "dependencies": [
+        {
+          "name": "functions-framework-cpp",
+          "default-features": false,
+          "features": ["framework"]
+        },
+        "boost-filesystem",
+        "boost-process",
+        "boost-uuid",
+        "cppcodec",
+        "fmt",
+        "gtest"
+      ]
+    },
+    "examples": {
+      "description": "Unit and Integration tests for the functions-framework-cpp examples.",
+      "dependencies": [
+        {
+          "name": "functions-framework-cpp",
+          "default-features": false,
+          "features": ["framework", "tests"]
+        },
+        "boost-log",
+        "boost-property-tree",
+        "google-cloud-cpp"
+      ]
+    }
+  }
 }

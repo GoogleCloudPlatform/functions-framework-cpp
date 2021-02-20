@@ -20,6 +20,16 @@ if (NOT (CMAKE_VERSION VERSION_LESS "3.14"))
     cmake_policy(SET CMP0091 NEW)
 endif ()
 
+option(BUILD_TESTING "Enable tests" ON)
+if (BUILD_TESTING)
+    list(APPEND VCPKG_MANIFEST_FEATURES "tests")
+endif ()
+option(FUNCTIONS_FRAMEWORK_CPP_EXAMPLES "Enable testing for examples" ON)
+mark_as_advanced(FUNCTIONS_FRAMEWORK_CPP_EXAMPLES)
+if (FUNCTIONS_FRAMEWORK_CPP_EXAMPLES)
+    list(APPEND VCPKG_MANIFEST_FEATURES "examples")
+endif ()
+
 set(PACKAGE_BUGREPORT
     "http://github.com/GoogleCloudPlatform/functions-framework-cpp")
 project(
