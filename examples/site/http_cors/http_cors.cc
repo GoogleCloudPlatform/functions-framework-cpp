@@ -32,8 +32,8 @@ gcf::HttpResponse http_cors(gcf::HttpRequest request) {  // NOLINT
   }
 
   return gcf::HttpResponse{}
+      .set_header("Access-Control-Allow-Origin", "*")
       .set_header("content-type", "text/plain")
-      .set_payload("Hello World!")
-      .set_header("Access-Control-Allow-Origin", "*");
+      .set_payload("Hello World!");
 }
 // [END functions_http_cors]

@@ -59,7 +59,7 @@ gcf::HttpResponse tutorial_cloud_spanner(
   }
 
   return gcf::HttpResponse{}
-      .set_payload(std::move(os).str())
-      .set_header("content-type", "text/plain");
+      .set_header("content-type", "text/plain")
+      .set_payload(std::move(os).str());
 }
 // [END spanner_functions_quickstart]

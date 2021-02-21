@@ -29,7 +29,7 @@ gcf::HttpResponse log_helloworld(gcf::HttpRequest /*request*/) {  // NOLINT
                    .dump()
             << "\n";
   return gcf::HttpResponse{}
-      .set_payload("Hello Logging!")
-      .set_header("content-type", "text/plain");
+      .set_header("content-type", "text/plain")
+      .set_payload("Hello Logging!");
 }
 // [END functions_log_helloworld]

@@ -50,7 +50,7 @@ gcf::HttpResponse hello_world_error(gcf::HttpRequest request) {  // NOLINT
             << std::endl;
 
   return gcf::HttpResponse{}
-      .set_payload("Hello World!")
-      .set_header("content-type", "text/plain");
+      .set_header("content-type", "text/plain")
+      .set_payload("Hello World!");
 }
 // [END functions_helloworld_error]

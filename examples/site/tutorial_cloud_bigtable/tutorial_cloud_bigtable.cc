@@ -74,7 +74,7 @@ gcf::HttpResponse tutorial_cloud_bigtable(gcf::HttpRequest request) {  // NOLINT
   }
 
   return gcf::HttpResponse{}
-      .set_payload(std::move(os).str())
-      .set_header("content-type", "text/plain");
+      .set_header("content-type", "text/plain")
+      .set_payload(std::move(os).str());
 }
 // [END bigtable_functions_quickstart]

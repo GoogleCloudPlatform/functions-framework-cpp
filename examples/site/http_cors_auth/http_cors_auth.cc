@@ -33,9 +33,9 @@ gcf::HttpResponse http_cors_auth(gcf::HttpRequest request) {  // NOLINT
   }
 
   return gcf::HttpResponse{}
-      .set_header("content-type", "text/plain")
-      .set_payload("Hello World!")
       .set_header("Access-Control-Allow-Origin", "https://mydomain.com")
-      .set_header("Access-Control-Allow-Credentials", "true");
+      .set_header("Access-Control-Allow-Credentials", "true")
+      .set_header("content-type", "text/plain")
+      .set_payload("Hello World!");
 }
 // [END functions_http_cors_auth]

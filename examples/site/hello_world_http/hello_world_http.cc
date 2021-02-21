@@ -30,7 +30,7 @@ gcf::HttpResponse hello_world_http(gcf::HttpRequest request) {
   };
 
   return gcf::HttpResponse{}
-      .set_payload(greeting())
-      .set_header("content-type", "text/plain");
+      .set_header("content-type", "text/plain")
+      .set_payload(greeting());
 }
 // [END functions_helloworld_http]

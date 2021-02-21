@@ -46,8 +46,8 @@ gcf::HttpResponse http_content(gcf::HttpRequest request) {  // NOLINT
   }
 
   return gcf::HttpResponse{}
-      .set_payload("Hello " + name)
-      .set_header("content-type", "text/plain");
+      .set_header("content-type", "text/plain")
+      .set_payload("Hello " + name);
 }
 // [END functions_http_content]
 
