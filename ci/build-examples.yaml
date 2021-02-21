@@ -288,6 +288,15 @@ steps:
     ]
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
+    id: 'site-http_form_data'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'TARGET_FUNCTION=http_form_data',
+      '--path', 'examples/site/http_form_data',
+      'site-http_form_data',
+    ]
+  - name: 'pack'
+    waitFor: ['gcf-builder-ready']
     id: 'site-http_method'
     args: ['build',
       '--env', 'FUNCTION_SIGNATURE_TYPE=http',

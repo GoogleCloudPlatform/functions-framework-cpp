@@ -36,7 +36,8 @@
       "description": "Unit and Integration tests for the functions-framework-cpp examples.",
       "dependencies": [
         "boost-property-tree",
-        "google-cloud-cpp"
+        "google-cloud-cpp",
+        "poco"
       ]
     }
   }
