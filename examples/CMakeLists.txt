@@ -20,7 +20,6 @@ find_package(google_cloud_cpp_bigtable REQUIRED)
 find_package(google_cloud_cpp_pubsub REQUIRED)
 find_package(google_cloud_cpp_spanner REQUIRED)
 find_package(google_cloud_cpp_storage REQUIRED)
-find_package(Poco REQUIRED Net)
 
 add_library(
     functions_framework_examples # cmake-format: sort
