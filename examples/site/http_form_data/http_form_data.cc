@@ -28,8 +28,12 @@ namespace gcf = ::google::cloud::functions;
 namespace {
 class FormDataDelimiter {
  public:
+#if defined(__APPLE__) && defined(__clang__)
+  using searcher = std::default_searcher<absl::string_view::iterator>;
+#else
   using searcher =
       std::boyer_moore_horspool_searcher<absl::string_view::iterator>;
+#endif  // ! __APPLE__ && __clang__
   static FormDataDelimiter FromHeader(std::string const& header);
   [[nodiscard]] absl::string_view Find(absl::string_view text,
                                        std::size_t pos) const;
