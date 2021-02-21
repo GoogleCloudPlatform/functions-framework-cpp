@@ -56,9 +56,7 @@ class HttpResponse {
     impl_->set_result(code);
     return *this;
   }
-  HttpResponse&& set_result(int code) && {
-    return std::move(set_result(code));
-  }
+  HttpResponse&& set_result(int code) && { return std::move(set_result(code)); }
   [[nodiscard]] int result() const { return impl_->result(); }
 
   /// The request HTTP headers
