@@ -104,8 +104,8 @@ TEST(FrameworkTest, Http) {
   std::atomic<bool> shutdown{false};
   auto hello = [](functions::HttpRequest const& r) {
     return functions::HttpResponse{}
-        .set_payload("Hello World from " + r.target())
-        .set_header("content-type", "text/plain");
+        .set_header("content-type", "text/plain")
+        .set_payload("Hello World from " + r.target());
   };
   auto run = [&](int argc, char const* const argv[],
                  functions::UserHttpFunction f) {

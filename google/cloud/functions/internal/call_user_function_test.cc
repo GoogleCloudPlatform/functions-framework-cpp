@@ -30,8 +30,8 @@ TEST(CallUserFunctionHttpTest, Basic) {
     EXPECT_THAT(request.headers(),
                 Contains(std::make_pair("x-goog-test", "test-value")));
     return functions::HttpResponse{}
-        .set_payload("just nod if you can hear me")
-        .set_header("x-goog-test", "response-header");
+        .set_header("x-goog-test", "response-header")
+        .set_payload("just nod if you can hear me");
   };
   BeastRequest request;
   request.target("/foo/bar");

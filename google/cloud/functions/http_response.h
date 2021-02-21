@@ -51,7 +51,7 @@ class HttpResponse {
   }
   [[nodiscard]] std::string const& payload() const { return impl_->payload(); }
 
-  /// Set the status result
+  /// The status result
   HttpResponse& set_result(int code) & {
     impl_->set_result(code);
     return *this;
