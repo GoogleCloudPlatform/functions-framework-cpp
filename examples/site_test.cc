@@ -375,29 +375,38 @@ TEST(ExamplesSiteTest, HttpFormData) {
       "--boundary--\r\n"  //
       ;
 
-  auto actual = http_form_data(
-      gcf::HttpRequest{}
-          .add_header("content-type",
-                      R"""(multipart/form-data;boundary="boundary")""")
-          .set_payload(kPayload)
-          .set_verb("POST"));
-  ASSERT_EQ(actual.result(), gcf::HttpResponse::kOkay);
-  auto const actual_payload = nlohmann::json::parse(actual.payload());
-  auto const expected_payload = nlohmann::json{
-      {"parts",
-       {
-           {{"bodySize", 6}, {"headerCount", 1}, {"name", "\"field1\""}},
-           {{"bodySize", 6},
-            {"filename", "\"example.txt\""},
-            {"headerCount", 1},
-            {"isFile", true}},
-       }}};
-  EXPECT_EQ(actual_payload, expected_payload);
+  // Test with both quoted and unquoted boundaries.
+  for (auto const* content_type :
+       {R"""(multipart/form-data;boundary="boundary")""",
+        R"""(multipart/form-data;boundary=boundary)"""}) {
+    SCOPED_TRACE("Testing with content_type = " + std::string(content_type));
+    auto actual = http_form_data(gcf::HttpRequest{}
+                                     .add_header("content-type", content_type)
+                                     .set_payload(kPayload)
+                                     .set_verb("POST"));
+    ASSERT_EQ(actual.result(), gcf::HttpResponse::kOkay);
+    auto const actual_payload = nlohmann::json::parse(actual.payload());
+    auto const expected_payload = nlohmann::json{
+        {"parts",
+         {
+             {{"bodySize", 45}, {"headerCount", 1}, {"name", "\"field1\""}},
+             {{"bodySize", 71},
+              {"filename", "\"example.txt\""},
+              {"headerCount", 1},
+              {"isFile", true}},
+         }}};
+    EXPECT_EQ(actual_payload, expected_payload);
+  }
 
   EXPECT_EQ(http_form_data(gcf::HttpRequest{}).result(),
             gcf::HttpResponse::kMethodNotAllowed);
   EXPECT_EQ(http_form_data(gcf::HttpRequest{}.set_verb("POST")).result(),
             gcf::HttpResponse::kBadRequest);
+  EXPECT_THROW(
+      http_form_data(gcf::HttpRequest{}
+                         .add_header("content-type", "multipart/form-data")
+                         .set_verb("POST")),
+      std::exception);
 }
 
 TEST(ExamplesSiteTest, HttpMethod) {
