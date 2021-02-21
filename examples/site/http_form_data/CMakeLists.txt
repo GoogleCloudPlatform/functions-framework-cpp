@@ -17,6 +17,6 @@
 find_package(absl CONFIG REQUIRED)
 find_package(functions_framework_cpp REQUIRED)
 
-add_library(functions_framework_cpp_function tips_gcp_apis.cc)
+add_library(functions_framework_cpp_function http_form_data.cc)
 target_link_libraries(functions_framework_cpp_function
                       functions-framework-cpp::framework absl::strings)
