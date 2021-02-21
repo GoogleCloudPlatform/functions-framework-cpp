@@ -23,25 +23,29 @@ using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 
 TEST(WrapResponseTest, Payload) {
-  functions::HttpResponse response;
-  EXPECT_THAT(response.payload(), IsEmpty());
+  functions::HttpResponse r;
+  EXPECT_THAT(r.payload(), IsEmpty());
   auto const hello = std::string("Hello");
-  response.set_payload(std::string(hello));
+  auto response = std::move(r).set_payload(std::string(hello));
   EXPECT_EQ(response.payload(), hello);
-  auto const goodbye = std::string("Goodbye");
+  auto const bye = std::string("Goodbye");
+  response.set_payload(bye);
+  EXPECT_EQ(response.payload(), bye);
 }
 
 TEST(WrapResponseTest, Result) {
-  functions::HttpResponse response;
-  EXPECT_EQ(response.result(), functions::HttpResponse::kOkay);
-  response.set_result(functions::HttpResponse::kNotFound);
+  functions::HttpResponse r;
+  EXPECT_EQ(r.result(), functions::HttpResponse::kOkay);
+  auto response = std::move(r).set_result(functions::HttpResponse::kNotFound);
   EXPECT_EQ(response.result(), functions::HttpResponse::kNotFound);
+  response.set_result(functions::HttpResponse::kBadGateway);
+  EXPECT_EQ(response.result(), functions::HttpResponse::kBadGateway);
 }
 
 TEST(WrapResponseTest, Headers) {
-  functions::HttpResponse response;
-  EXPECT_THAT(response.headers(), IsEmpty());
-  response.set_header("Content-Type", "application/json");
+  auto r = functions::HttpResponse{};
+  EXPECT_THAT(r.headers(), IsEmpty());
+  auto response = std::move(r).set_header("Content-Type", "application/json");
   EXPECT_THAT(response.headers(),
               ElementsAre(std::make_pair("Content-Type", "application/json")));
   response.set_header("x-goog-test", "a");
@@ -52,12 +56,15 @@ TEST(WrapResponseTest, Headers) {
 }
 
 TEST(WrapResponseTest, Version) {
-  functions::HttpResponse response;
-  EXPECT_EQ(response.version_major(), 1);
-  EXPECT_EQ(response.version_minor(), 1);
-  response.set_version(1, 0);
+  auto r = functions::HttpResponse{};
+  EXPECT_EQ(r.version_major(), 1);
+  EXPECT_EQ(r.version_minor(), 1);
+  auto response = std::move(r).set_version(1, 0);
   EXPECT_EQ(response.version_major(), 1);
   EXPECT_EQ(response.version_minor(), 0);
+  response.set_version(1, 1);
+  EXPECT_EQ(response.version_major(), 1);
+  EXPECT_EQ(response.version_minor(), 1);
 }
 
 }  // namespace

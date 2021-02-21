@@ -20,16 +20,13 @@ namespace gcf = ::google::cloud::functions;
 
 gcf::HttpResponse http_method(gcf::HttpRequest request) {  // NOLINT
   if (request.verb() == "GET") {
-    gcf::HttpResponse response;
-    response.set_header("content-type", "text/plain");
-    response.set_payload("Hello World!");
-    return response;
+    return gcf::HttpResponse{}
+        .set_header("content-type", "text/plain")
+        .set_payload("Hello World!");
   }
 
-  gcf::HttpResponse response;
-  response.set_result(request.verb() == "POST"
-                          ? gcf::HttpResponse::kForbidden
-                          : gcf::HttpResponse::kMethodNotAllowed);
-  return response;
+  return gcf::HttpResponse{}.set_result(
+      request.verb() == "POST" ? gcf::HttpResponse::kForbidden
+                               : gcf::HttpResponse::kMethodNotAllowed);
 }
 // [END functions_http_method]

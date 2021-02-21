@@ -33,10 +33,10 @@ TEST(HttpRequestTest, Default) {
 
 TEST(HttpRequestTest, SimpleSetters) {
   auto const actual = HttpRequest{}
+                          .set_version(1, 0)
                           .set_verb("POST")
                           .set_target("/index.html")
-                          .set_payload("Hello")
-                          .set_version(1, 0);
+                          .set_payload("Hello");
   EXPECT_EQ(actual.verb(), "POST");
   EXPECT_EQ(actual.target(), "/index.html");
   EXPECT_EQ(actual.payload(), "Hello");

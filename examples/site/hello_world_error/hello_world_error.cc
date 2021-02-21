@@ -23,9 +23,8 @@ namespace gcf = ::google::cloud::functions;
 gcf::HttpResponse hello_world_error(gcf::HttpRequest request) {  // NOLINT
   if (request.target() == "/return500") {
     // An error response code does NOT create entries in Error Reporting
-    gcf::HttpResponse response;
-    response.set_result(gcf::HttpResponse::kInternalServerError);
-    return response;
+    return gcf::HttpResponse{}.set_result(
+        gcf::HttpResponse::kInternalServerError);
   }
   // Unstructured logs to stdout and/or stderr do NOT create entries in Error
   // Reporting
@@ -50,9 +49,8 @@ gcf::HttpResponse hello_world_error(gcf::HttpRequest request) {  // NOLINT
                    .dump()
             << std::endl;
 
-  gcf::HttpResponse response;
-  response.set_payload("Hello World!");
-  response.set_header("content-type", "text/plain");
-  return response;
+  return gcf::HttpResponse{}
+      .set_header("content-type", "text/plain")
+      .set_payload("Hello World!");
 }
 // [END functions_helloworld_error]

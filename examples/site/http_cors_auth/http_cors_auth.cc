@@ -23,21 +23,19 @@ gcf::HttpResponse http_cors_auth(gcf::HttpRequest request) {  // NOLINT
   if (request.verb() == "OPTIONS") {
     // Allows GET requests from any origin with the Content-Type header and
     // caches preflight response for an 3600s
-    gcf::HttpResponse response;
-    response.set_result(gcf::HttpResponse::kNoContent);
-    response.set_header("Access-Control-Allow-Origin", "https://mydomain.com");
-    response.set_header("Access-Control-Allow-Methods", "GET");
-    response.set_header("Access-Control-Allow-Headers", "Authorization");
-    response.set_header("Access-Control-Max-Age", "3600");
-    response.set_header("Access-Control-Allow-Credentials", "true");
-    return response;
+    return gcf::HttpResponse{}
+        .set_result(gcf::HttpResponse::kNoContent)
+        .set_header("Access-Control-Allow-Origin", "https://mydomain.com")
+        .set_header("Access-Control-Allow-Methods", "GET")
+        .set_header("Access-Control-Allow-Headers", "Authorization")
+        .set_header("Access-Control-Max-Age", "3600")
+        .set_header("Access-Control-Allow-Credentials", "true");
   }
 
-  gcf::HttpResponse response;
-  response.set_header("content-type", "text/plain");
-  response.set_payload("Hello World!");
-  response.set_header("Access-Control-Allow-Origin", "https://mydomain.com");
-  response.set_header("Access-Control-Allow-Credentials", "true");
-  return response;
+  return gcf::HttpResponse{}
+      .set_header("Access-Control-Allow-Origin", "https://mydomain.com")
+      .set_header("Access-Control-Allow-Credentials", "true")
+      .set_header("content-type", "text/plain")
+      .set_payload("Hello World!");
 }
 // [END functions_http_cors_auth]

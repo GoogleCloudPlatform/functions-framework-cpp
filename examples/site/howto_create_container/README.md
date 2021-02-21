@@ -52,10 +52,9 @@ gcf::HttpResponse hello_world_http(gcf::HttpRequest request) {
     return std::string("Hello World!");
   };
 
-  gcf::HttpResponse response;
-  response.set_payload(greeting());
-  response.set_header("content-type", "text/plain");
-  return response;
+  return gcf::HttpResponse{}
+      .set_header("content-type", "text/plain")
+      .set_payload(greeting());
 }
 ```
 

@@ -23,19 +23,17 @@ gcf::HttpResponse http_cors(gcf::HttpRequest request) {  // NOLINT
   if (request.verb() == "OPTIONS") {
     // Allows GET requests from any origin with the Content-Type header and
     // caches preflight response for an 3600s
-    gcf::HttpResponse response;
-    response.set_result(gcf::HttpResponse::kNoContent);
-    response.set_header("Access-Control-Allow-Origin", "*");
-    response.set_header("Access-Control-Allow-Methods", "GET");
-    response.set_header("Access-Control-Allow-Headers", "Content-Type");
-    response.set_header("Access-Control-Max-Age", "3600");
-    return response;
+    return gcf::HttpResponse{}
+        .set_result(gcf::HttpResponse::kNoContent)
+        .set_header("Access-Control-Allow-Origin", "*")
+        .set_header("Access-Control-Allow-Methods", "GET")
+        .set_header("Access-Control-Allow-Headers", "Content-Type")
+        .set_header("Access-Control-Max-Age", "3600");
   }
 
-  gcf::HttpResponse response;
-  response.set_header("content-type", "text/plain");
-  response.set_payload("Hello World!");
-  response.set_header("Access-Control-Allow-Origin", "*");
-  return response;
+  return gcf::HttpResponse{}
+      .set_header("Access-Control-Allow-Origin", "*")
+      .set_header("content-type", "text/plain")
+      .set_payload("Hello World!");
 }
 // [END functions_http_cors]

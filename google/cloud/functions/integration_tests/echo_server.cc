@@ -29,17 +29,14 @@ HttpResponse EchoServer(HttpRequest const& request) {
   if (target.rfind("/unknown-exception/", 0) == 0) throw "uh-oh";
 
   if (target == "/ok") {
-    HttpResponse response;
-    response.set_header("Content-Type", "text/plain");
-    response.set_payload("OK");
-    return response;
+    return HttpResponse{}
+        .set_header("Content-Type", "text/plain")
+        .set_payload("OK");
   }
 
   if (target.rfind("/error/", 0) == 0) {
     auto code = std::stoi(target.substr(std::strlen("/error/")));
-    HttpResponse response;
-    response.set_result(code);
-    return response;
+    return HttpResponse{}.set_result(code);
   }
 
   if (target.rfind("/buffered-stdout/", 0) == 0) {
@@ -60,10 +57,9 @@ HttpResponse EchoServer(HttpRequest const& request) {
   }
   payload << "}\n";
 
-  HttpResponse response;
-  response.set_header("Content-Type", "application/json");
-  response.set_payload(std::move(payload).str());
-  return response;
+  return HttpResponse{}
+      .set_header("Content-Type", "application/json")
+      .set_payload(std::move(payload).str());
 }
 
 int main(int argc, char* argv[]) {

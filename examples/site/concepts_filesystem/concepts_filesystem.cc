@@ -25,9 +25,8 @@ gcf::HttpResponse concepts_filesystem(gcf::HttpRequest /*request*/) {  // NOLINT
     payload += p.path().generic_string();
     payload += "\n";
   }
-  gcf::HttpResponse response;
-  response.set_header("content-type", "text/plain");
-  response.set_payload(payload);
-  return response;
+  return gcf::HttpResponse{}
+      .set_header("content-type", "text/plain")
+      .set_payload(payload);
 }
 // [END functions_concepts_after_timeout]

@@ -318,8 +318,8 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
 TEST(ExamplesSiteTest, HttpContent) {
   auto make_request = [](std::string content_type, std::string payload) {
     return gcf::HttpRequest{}
-        .set_payload(std::move(payload))
-        .add_header("content-type", std::move(content_type));
+        .add_header("content-type", std::move(content_type))
+        .set_payload(std::move(payload));
   };
 
   auto actual = http_content(

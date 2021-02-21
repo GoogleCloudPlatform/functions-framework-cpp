@@ -28,8 +28,6 @@ gcf::HttpResponse concepts_after_response(
     for (int i = 0; i != kIterations; ++i) sum += i;
     return sum;
   });
-  gcf::HttpResponse response;
-  response.set_payload("Hello World!");
-  return response;
+  return gcf::HttpResponse{}.set_payload("Hello World!");
 }
 // [END functions_concepts_after_response]
