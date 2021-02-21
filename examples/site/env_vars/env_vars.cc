@@ -22,8 +22,6 @@ namespace gcf = ::google::cloud::functions;
 gcf::HttpResponse env_vars(gcf::HttpRequest /*request*/) {  // NOLINT
   char const* value = std::getenv("FOO");
   if (value == nullptr) value = "FOO environment variable is not set";
-  gcf::HttpResponse response;
-  response.set_payload(value);
-  return response;
+  return gcf::HttpResponse{}.set_payload(value);
 }
 // [END functions_env_vars]

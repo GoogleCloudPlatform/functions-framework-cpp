@@ -19,9 +19,8 @@
 namespace gcf = ::google::cloud::functions;
 
 gcf::HttpResponse hello_world_get(gcf::HttpRequest) {  // NOLINT
-  gcf::HttpResponse response;
-  response.set_payload("Hello World!");
-  response.set_header("content-type", "text/plain");
-  return response;
+  return gcf::HttpResponse{}
+      .set_payload("Hello World!")
+      .set_header("content-type", "text/plain");
 }
 // [END functions_helloworld_get]

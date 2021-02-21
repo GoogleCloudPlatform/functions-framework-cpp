@@ -29,10 +29,9 @@ TEST(CallUserFunctionHttpTest, Basic) {
     EXPECT_EQ(request.target(), "/foo/bar");
     EXPECT_THAT(request.headers(),
                 Contains(std::make_pair("x-goog-test", "test-value")));
-    functions::HttpResponse response{};
-    response.set_payload("just nod if you can hear me");
-    response.set_header("x-goog-test", "response-header");
-    return response;
+    return functions::HttpResponse{}
+        .set_payload("just nod if you can hear me")
+        .set_header("x-goog-test", "response-header");
   };
   BeastRequest request;
   request.target("/foo/bar");
@@ -47,9 +46,8 @@ TEST(CallUserFunctionHttpTest, Basic) {
 
 TEST(CallUserFunctionHttpTest, ReturnError) {
   auto func = [&](functions::HttpRequest const& /*request*/) {
-    functions::HttpResponse response{};
-    response.set_result(functions::HttpResponse::kNotFound);
-    return response;
+    return functions::HttpResponse{}.set_result(
+        functions::HttpResponse::kNotFound);
   };
   BeastRequest request;
   request.target("/foo/bar/not-there");

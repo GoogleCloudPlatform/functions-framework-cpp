@@ -20,10 +20,9 @@ namespace gcf = ::google::cloud::functions;
 namespace {
 
 gcf::HttpResponse HelloWithShutdown(gcf::HttpRequest const& /*request*/) {
-  gcf::HttpResponse response;
-  response.set_header("Content-Type", "text/plain");
-  response.set_payload("Hello World\n");
-  return response;
+  return gcf::HttpResponse{}
+      .set_header("Content-Type", "text/plain")
+      .set_payload("Hello World\n");
 }
 
 }  // namespace

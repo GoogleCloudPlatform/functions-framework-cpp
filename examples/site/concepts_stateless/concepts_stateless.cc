@@ -25,8 +25,7 @@ std::atomic<int> count{0};
 }  // namespace
 
 gcf::HttpResponse concepts_stateless(gcf::HttpRequest /*request*/) {  // NOLINT
-  gcf::HttpResponse response;
-  response.set_payload("Instance execution count: " + std::to_string(++count));
-  return response;
+  return gcf::HttpResponse{}.set_payload("Instance execution count: " +
+                                         std::to_string(++count));
 }
 // [END functions_concepts_stateless]

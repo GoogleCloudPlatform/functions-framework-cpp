@@ -30,9 +30,8 @@ gcf::HttpResponse http_xml(gcf::HttpRequest request) {  // NOLINT
   boost::property_tree::read_xml(is, data);
 
   auto name = data.get<std::string>("name", "World");
-  gcf::HttpResponse response;
-  response.set_header("content-type", "text/plain");
-  response.set_payload("Hello " + name);
-  return response;
+  return gcf::HttpResponse{}
+      .set_header("content-type", "text/plain")
+      .set_payload("Hello " + name);
 }
 // [END functions_http_xml]

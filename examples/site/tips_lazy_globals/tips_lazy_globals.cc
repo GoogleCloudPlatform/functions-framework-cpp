@@ -29,8 +29,6 @@ void h_init() { h = "heavy computation"; }
 
 gcf::HttpResponse tips_lazy_globals(gcf::HttpRequest /*request*/) {  // NOLINT
   std::call_once(h_init_flag, h_init);
-  gcf::HttpResponse response;
-  response.set_payload("Global: " + h);
-  return response;
+  return gcf::HttpResponse{}.set_payload("Global: " + h);
 }
 // [END functions_tips_lazy_globals]

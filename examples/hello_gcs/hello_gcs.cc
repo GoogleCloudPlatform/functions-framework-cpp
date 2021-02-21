@@ -23,9 +23,7 @@ namespace gcs = ::google::cloud::storage;
 
 HttpResponse HelloGcs(HttpRequest request) {  // NOLINT
   auto error = [] {
-    HttpResponse response;
-    response.set_result(HttpResponse::kBadRequest);
-    return response;
+    return HttpResponse{}.set_result(HttpResponse::kBadRequest);
   };
 
   std::vector<std::string> components;
@@ -42,8 +40,7 @@ HttpResponse HelloGcs(HttpRequest request) {  // NOLINT
                        std::istreambuf_iterator<char>{});
   if (!reader.status().ok()) return error();
 
-  HttpResponse response;
-  response.set_header("Content-Type", "application/octet-stream");
-  response.set_payload(std::move(contents));
-  return response;
+  return HttpResponse{}
+      .set_header("Content-Type", "application/octet-stream")
+      .set_payload(std::move(contents));
 }

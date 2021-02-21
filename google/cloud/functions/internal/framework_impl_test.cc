@@ -103,10 +103,9 @@ TEST(FrameworkTest, Http) {
   auto port_f = port_p.get_future();
   std::atomic<bool> shutdown{false};
   auto hello = [](functions::HttpRequest const& r) {
-    functions::HttpResponse response;
-    response.set_payload("Hello World from " + r.target());
-    response.set_header("content-type", "text/plain");
-    return response;
+    return functions::HttpResponse{}
+        .set_payload("Hello World from " + r.target())
+        .set_header("content-type", "text/plain");
   };
   auto run = [&](int argc, char const* const argv[],
                  functions::UserHttpFunction f) {

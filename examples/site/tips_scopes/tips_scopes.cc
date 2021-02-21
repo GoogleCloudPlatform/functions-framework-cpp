@@ -29,9 +29,7 @@ std::string h = heavy_computation();
 
 gcf::HttpResponse tips_scopes(gcf::HttpRequest /*request*/) {  // NOLINT
   auto l = light_computation();
-  gcf::HttpResponse response;
-  response.set_payload("Global: " + h + ", Local: " + l);
-  return response;
+  return gcf::HttpResponse{}.set_payload("Global: " + h + ", Local: " + l);
 }
 // [END functions_tips_scopes]
 

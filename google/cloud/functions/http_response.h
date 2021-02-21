@@ -41,6 +41,47 @@ class HttpResponse {
 
   HttpResponse();
 
+  /// The request payload
+  HttpResponse& set_payload(std::string v) & {
+    impl_->set_payload(std::move(v));
+    return *this;
+  }
+  HttpResponse&& set_payload(std::string v) && {
+    return std::move(set_payload(std::move(v)));
+  }
+  [[nodiscard]] std::string const& payload() const { return impl_->payload(); }
+
+  /// Set the status result
+  HttpResponse& set_result(int code) & {
+    impl_->set_result(code);
+    return *this;
+  }
+  HttpResponse&& set_result(int code) && {
+    return std::move(set_result(code));
+  }
+  [[nodiscard]] int result() const { return impl_->result(); }
+
+  /// The request HTTP headers
+  HttpResponse& set_header(std::string_view name, std::string_view value) & {
+    impl_->set_header(name, value);
+    return *this;
+  }
+  HttpResponse&& set_header(std::string_view name, std::string_view value) && {
+    return std::move(set_header(name, value));
+  }
+  [[nodiscard]] HeadersType headers() const { return impl_->headers(); }
+
+  /// The HTTP version for the request
+  HttpResponse& set_version(int major, int minor) & {
+    impl_->set_version(major, minor);
+    return *this;
+  }
+  HttpResponse&& set_version(int major, int minor) && {
+    return std::move(set_version(major, minor));
+  }
+  [[nodiscard]] int version_major() const { return impl_->version_major(); }
+  [[nodiscard]] int version_minor() const { return impl_->version_minor(); }
+
   /**
    * @name Common HTTP status codes.
    */
@@ -114,25 +155,6 @@ class HttpResponse {
   inline static auto constexpr kNotExtended = 510;
   inline static auto constexpr kNetworkAuthenticationRequired = 511;
   //@}
-
-  /// The request payload
-  void set_payload(std::string v) { impl_->set_payload(std::move(v)); }
-  [[nodiscard]] std::string const& payload() const { return impl_->payload(); }
-
-  /// Set the status result
-  void set_result(int code) { impl_->set_result(code); }
-  [[nodiscard]] int result() const { return impl_->result(); }
-
-  /// The request HTTP headers
-  void set_header(std::string_view name, std::string_view value) {
-    impl_->set_header(name, value);
-  }
-  [[nodiscard]] HeadersType headers() const { return impl_->headers(); }
-
-  /// The HTTP version for the request
-  void set_version(int major, int minor) { impl_->set_version(major, minor); }
-  [[nodiscard]] int version_major() const { return impl_->version_major(); }
-  [[nodiscard]] int version_minor() const { return impl_->version_minor(); }
 
   class Impl {
    public:

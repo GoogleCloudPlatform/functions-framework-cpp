@@ -25,9 +25,7 @@ gcf::HttpResponse concepts_after_timeout(gcf::HttpRequest request) {  // NOLINT
   using std::chrono::minutes;
   std::cout << "Function running..." << std::endl;
   if (request.verb() == "GET") std::this_thread::sleep_for(minutes(2));
-  gcf::HttpResponse response;
-  response.set_payload("Function completed!");
   std::cout << "Function completed!" << std::endl;
-  return response;
+  return gcf::HttpResponse{}.set_payload("Function completed!");
 }
 // [END functions_concepts_after_timeout]
