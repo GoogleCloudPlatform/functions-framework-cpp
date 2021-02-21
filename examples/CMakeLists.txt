@@ -70,7 +70,7 @@ if (MSVC)
 endif ()
 target_link_libraries(
     functions_framework_examples
-    abseil::strings
+    absl::strings
     fmt::fmt
     functions-framework-cpp::framework
     google-cloud-cpp::bigtable

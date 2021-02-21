@@ -14,7 +14,7 @@
 # limitations under the License.
 # ~~~
 
-find_package(Poco REQUIRED Net)
+find_package(absl CONFIG REQUIRED)
 find_package(functions_framework_cpp REQUIRED)
 
 add_library(functions_framework_cpp_function tips_gcp_apis.cc)
