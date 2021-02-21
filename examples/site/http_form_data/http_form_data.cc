@@ -76,17 +76,14 @@ gcf::HttpResponse http_form_data(gcf::HttpRequest request) {  // NOLINT
       absl::StrSplit(request.payload(), delimiter, absl::SkipEmpty{});
   nlohmann::json result{{"parts", std::vector<nlohmann::json>{}}};
   for (auto& p : parts) {
-    std::vector<absl::string_view> components = absl::StrSplit(p, "\r\n\r\n");
-    if (components.size() != 2) {
-      result.push_back(
-          nlohmann::json{{"error", "too many header/body splits=" +
-                                       std::to_string(components.size())}});
-      continue;
-    }
+    std::vector<absl::string_view> components =
+        absl::StrSplit(p, absl::MaxSplits("\r\n\r\n", 2));
+    auto const body_size =
+        components.size() == 2 ? components[0].size() : std::size_t(0);
 
     std::vector<std::string> part_headers =
         absl::StrSplit(components[0], "\r\n");
-    nlohmann::json descriptor{{"bodySize", components[1].size()},
+    nlohmann::json descriptor{{"bodySize", body_size},
                               {"headerCount", part_headers.size()}};
     for (auto const& h : part_headers) {
       static auto const kContentDispositionRE = std::regex(
