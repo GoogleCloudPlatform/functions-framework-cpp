@@ -402,6 +402,10 @@ TEST(ExamplesSiteTest, HttpFormData) {
             gcf::HttpResponse::kMethodNotAllowed);
   EXPECT_EQ(http_form_data(gcf::HttpRequest{}.set_verb("POST")).result(),
             gcf::HttpResponse::kBadRequest);
+  EXPECT_EQ(http_form_data(gcf::HttpRequest{}.set_verb("POST").add_header(
+                               "content-type", "application/json"))
+                .result(),
+            gcf::HttpResponse::kBadRequest);
   EXPECT_THROW(
       http_form_data(gcf::HttpRequest{}
                          .add_header("content-type", "multipart/form-data")
