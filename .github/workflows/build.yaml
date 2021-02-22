@@ -143,12 +143,11 @@ jobs:
             '-DVCPKG_TARGET_TRIPLET=${{matrix.triplet}}' `
             '-DBUILD_SHARED_LIBS=${{matrix.buildShared}}' `
             '-DCMAKE_TOOLCHAIN_FILE=${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake'
-      # Disable to warm up the cache
-      # - name: build
-      #   run: cmake --build "${{runner.temp}}/build"
-      # - name: test
-      #   working-directory: "${{runner.temp}}/build"
-      #   run: ctest --output-on-failure --timeout=60s
+      - name: build
+        run: cmake --build "${{runner.temp}}/build"
+      - name: test
+        working-directory: "${{runner.temp}}/build"
+        run: ctest --output-on-failure --timeout=60s
 
   build-macos:
     name: macos-10
