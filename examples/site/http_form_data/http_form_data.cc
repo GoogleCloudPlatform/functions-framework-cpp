@@ -93,7 +93,7 @@ gcf::HttpResponse http_form_data(gcf::HttpRequest request) {  // NOLINT
           std::regex(R"re([;[:space:]]name=([^[:space:];]+))re",
                      std::regex::extended | std::regex::icase);
       // NOTE: this does not handle embedded spaces and/or semi-colons in the
-      // filename, should be improved for production code.
+      // filename, and so should be improved for production code.
       static auto const kFilenameRE =
           std::regex(R"re([;[:space:]]filename=([^[:space:];]+))re",
                      std::regex::extended | std::regex::icase);
