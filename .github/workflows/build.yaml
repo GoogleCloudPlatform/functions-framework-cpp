@@ -92,6 +92,14 @@ jobs:
   build-msvc-2019:
     name: msvc-2019
     runs-on: windows-2019
+    strategy:
+      matrix:
+        triplet: ["x64-windows-static", "x64-windows"]
+        include:
+          - triplet: "x64-windows-static"
+            buildShared: "OFF"
+          - triplet: "x64-windows"
+            buildShared: "ON"
     steps:
       - name: install-ninja
         run: choco install -y --no-progress ninja
@@ -115,9 +123,9 @@ jobs:
           path: |
             ~\AppData\Local\vcpkg\archives
           key: |
-            vcpkg-${{ env.vcpkg_SHA }}-build-msvc-2019-2-${{ hashFiles('vcpkg.json') }}
+            vcpkg-${{ env.vcpkg_SHA }}-build-msvc-2019-3-${{matrix.triplet}}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ env.vcpkg_SHA }}-build-msvc-2019-2-
+            vcpkg-${{ env.vcpkg_SHA }}-build-msvc-2019-3-${{matrix.triplet}}-
 
       - uses: actions/checkout@v2
       - uses: ilammy/msvc-dev-cmd@v1
@@ -126,6 +134,9 @@ jobs:
           cmake -S . -B '${{runner.temp}}/build' -GNinja `
             '-DBUILD_TESTING=ON' `
             '-DFUNCTIONS_FRAMEWORK_CPP_TEST_EXAMPLES=OFF' `
+            '-DVCPKG_MANIFEST_FEATURES=framework' `
+            '-DVCPKG_TARGET_TRIPLET=${{matrix.triplet}}' `
+            '-DBUILD_SHARED_LIBS=${{matrix.buildShared}}' `
             '-DCMAKE_TOOLCHAIN_FILE=${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake'
       - name: build
         run: cmake --build "${{runner.temp}}/build"
