@@ -83,7 +83,8 @@ set_target_properties(
                VERSION "${PROJECT_VERSION}"
                SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 if (WIN32 AND BUILD_SHARED_LIBS)
-    set_target_properties(functions_framework_cpp PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    set_target_properties(functions_framework_cpp
+                          PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif ()
 add_library(functions-framework-cpp::framework ALIAS functions_framework_cpp)
 
@@ -119,7 +120,8 @@ if (BUILD_TESTING)
             get_target_property(FRAMEWORK_DIR
                                 functions-framework-cpp::framework BINARY_DIR)
             set_tests_properties(
-                ${target} PROPERTIES ENVIRONMENT "PATH=${FRAMEWORK_DIR};$ENV{PATH}")
+                ${target} PROPERTIES ENVIRONMENT
+                                     "PATH=${FRAMEWORK_DIR};$ENV{PATH}")
         endif ()
     endforeach ()
 
