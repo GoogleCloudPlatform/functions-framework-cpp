@@ -47,6 +47,7 @@ add_library(
     site/http_content/http_content.cc
     site/http_cors/http_cors.cc
     site/http_cors_auth/http_cors_auth.cc
+    site/http_form_data/http_form_data.cc
     site/http_method/http_method.cc
     site/http_xml/http_xml.cc
     site/log_helloworld/log_helloworld.cc
@@ -68,8 +69,12 @@ if (MSVC)
         PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
 endif ()
 target_link_libraries(
-    functions_framework_examples fmt::fmt functions-framework-cpp::framework
-    google-cloud-cpp::bigtable google-cloud-cpp::pubsub
+    functions_framework_examples
+    absl::strings
+    fmt::fmt
+    functions-framework-cpp::framework
+    google-cloud-cpp::bigtable
+    google-cloud-cpp::pubsub
     google-cloud-cpp::storage)
 
 if (BUILD_TESTING)

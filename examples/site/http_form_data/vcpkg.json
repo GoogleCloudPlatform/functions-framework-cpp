@@ -1,0 +1,8 @@
+{
+  "name": "http-form-data",
+  "version-string": "unversioned",
+  "dependencies": [
+    "abseil",
+    "functions-framework-cpp"
+  ]
+}
