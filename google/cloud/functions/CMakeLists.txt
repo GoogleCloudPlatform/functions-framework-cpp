@@ -116,8 +116,10 @@ if (BUILD_TESTING)
         functions_framework_cpp_add_common_options(${target})
         add_test(NAME ${target} COMMAND ${target})
         if (WIN32 AND BUILD_SHARED_LIBS)
-            get_target_property(FRAMEWORK_DIR functions-framework-cpp::framework BINARY_DIR)
-            set_tests_properties(${target} PROPERTIES ENVIRONMENT "PATH=${FRAMEWORK_DIR};$ENV{PATH}")
+            get_target_property(FRAMEWORK_DIR
+                                functions-framework-cpp::framework BINARY_DIR)
+            set_tests_properties(
+                ${target} PROPERTIES ENVIRONMENT "PATH=${FRAMEWORK_DIR};$ENV{PATH}")
         endif ()
     endforeach ()
 
