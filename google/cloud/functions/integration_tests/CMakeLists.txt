@@ -36,8 +36,8 @@ foreach (fname ${functions_framework_cpp_integration_tests})
     target_compile_definitions("${target}" PRIVATE BOOST_UUID_FORCE_AUTO_LINK)
     add_test(NAME ${target} COMMAND ${target})
     if (WIN32 AND BUILD_SHARED_LIBS)
-        get_target_property(FRAMEWORK_DIR
-                            functions-framework-cpp::framework BINARY_DIR)
+        get_target_property(FRAMEWORK_DIR functions-framework-cpp::framework
+                            BINARY_DIR)
         set_tests_properties(
             ${target} PROPERTIES ENVIRONMENT "PATH=${FRAMEWORK_DIR};$ENV{PATH}")
     endif ()
