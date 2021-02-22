@@ -35,6 +35,10 @@ foreach (fname ${functions_framework_cpp_integration_tests})
     # MSVC, but it does not seem to work here.
     target_compile_definitions("${target}" PRIVATE BOOST_UUID_FORCE_AUTO_LINK)
     add_test(NAME ${target} COMMAND ${target})
+    if (WIN32 AND BUILD_SHARED_LIBS)
+        get_target_property(FRAMEWORK_DIR functions-framework-cpp::framework BINARY_DIR)
+        set_tests_properties(${target} PROPERTIES ENVIRONMENT "PATH=${FRAMEWORK_DIR};$ENV{PATH}")
+    endif ()
 endforeach ()
 
 set(functions_framework_cpp_integration_programs
