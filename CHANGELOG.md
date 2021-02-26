@@ -1,6 +1,13 @@
 # Changelog
 
-## v0.5.0 - TBD
+## v0.6.0 - TBD
+
+## v0.5.0 - 2021-03
+
+* feat: make HttpResponse fluent (#293)
+* ci: add a build for MSVC 2019 (#290)
+* refactor: use vcpkg features to control dependencies (#289)
+* fix: build problems with MSVC (#288)
 
 ## v0.4.0 - 2021-02
 
