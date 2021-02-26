@@ -126,14 +126,6 @@ RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug functions-framewo
 # its dependencies, as well as for `google-cloud-cpp`.
 FROM gcf-cpp-incremental-1 AS gcf-cpp-develop
 
-# Copy the framework to /usr/local/share/gcf, that is just a lazy way to
-# get all the scripts we need for both the CI and regular builds.
-COPY build_scripts/cmake /usr/local/share/gcf/build_scripts/cmake
-COPY build_scripts/generate-wrapper.sh /usr/local/share/gcf/build_scripts/generate-wrapper.sh
-RUN find /usr/local/share/gcf -type f | xargs chmod 644
-RUN find /usr/local/share/gcf -type d | xargs chmod 755
-RUN chmod 755 /usr/local/share/gcf/build_scripts/generate-wrapper.sh
-
 COPY --from=gcf-cpp-incremental-3 /usr/local/bin/cmake   /usr/local/bin/cmake
 COPY --from=gcf-cpp-incremental-3 /usr/local/bin/ctest   /usr/local/bin/ctest
 COPY --from=gcf-cpp-incremental-3 /usr/local/bin/ninja   /usr/local/bin/ninja
@@ -149,7 +141,6 @@ FROM gcf-cpp-incremental-2 AS gcf-cpp-ci-0
 COPY . /usr/local/share/gcf
 RUN find /usr/local/share/gcf -type f | xargs chmod 644
 RUN find /usr/local/share/gcf -type d | xargs chmod 755
-RUN chmod 755 /usr/local/share/gcf/build_scripts/generate-wrapper.sh
 RUN VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/build_scripts/vcpkg-overlays \
     /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug functions-framework-cpp
 
