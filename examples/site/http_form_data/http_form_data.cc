@@ -59,7 +59,7 @@ class FormDataDelimiter {
 
 }  // namespace
 
-gcf::HttpResponse http_form_data(gcf::HttpRequest request) {  // NOLINT
+gcf::HttpResponse http_form_data(gcf::HttpRequest request) {
   if (request.verb() != "POST") {
     return gcf::HttpResponse{}.set_result(gcf::HttpResponse::kMethodNotAllowed);
   }
@@ -72,8 +72,10 @@ gcf::HttpResponse http_form_data(gcf::HttpRequest request) {  // NOLINT
     return gcf::HttpResponse{}.set_result(gcf::HttpResponse::kBadRequest);
   }
   auto delimiter = FormDataDelimiter::FromHeader(header->second);
+
+  auto payload = std::move(request).payload();
   std::vector<absl::string_view> parts =
-      absl::StrSplit(request.payload(), delimiter, absl::SkipEmpty{});
+      absl::StrSplit(payload, delimiter, absl::SkipEmpty{});
   nlohmann::json result{{"parts", std::vector<nlohmann::json>{}}};
   for (auto& p : parts) {
     std::vector<absl::string_view> components =
