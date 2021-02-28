@@ -41,7 +41,7 @@ class HttpRequest {
   [[nodiscard]] std::string const& target() const { return target_; }
 
   /// The request payload
-  [[nodiscard]] std::string const& payload() const & { return payload_; }
+  [[nodiscard]] std::string const& payload() const& { return payload_; }
   [[nodiscard]] std::string&& payload() && { return std::move(payload_); }
 
   /// The request HTTP headers
