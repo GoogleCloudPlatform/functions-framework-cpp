@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env:
-  vcpkg_SHA: "65e5ea1df685a5362e70367bef4dbf827addff31"
+  vcpkg_SHA: "9b9a6680b25872989c8eb0303d670f32e5cfe6a4"
   VCPKG_TOOL_VERSION: "2021-01-13-768d8f95c9e752603d2c5901c7a7c7fbdb08af35"
 
 jobs:
