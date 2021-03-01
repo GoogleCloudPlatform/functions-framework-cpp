@@ -16,7 +16,7 @@ fi
 if [[ ! -d "${VCPKG_ROOT}" ]]; then
   echo "-----> Install vcpkg"
   mkdir -p "${VCPKG_ROOT}"
-  curl -sSL https://github.com/Microsoft/vcpkg/archive/65e5ea1df685a5362e70367bef4dbf827addff31.tar.gz | \
+  curl -sSL https://github.com/Microsoft/vcpkg/archive/9b9a6680b25872989c8eb0303d670f32e5cfe6a4.tar.gz | \
     tar -C "${VCPKG_ROOT}" -xzf - --strip-components=1
   cat >"${VCPKG_ROOT}/triplets/x64-linux-nodebug.cmake" <<_EOF_
 set(VCPKG_BUILD_TYPE release)
