@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START functions_concepts_after_timeout]
+// [START functions_concepts_filesystem]
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
 #include <filesystem>
@@ -29,4 +29,4 @@ gcf::HttpResponse concepts_filesystem(gcf::HttpRequest /*request*/) {  // NOLINT
       .set_header("content-type", "text/plain")
       .set_payload(payload);
 }
-// [END functions_concepts_after_timeout]
+// [END functions_concepts_filesystem]
