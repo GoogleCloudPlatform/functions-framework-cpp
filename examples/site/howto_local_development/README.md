@@ -1,10 +1,5 @@
 # How-to Guide: Local Development
 
-[vcpkg-gh]: https://github.com/microsoft/vcpkg
-[vcpkg-install]: https://github.com/microsoft/vcpkg#getting-started
-[cmake]: https://cmake.org
-[cmake-install]: https://cmake.org/install/
-
 This guide describes how to compile and run a function locally. This can be
 useful when writing unit test, or to accelerate the edit -> compile -> test
 cycle.
@@ -134,3 +129,8 @@ curl http://localhost:8080
 ```
 
 You can just interrupt (`Ctrl-C`) the program to terminate it.
+
+[vcpkg-gh]: https://github.com/microsoft/vcpkg
+[vcpkg-install]: https://github.com/microsoft/vcpkg#getting-started
+[cmake]: https://cmake.org
+[cmake-install]: https://cmake.org/install/

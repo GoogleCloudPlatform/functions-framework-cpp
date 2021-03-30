@@ -1,15 +1,5 @@
 # How-to Guide: Testing Event-driven Functions (Pub/Sub triggered)
 
-[buildpacks]: https://buildpacks.io
-[boost-log-gh]: https://github.com/boostorg/log
-[/examples/site/hello_world_pubsub/hello_world_pubsub.cc]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
-[pubsub_unit_test.cc]: pubsub_unit_test.cc
-[pubsub_integration_server.cc]: pubsub_integration_server.cc
-[pubsub_integration_test.cc]: pubsub_integration_test.cc
-[quickstart-guide]: /examples/site/howto_local_development/README.md
-[container-guide]: /examples/site/howto_create_container/README.md
-[pubsub-quickstart]: https://cloud.google.com/pubsub/docs/quickstart-console
-
 Event-driven functions do not return values, their only observable behavior are
 side-effects. All tests, therefore, are looking at the side-effects of these
 functions. Depending on where the function is deployed this might be more or
@@ -117,3 +107,13 @@ env "GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}" \
     "SERVICE_ID=gcf-hello-world-pubsub" \
     ./pubsub_system_test # use actual path to binary
 ```
+
+[buildpacks]: https://buildpacks.io
+[boost-log-gh]: https://github.com/boostorg/log
+[/examples/site/hello_world_pubsub/hello_world_pubsub.cc]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
+[pubsub_unit_test.cc]: pubsub_unit_test.cc
+[pubsub_integration_server.cc]: pubsub_integration_server.cc
+[pubsub_integration_test.cc]: pubsub_integration_test.cc
+[quickstart-guide]: /examples/site/howto_local_development/README.md
+[container-guide]: /examples/site/howto_create_container/README.md
+[pubsub-quickstart]: https://cloud.google.com/pubsub/docs/quickstart-console

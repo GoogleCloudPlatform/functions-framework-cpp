@@ -1,16 +1,5 @@
 # How-to Guide: Use Cloud Build to create a buildpacks builder
 
-[repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
-[cloud-build-quickstarts]: https://cloud.google.com/build/docs/quickstarts
-[gcp-quickstarts]: https://cloud.google.com/resource-manager/docs/creating-managing-projects
-[buildpacks]: https://buildpacks.io
-[docker]: https://docker.com/
-[docker-install]: https://store.docker.com/search?type=edition&offering=community
-[sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
-[pack-install]: https://buildpacks.io/docs/install-pack/
-[hello-world-http]: /examples/site/hello_world_http/hello_world_http.cc
-[cloud-build]: https://cloud.google.com/cloud-build
-
 This guide shows you how to use [Cloud Build][cloud-build] to offload the
 creation of [buildpacks] builders.
 
@@ -145,3 +134,14 @@ for image in \
     xargs gcloud container images delete --force-delete-tags
 done
 ```
+
+[repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
+[cloud-build-quickstarts]: https://cloud.google.com/build/docs/quickstarts
+[gcp-quickstarts]: https://cloud.google.com/resource-manager/docs/creating-managing-projects
+[buildpacks]: https://buildpacks.io
+[docker]: https://docker.com/
+[docker-install]: https://store.docker.com/search?type=edition&offering=community
+[sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
+[pack-install]: https://buildpacks.io/docs/install-pack/
+[hello-world-http]: /examples/site/hello_world_http/hello_world_http.cc
+[cloud-build]: https://cloud.google.com/cloud-build
