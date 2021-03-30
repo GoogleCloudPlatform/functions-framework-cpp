@@ -1,18 +1,4 @@
-# How-to Guide: Testing Event-driven Functions (Cloud Audit Log triggered)
-
-> :warning: this example depends on features in the upcoming release 0.4.0.
-> until that release is cut, the default builders will link against 0.3.0
-> and this example will not work correctly.
-
-[buildpacks]: https://buildpacks.io
-[boost-log-gh]: https://github.com/boostorg/log
-[/examples/site/hello_world_storage/hello_world_storage.cc]: /examples/site/hello_world_storage/hello_world_storage.cc
-[storage_unit_test.cc]: storage_unit_test.cc
-[storage_integration_server.cc]: storage_integration_server.cc
-[storage_integration_test.cc]: storage_integration_test.cc
-[quickstart-guide]: /examples/site/howto_local_development/README.md
-[container-guide]: /examples/site/howto_create_container/README.md
-[pubsub-quickstart]: https://cloud.google.com/pubsub/docs/quickstart-console
+# How-to Guide: Testing Event-driven Functions
 
 Event-driven functions do not return values, therefore, their only observable
 behavior are their side-effects and any testing for them is based in observing
@@ -75,9 +61,9 @@ We will create a container for the storage "hello world" function as usual:
 
 ```shell
 pack build \
-    --builder gcf-cpp-builder:bionic \
-    --env "FUNCTION_SIGNATURE_TYPE=cloudevent" \
-    --env "TARGET_FUNCTION=hello_world_storage" \
+    --builder gcr.io/buildpacks/builder:latest \
+    --env "GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent" \
+    --env "GOOGLE_FUNCTION_TARGET=hello_world_storage" \
     --path "examples/site/hello_world_storage" \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-storage"
 ```
@@ -144,3 +130,13 @@ gcloud run services delete gcf-cpp-hello-world-storage \
 gcloud container images delete \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-storage:latest"
 ```
+
+[buildpacks]: https://buildpacks.io
+[boost-log-gh]: https://github.com/boostorg/log
+[/examples/site/hello_world_storage/hello_world_storage.cc]: /examples/site/hello_world_storage/hello_world_storage.cc
+[storage_unit_test.cc]: storage_unit_test.cc
+[storage_integration_server.cc]: storage_integration_server.cc
+[storage_integration_test.cc]: storage_integration_test.cc
+[quickstart-guide]: /examples/site/howto_local_development/README.md
+[container-guide]: /examples/site/howto_create_container/README.md
+[pubsub-quickstart]: https://cloud.google.com/pubsub/docs/quickstart-console

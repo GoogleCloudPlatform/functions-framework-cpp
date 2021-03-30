@@ -1,17 +1,5 @@
 # How-to Guide: Deploy a C++ Pub/Sub function to Cloud Run
 
-[repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
-[howto-create-container]: /examples/site/howto_create_container/README.md
-[cloud-run-quickstarts]: https://cloud.google.com/run/docs/quickstarts
-[gcp-quickstarts]: https://cloud.google.com/resource-manager/docs/creating-managing-projects
-[buildpacks]: https://buildpacks.io
-[docker]: https://docker.com/
-[docker-install]: https://store.docker.com/search?type=edition&offering=community
-[sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
-[pack-install]: https://buildpacks.io/docs/install-pack/
-[hello-world-pubsub]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
-[gcloud-eventarc-create]: https://cloud.google.com/sdk/gcloud/reference/beta/eventarc/triggers/create
-
 ## Pre-requisites
 
 This guide assumes you are familiar with Google Cloud, and that you have a GCP
@@ -79,33 +67,26 @@ clone:
 cd $HOME/functions-framework-cpp
 ```
 
-## Setting up the buildpacks builder
-
-We will be using a [buildpacks][buildpacks] builder to create the container
-image deployed to Cloud Run. The first time your run these commands it can take
-several minutes, maybe as long as an hour, depending on your workstation's
-performance.
-
-```sh
-docker build -t gcf-cpp-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
-docker build -t gcf-cpp-build-image --target gcf-cpp-develop -f build_scripts/Dockerfile .
-pack builder create gcf-cpp-builder:bionic --config pack/builder.toml
-pack config trusted-builders add gcf-cpp-builder:bionic
-pack config default-builder gcf-cpp-builder:bionic
-```
-
 ## Building a Docker image
 
+> :warning: This will automatically download and compile the functions
+> framework and all its dependencies. Consequently, the first build of a
+> function may take several minutes (and up to an hour) depending on the
+> performance of your workstation. Subsequent builds cache many binary
+> artifacts, but these caches are *not* shared across functions, so plan
+> accordingly.
+
 Set the `GOOGLE_CLOUD_PROJECT` shell variable to the project id of your GCP
-project, and create a docker image with your function:
+project, and use the [Google Cloud buildpack] builder to create a docker image
+containing your function:
 
 ```shell
 GOOGLE_CLOUD_PROJECT=... # put the right value here
 pack build \
-   --builder gcf-cpp-builder:bionic \
-   --env FUNCTION_SIGNATURE_TYPE=cloudevent \
-   --env TARGET_FUNCTION=hello_world_pubsub \
-   --path examples/site/hello_world_pubsub \
+    --builder gcr.io/buildpacks/builder:latest \
+    --env GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent \
+    --env GOOGLE_FUNCTION_TARGET=hello_world_pubsub \
+    --path examples/site/hello_world_pubsub \
    "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-pubsub"
 ```
 
@@ -193,6 +174,14 @@ gcloud logging read \
 
 ## Cleanup
 
+Delete the trigger:
+
+```shell
+gcloud beta eventarc triggers delete gcf-cpp-hello-world-pubsub-trigger \
+    --project="${GOOGLE_CLOUD_PROJECT}" \
+    --location="us-central1"
+```
+
 Delete the Cloud Run deployment:
 
 ```sh
@@ -208,3 +197,16 @@ And the container image:
 gcloud container images delete \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-pubsub:latest"
 ```
+
+[repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
+[howto-create-container]: /examples/site/howto_create_container/README.md
+[cloud-run-quickstarts]: https://cloud.google.com/run/docs/quickstarts
+[gcp-quickstarts]: https://cloud.google.com/resource-manager/docs/creating-managing-projects
+[buildpacks]: https://buildpacks.io
+[docker]: https://docker.com/
+[docker-install]: https://store.docker.com/search?type=edition&offering=community
+[sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
+[pack-install]: https://buildpacks.io/docs/install-pack/
+[hello-world-pubsub]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
+[gcloud-eventarc-create]: https://cloud.google.com/sdk/gcloud/reference/beta/eventarc/triggers/create
+[Google Cloud buildpack]: https://github.com/GoogleCloudPlatform/buildpacks

@@ -1,13 +1,5 @@
 # How-to Guide: Running your function as Docker container
 
-[repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
-[buildpacks]: https://buildpacks.io
-[docker]: https://docker.com/
-[docker-install]: https://store.docker.com/search?type=edition&offering=community
-[sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
-[pack-install]: https://buildpacks.io/docs/install-pack/
-[hello-world-http]: /examples/site/hello_world_http/hello_world_http.cc
-
 This guide shows you how to create a container image for an example function,
 and how to run said image in a local container on your workstation.
 
@@ -75,30 +67,23 @@ clone:
 cd $HOME/functions-framework-cpp
 ```
 
-## Setting up the buildpacks builder
-
-We will be using a [buildpacks][buildpacks] builder to create the container
-image deployed to Cloud Run. The first time your run these commands it can take
-several minutes, maybe as long as an hour, depending on your workstation's
-performance.
-
-```sh
-docker build -t gcf-cpp-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
-docker build -t gcf-cpp-build-image --target gcf-cpp-develop -f build_scripts/Dockerfile .
-pack builder create gcf-cpp-builder:bionic --config pack/builder.toml
-pack config trusted-builders add gcf-cpp-builder:bionic
-pack config default-builder gcf-cpp-builder:bionic
-```
-
 ## Building a Docker image
 
-Build a Docker image from your function using this buildpack:
+> :warning: This will automatically download and compile the functions
+> framework and all its dependencies. Consequently, the first build of a
+> function may take several minutes (and up to an hour) depending on the
+> performance of your workstation. Subsequent builds cache many binary
+> artifacts, but these caches are *not* shared across functions, so plan
+> accordingly.
+
+We use the [Google Cloud buildpack] builder to create the Docker image
+containing your function:
 
 ```shell
 pack build \
-    --builder gcf-cpp-builder:bionic \
-    --env FUNCTION_SIGNATURE_TYPE=http \
-    --env TARGET_FUNCTION=hello_world_http \
+    --builder gcr.io/buildpacks/builder:latest \
+    --env GOOGLE_FUNCTION_SIGNATURE_TYPE=http \
+    --env GOOGLE_FUNCTION_TARGET=hello_world_http \
     --path examples/site/hello_world_http \
     gcf-cpp-hello-world-http
 ```
@@ -134,3 +119,12 @@ And delete the local image:
 ```shell
 docker image rm gcf-cpp-hello-world-http
 ```
+
+[repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
+[buildpacks]: https://buildpacks.io
+[docker]: https://docker.com/
+[docker-install]: https://store.docker.com/search?type=edition&offering=community
+[sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
+[pack-install]: https://buildpacks.io/docs/install-pack/
+[hello-world-http]: /examples/site/hello_world_http/hello_world_http.cc
+[Google Cloud buildpack]: https://github.com/GoogleCloudPlatform/buildpacks

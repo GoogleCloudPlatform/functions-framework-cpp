@@ -81,33 +81,26 @@ clone:
 cd $HOME/functions-framework-cpp
 ```
 
-## Setting up the buildpacks builder
-
-We will be using a [buildpacks][buildpacks] builder to create the container
-image deployed to Cloud Run. The first time your run these commands it can take
-several minutes, maybe as long as an hour, depending on your workstation's
-performance.
-
-```sh
-docker build -t gcf-cpp-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
-docker build -t gcf-cpp-build-image --target gcf-cpp-develop -f build_scripts/Dockerfile .
-pack builder create gcf-cpp-builder:bionic --config pack/builder.toml
-pack config trusted-builders add gcf-cpp-builder:bionic
-pack config default-builder gcf-cpp-builder:bionic
-```
-
 ## Building a Docker image
 
+> :warning: This will automatically download and compile the functions
+> framework and all its dependencies. Consequently, the first build of a
+> function may take several minutes (and up to an hour) depending on the
+> performance of your workstation. Subsequent builds cache many binary
+> artifacts, but these caches are *not* shared across functions, so plan
+> accordingly.
+
 Set the `GOOGLE_CLOUD_PROJECT` shell variable to the project id of your GCP
-project, and create a docker image with your function:
+project, and use the [Google Cloud buildpack] builder to create a docker image
+containing your function:
 
 ```shell
 GOOGLE_CLOUD_PROJECT=... # put the right value here
 pack build \
-   --builder gcf-cpp-builder:bionic \
-   --env FUNCTION_SIGNATURE_TYPE=http \
-   --env TARGET_FUNCTION=hello_world_http \
-   --path examples/site/hello_world_http \
+    --builder gcr.io/buildpacks/builder:latest \
+    --env GOOGLE_FUNCTION_SIGNATURE_TYPE=http \
+    --env GOOGLE_FUNCTION_TARGET=hello_world_http \
+    --path examples/site/hello_world_http \
    "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-http"
 ```
 
