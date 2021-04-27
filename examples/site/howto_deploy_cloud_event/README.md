@@ -129,7 +129,7 @@ The result should include `allUsers`.
 ## Setup a Pub/Sub trigger
 
 An eventarc trigger receives events from Pub/Sub and forward them to your
-function in the correct format. For simplicity, this guide will create create a
+function in the correct format. For simplicity, this guide will create a
 new topic as part of setting up the trigger. If you prefer to use an existing
 topic read about the the `--topic-transport` option in the
 [gcloud documentation][gcloud-eventarc-create]. Once you have decided how to
