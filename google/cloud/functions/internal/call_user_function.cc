@@ -92,6 +92,7 @@ BeastResponse CallUserFunction(
   }
   return BeastResponse{};
 } catch (std::exception const& ex) {
+  std::cerr << __FILE__ << ":" << __LINE__ << " " << __PRETTY_FUNCTION__ << " request=" << request << std::endl;
   return ReportExceptionInFunction(ex);
 } catch (...) {
   return ReportUnknownExceptionInFunction();

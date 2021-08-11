@@ -47,6 +47,8 @@ add_library(
     internal/parse_cloud_event_http.h
     internal/parse_cloud_event_json.cc
     internal/parse_cloud_event_json.h
+    internal/parse_cloud_event_legacy.cc
+    internal/parse_cloud_event_legacy.h
     internal/parse_cloud_event_storage.cc
     internal/parse_cloud_event_storage.h
     internal/parse_options.cc
@@ -97,6 +99,7 @@ if (BUILD_TESTING)
         internal/framework_impl_test.cc
         internal/parse_cloud_event_http_test.cc
         internal/parse_cloud_event_json_test.cc
+        internal/parse_cloud_event_legacy_test.cc
         internal/parse_cloud_event_storage_test.cc
         internal/parse_options_test.cc
         internal/wrap_request_test.cc
