@@ -44,9 +44,11 @@ std::string MapGCFTypeToService(std::string const& gcf_event_type) {
   static auto const* const kPrefixes =
       new auto(std::vector<std::pair<std::string, std::string>>{
           {"providers/cloud.firestore/", "firestore.googleapis.com"},
-          {"providers/google.firebase.analytics/", "firebaseanalytics.googleapis.com"},
+          {"providers/google.firebase.analytics/",
+           "firebaseanalytics.googleapis.com"},
           {"providers/firebase.auth/", "firebaseauth.googleapis.com"},
-          {"providers/google.firebase.database/", "firebasedatabase.googleapis.com"},
+          {"providers/google.firebase.database/",
+           "firebasedatabase.googleapis.com"},
           {"providers/cloud.pubsub/", "pubsub.googleapis.com"},
           {"google.storage.object.", "storage.googleapis.com"},
       });
@@ -106,52 +108,91 @@ std::string MapGCFTypeToCloudEventType(std::string const& gcf_event_type) {
                            gcf_event_type + ">");
 }
 
-functions::CloudEvent ParseCloudEventLegacy(nlohmann::json const& json) {
-  auto const gcf_event_type =
+struct LegacyCommonFields {
+  std::string event_type;
+  std::string service;
+  std::string event_id;
+  std::string resource_name;
+  std::string timestamp;
+  std::string source;
+  std::string subject;
+};
+
+LegacyCommonFields ParseLegacyCommonFields(nlohmann::json const& json) {
+  auto gcf_event_type =
       GetAlternatives(json, {"context", "eventType"}, "eventType");
-  auto const gcf_service = [&] {
+  auto gcf_service = [&] {
     auto value = GetNestedKey(json, {"context", "resource", "service"});
     if (!value.empty()) return value;
     return MapGCFTypeToService(gcf_event_type);
   }();
+  auto gcf_event_id = GetAlternatives(json, {"context", "eventId"}, "eventId");
   auto gcf_resource_name =
       GetAlternatives(json, {"context", "resource", "name"}, "resource");
-  auto gcf_event_id = GetAlternatives(json, {"context", "eventId"}, "eventId");
-  auto const gcf_timestamp =
+  auto gcf_timestamp =
       GetAlternatives(json, {"context", "timestamp"}, "timestamp");
-  auto ce_type = MapGCFTypeToCloudEventType(gcf_event_type);
-
   auto gcf_source = "//" + gcf_service + "/" + gcf_resource_name;
-  auto gcf_subject = std::string{};
-  auto gcf_data = nlohmann::json{};
-  if (json.contains("data")) gcf_data = json.at("data");
 
-  if (gcf_service == "storage.googleapis.com") {
-    auto const re = std::regex(
-        "//storage.googleapis.com/projects/_/buckets/([^/]+)/objects/(.+)");
-    std::smatch m;
-    if (std::regex_match(gcf_source, m, re) && m.size() >= 2) {
-      gcf_source = "//storage.googleapis.com/projects/_/buckets/" + m[1].str();
-      gcf_subject = "objects/" + m[2].str();
-      auto const p = gcf_subject.find_last_of('#');
-      if (p != std::string::npos &&
-          gcf_subject.find_first_not_of("0123456789", p + 1) ==
-              std::string::npos) {
-        gcf_subject = gcf_subject.substr(0, p);
-      }
-    }
-  } else if (gcf_service == "pubsub.googleapis.com") {
-    // Wrap the `data` into a message that contains the data :shrug:
-    gcf_data = nlohmann::json{{"message", {{"data", std::move(gcf_data)}}}};
-  }
+  return LegacyCommonFields{/*.event_type=*/std::move(gcf_event_type),
+                            /*.service=*/std::move(gcf_service),
+                            /*.event_id=*/std::move(gcf_event_id),
+                            /*.resource_name=*/std::move(gcf_resource_name),
+                            /*.timestamp=*/std::move(gcf_timestamp),
+                            /*.source=*/std::move(gcf_source),
+                            /*.subject=*/{}};
+}
 
-  auto event = functions::CloudEvent(std::move(gcf_event_id),
-                                     std::move(gcf_source), std::move(ce_type));
-  if (!gcf_timestamp.empty()) event.set_time(gcf_timestamp);
-  if (!gcf_subject.empty()) event.set_subject(std::move(gcf_subject));
+functions::CloudEvent ParseLegacyCommon(LegacyCommonFields gcf,
+                                        nlohmann::json const& data) {
+  auto ce_type = MapGCFTypeToCloudEventType(gcf.event_type);
+  auto event = functions::CloudEvent(std::move(gcf.event_id),
+                                     std::move(gcf.source), std::move(ce_type));
+  if (!gcf.timestamp.empty()) event.set_time(gcf.timestamp);
+  if (!gcf.subject.empty()) event.set_subject(std::move(gcf.subject));
   event.set_data_content_type("application/json");
-  event.set_data(gcf_data.dump());
+  event.set_data(data.dump());
   return event;
+}
+
+functions::CloudEvent ParseLegacyStorage(nlohmann::json const& json,
+                                         LegacyCommonFields gcf) {
+  auto const re = std::regex(
+      "//storage.googleapis.com/projects/_/buckets/([^/]+)/objects/(.+)");
+  std::smatch m;
+  if (std::regex_match(gcf.source, m, re) && m.size() >= 2) {
+    gcf.source = "//storage.googleapis.com/projects/_/buckets/" + m[1].str();
+    gcf.subject = "objects/" + m[2].str();
+    auto const p = gcf.subject.find_last_of('#');
+    if (p != std::string::npos &&
+        gcf.subject.find_first_not_of("0123456789", p + 1) ==
+            std::string::npos) {
+      gcf.subject = gcf.subject.substr(0, p);
+    }
+  }
+  return ParseLegacyCommon(std::move(gcf),
+                           json.value("data", nlohmann::json{}));
+}
+
+functions::CloudEvent ParseLegacyPubSub(nlohmann::json const& json,
+                                        LegacyCommonFields gcf) {
+  auto gcf_data = nlohmann::json{
+      {"message", {{"data", json.value("data", nlohmann::json{})}}}};
+  return ParseLegacyCommon(std::move(gcf), gcf_data);
+}
+
+functions::CloudEvent ParseCloudEventLegacy(nlohmann::json const& json) {
+  auto gcf = ParseLegacyCommonFields(json);
+
+  auto gcf_subject = std::string{};
+
+  if (gcf.service == "storage.googleapis.com") {
+    return ParseLegacyStorage(json, std::move(gcf));
+  }
+  if (gcf.service == "pubsub.googleapis.com") {
+    return ParseLegacyPubSub(json, std::move(gcf));
+  }
+  return ParseLegacyCommon(std::move(gcf),
+                           json.value("data", nlohmann::json{}));
 }
 
 }  // namespace
