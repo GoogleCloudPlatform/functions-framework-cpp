@@ -157,7 +157,8 @@ functions::CloudEvent ParseLegacyCommon(LegacyCommonFields gcf,
 functions::CloudEvent ParseLegacyStorage(nlohmann::json const& json,
                                          LegacyCommonFields gcf) {
   auto const re = std::regex(
-      "//storage.googleapis.com/projects/_/buckets/([^/]+)/objects/(.+)");
+      "//storage\\.googleapis\\.com/"
+      "projects/_/buckets/([^/]+)/objects/(.+)");
   std::smatch m;
   if (std::regex_match(gcf.source, m, re) && m.size() >= 2) {
     gcf.source = "//storage.googleapis.com/projects/_/buckets/" + m[1].str();
@@ -180,20 +181,52 @@ functions::CloudEvent ParseLegacyPubSub(nlohmann::json const& json,
   return ParseLegacyCommon(std::move(gcf), gcf_data);
 }
 
+functions::CloudEvent ParseLegacyFirebaseDatabase(nlohmann::json const& json,
+                                                  LegacyCommonFields gcf) {
+  auto const location = [&json] {
+    if (json.count("domain") == 0) {
+      throw std::runtime_error(
+          "Missing `domain` attribute for firebase database event");
+    }
+    auto const gcf_domain = json.value("domain", "");
+    if (gcf_domain == "firebaseio.com") {
+      return std::string{"us-central1"};
+    }
+    if (auto p = gcf_domain.find('.'); p != std::string::npos) {
+      return gcf_domain.substr(0, p);
+    }
+    throw std::runtime_error(
+        "Invalid or unknown format for `domain` attribute (" + gcf_domain +
+        ") firebase database event");
+  }();
+
+  auto const re = std::regex(
+      "//firebasedatabase\\.googleapis\\.com/"
+      "projects/_/instances/([^/]+)/refs/(.+)");
+  std::smatch m;
+  if (std::regex_match(gcf.source, m, re) && m.size() >= 2) {
+    gcf.source = "//firebasedatabase.googleapis.com/projects/_/locations/" +
+                 location + "/instances/" + m[1].str();
+    gcf.subject = "refs/" + m[2].str();
+  }
+  return ParseLegacyCommon(std::move(gcf),
+                           json.value("data", nlohmann::json{}));
+}
+
 functions::CloudEvent ParseLegacyFirebaseAuth(nlohmann::json const& json,
                                               LegacyCommonFields gcf) {
   if (json.count("data") == 0) {
     throw std::runtime_error(
-        "Missing `data` attribute for firebaseauth event");
+        "Missing `data` attribute for firebase auth event");
   }
   if (json["data"].count("metadata") == 0) {
     throw std::runtime_error(
-        "Missing `metadata/data` attribute for firebaseauth event");
+        "Missing `metadata/data` attribute for firebase auth event");
   }
   auto const uid = GetNestedKey(json, {"data", "uid"});
   if (uid.empty()) {
     throw std::runtime_error(
-        "Missing `data/uid` attribute for firebaseauth event");
+        "Missing `data/uid` attribute for firebase auth event");
   }
   gcf.subject = "users/" + uid;
 
@@ -219,6 +252,9 @@ functions::CloudEvent ParseCloudEventLegacy(nlohmann::json const& json) {
   }
   if (gcf.service == "pubsub.googleapis.com") {
     return ParseLegacyPubSub(json, std::move(gcf));
+  }
+  if (gcf.service == "firebasedatabase.googleapis.com") {
+    return ParseLegacyFirebaseDatabase(json, std::move(gcf));
   }
   if (gcf.service == "firebaseauth.googleapis.com") {
     return ParseLegacyFirebaseAuth(json, std::move(gcf));

@@ -176,6 +176,7 @@ TEST(ParseCloudEventLegacy, MapEventTypePrefixToEventType) {
          {{"eventType", test.gcf_event_type},
           {"eventId", "test-event-id"},
           {"resource", {{"name", "test-resource-name"}}}}},
+        {"domain", "unused.firebase.app"},
         {"data", {{"uid", "test-uid"}, {"metadata", nlohmann::json{}}}},
     };
     auto const ce = ParseCloudEventLegacy(input_event.dump());
@@ -279,6 +280,104 @@ TEST(ParseCloudEventLegacy, MapPubSub) {
   ASSERT_EQ(data["message"], expected_message);
 }
 
+TEST(ParseCloudEventLegacy, MapFirebaseDatabase) {
+  auto constexpr kInput = R"js({
+      "eventType": "providers/google.firebase.database/eventTypes/ref.write",
+      "params": {
+        "child": "xyz"
+      },
+      "auth": {
+        "admin": true
+      },
+      "domain": "firebaseio.com",
+      "data": {
+        "data": null,
+        "delta": {
+          "grandchild": "other"
+        }
+      },
+      "resource": "projects/_/instances/my-project-id/refs/gcf-test/xyz",
+      "timestamp": "2020-09-29T11:32:00.000Z",
+      "eventId": "aaaaaa-1111-bbbb-2222-cccccccccccc"
+    })js";
+  auto constexpr kOutputData = R"js({
+      "data": null,
+      "delta": {
+        "grandchild": "other"
+      }
+    })js";
+
+  auto const ce = ParseCloudEventLegacy(kInput);
+  EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
+  EXPECT_EQ(ce.type(), "google.firebase.database.ref.v1.written");
+  EXPECT_EQ(
+      ce.source(),
+      "//firebasedatabase.googleapis.com/projects/_/locations/us-central1/instances/my-project-id");
+  EXPECT_EQ(ce.subject(), "refs/gcf-test/xyz");
+  auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
+  auto const expected_data = nlohmann::json::parse(kOutputData);
+  EXPECT_EQ(expected_data, actual_data)
+      << "diff=" << nlohmann::json::diff(expected_data, actual_data);
+}
+
+TEST(ParseCloudEventLegacy, MapFirebaseDatabaseNonDefaultDomain) {
+  auto constexpr kInput = R"js({
+      "eventType": "providers/google.firebase.database/eventTypes/ref.write",
+      "params": {
+        "child": "xyz"
+      },
+      "auth": {
+        "admin": true
+      },
+      "domain": "europe-west1.firebasedatabase.app",
+      "data": {
+        "data": null,
+        "delta": {
+          "grandchild": "other"
+        }
+      },
+      "resource": "projects/_/instances/my-project-id/refs/gcf-test/xyz",
+      "timestamp": "2020-09-29T11:32:00.000Z",
+      "eventId": "aaaaaa-1111-bbbb-2222-cccccccccccc"
+  })js";
+  auto constexpr kOutputData = R"js({
+      "data": null,
+      "delta": {
+        "grandchild": "other"
+      }
+  })js";
+
+  auto const ce = ParseCloudEventLegacy(kInput);
+  EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
+  EXPECT_EQ(ce.type(), "google.firebase.database.ref.v1.written");
+  EXPECT_EQ(
+      ce.source(),
+      "//firebasedatabase.googleapis.com/projects/_/locations/europe-west1/instances/my-project-id");
+  EXPECT_EQ(ce.subject(), "refs/gcf-test/xyz");
+  auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
+  auto const expected_data = nlohmann::json::parse(kOutputData);
+  EXPECT_EQ(expected_data, actual_data)
+      << "diff=" << nlohmann::json::diff(expected_data, actual_data);
+}
+
+TEST(ParseCloudEventLegacy, MapFirebaseDatabaseInvalidDomain) {
+  auto constexpr kInput = R"js({
+      "eventType": "providers/google.firebase.database/eventTypes/ref.write",
+      "domain": "europe-west1",
+      "data": {
+        "data": null,
+        "delta": {
+          "grandchild": "other"
+        }
+      },
+      "resource": "projects/_/instances/my-project-id/refs/gcf-test/xyz",
+      "timestamp": "2020-09-29T11:32:00.000Z",
+      "eventId": "aaaaaa-1111-bbbb-2222-cccccccccccc"
+  })js";
+
+  EXPECT_THROW(ParseCloudEventLegacy(kInput), std::runtime_error);
+}
+
 TEST(ParseCloudEventLegacy, MapFirebaseAuth) {
   auto constexpr kInput = R"js({
     "data": {
@@ -322,7 +421,8 @@ TEST(ParseCloudEventLegacy, MapFirebaseAuth) {
   auto const ce = ParseCloudEventLegacy(kInput);
   EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
   EXPECT_EQ(ce.type(), "google.firebase.auth.user.v1.created");
-  EXPECT_EQ(ce.source(), "//firebaseauth.googleapis.com/projects/my-project-id");
+  EXPECT_EQ(ce.source(),
+            "//firebaseauth.googleapis.com/projects/my-project-id");
   auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
   auto const expected_data = nlohmann::json::parse(kOutputData);
   EXPECT_EQ(expected_data, actual_data)
