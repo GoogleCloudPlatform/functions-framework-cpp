@@ -98,10 +98,15 @@ int RunForTestImpl(int argc, char const* const argv[], UserFunction&& function,
   };
 
   // Reaching this number of sessions triggers a cleanup of any sessions that
-  // may have finished already.
-  auto constexpr kSessionCleanupThreshold = 32;
-  // If we reach this number of sessions we block until we are below the count.
-  auto constexpr kMaximumSessions = 64;
+  // may have finished already. We allow up to 80 sessions to start without
+  // blocking, this should be enough for Cloud Run and Cloud Functions:
+  //     https://cloud.google.com/run/docs/about-concurrency#concurrency_values
+  auto constexpr kSessionCleanupThreshold = 80;
+
+  // If we reach this number of sessions we block until we are below the cleanup
+  // threshold.
+  auto constexpr kMaximumSessions = 160;
+
   std::vector<std::future<void>> sessions;
   while (!shutdown()) {
     if (sessions.size() >= kSessionCleanupThreshold) {
