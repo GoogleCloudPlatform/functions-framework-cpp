@@ -207,7 +207,7 @@ TEST(RunIntegrationTest, SomeParallelism) {
   auto result = WaitForServerReady("localhost", "8010");
   ASSERT_EQ(result, 0);
 
-  auto const kTaskCount = 16;
+  auto constexpr kTaskCount = 16;
   auto task = [] {
     auto start = std::chrono::steady_clock::now();
     (void)HttpGet("localhost", "8010", "/sleep/1000");
