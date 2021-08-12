@@ -29,8 +29,8 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
-using ::testing::HasSubstr;
 using ::testing::Each;
+using ::testing::HasSubstr;
 
 namespace bp = boost::process;
 // Even with C++17, we have to use the Boost version because Boost.Process
