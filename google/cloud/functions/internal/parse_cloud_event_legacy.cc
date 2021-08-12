@@ -44,9 +44,9 @@ std::string MapGCFTypeToService(std::string const& gcf_event_type) {
   static auto const* const kPrefixes =
       new auto(std::vector<std::pair<std::string, std::string>>{
           {"providers/cloud.firestore/", "firestore.googleapis.com"},
-          {"providers/google.firebase.analytics/", "firebase.googleapis.com"},
-          {"providers/firebase.auth/", "firebase.googleapis.com"},
-          {"providers/google.firebase.database/", "firebase.googleapis.com"},
+          {"providers/google.firebase.analytics/", "firebaseanalytics.googleapis.com"},
+          {"providers/firebase.auth/", "firebaseauth.googleapis.com"},
+          {"providers/google.firebase.database/", "firebasedatabase.googleapis.com"},
           {"providers/cloud.pubsub/", "pubsub.googleapis.com"},
           {"google.storage.object.", "storage.googleapis.com"},
       });

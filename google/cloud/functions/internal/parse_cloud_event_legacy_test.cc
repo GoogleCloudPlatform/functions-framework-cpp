@@ -48,7 +48,8 @@ TEST(ParseCloudEventLegacy, Basic) {
 
   auto const ce = ParseCloudEventLegacy(kInput);
   EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
-  EXPECT_EQ(ce.source(), "//firebase.googleapis.com/projects/my-project-id");
+  EXPECT_EQ(ce.source(),
+            "//firebaseauth.googleapis.com/projects/my-project-id");
   EXPECT_EQ(ce.type(), "google.firebase.auth.user.v1.created");
   EXPECT_EQ(ce.spec_version(), "1.0");
 
@@ -90,7 +91,8 @@ TEST(ParseCloudEventLegacy, WithContext) {
 
   auto const ce = ParseCloudEventLegacy(kInput);
   EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
-  EXPECT_EQ(ce.source(), "//firebase.googleapis.com/projects/my-project-id");
+  EXPECT_EQ(ce.source(),
+            "//firebaseauth.googleapis.com/projects/my-project-id");
   EXPECT_EQ(ce.type(), "google.firebase.auth.user.v1.created");
   EXPECT_EQ(ce.spec_version(), "1.0");
 
@@ -136,7 +138,8 @@ TEST(ParseCloudEventLegacy, PreferContext) {
 
   auto const ce = ParseCloudEventLegacy(kInput);
   EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
-  EXPECT_EQ(ce.source(), "//firebase.googleapis.com/projects/my-project-id");
+  EXPECT_EQ(ce.source(),
+            "//firebaseauth.googleapis.com/projects/my-project-id");
   EXPECT_EQ(ce.type(), "google.firebase.auth.user.v1.created");
   EXPECT_EQ(ce.spec_version(), "1.0");
 
@@ -156,11 +159,11 @@ TEST(ParseCloudEventLegacy, MapEventTypePrefixToEventType) {
       {"providers/cloud.firestore/eventTypes/document.write",
        "firestore.googleapis.com"},
       {"providers/google.firebase.analytics/eventTypes/event.log",
-       "firebase.googleapis.com"},
+       "firebaseanalytics.googleapis.com"},
       {"providers/firebase.auth/eventTypes/user.delete",
-       "firebase.googleapis.com"},
+       "firebaseauth.googleapis.com"},
       {"providers/google.firebase.database/eventTypes/ref.write",
-       "firebase.googleapis.com"},
+       "firebasedatabase.googleapis.com"},
       {"providers/cloud.pubsub/eventTypes/topic.publish",
        "pubsub.googleapis.com"},
       {"google.storage.object.finalize", "storage.googleapis.com"},
