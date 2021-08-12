@@ -124,6 +124,7 @@ TEST(RunIntegrationTest, Basic) {
 
   try {
     (void)HttpGet("localhost", "8010", "/quit/program/0");
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -151,6 +152,7 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   EXPECT_THAT(log.value("message", ""), HasSubstr("/exception/test-string"));
 
   try {
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
     (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
@@ -183,6 +185,7 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
 
   try {
     (void)HttpGet("localhost", "8010", "/quit/program/0");
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -195,6 +198,7 @@ TEST(RunIntegrationTest, ConformanceSmokeTest) {
   ASSERT_EQ(result, 0);
 
   try {
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
     (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
@@ -224,6 +228,7 @@ TEST(RunIntegrationTest, SomeParallelism) {
   EXPECT_THAT(elapsed, Each(::testing::Le(std::chrono::seconds(5))));
 
   try {
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
     (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }

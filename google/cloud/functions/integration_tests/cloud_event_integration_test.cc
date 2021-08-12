@@ -200,6 +200,7 @@ TEST(RunIntegrationTest, Basic) {
 
   try {
     (void)HttpPost("localhost", "8020", "/quit/program/0");
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -215,6 +216,7 @@ TEST(RunIntegrationTest, Batch) {
   EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
   try {
     (void)HttpPost("localhost", "8020", "/quit/program/0");
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -229,6 +231,7 @@ TEST(RunIntegrationTest, Binary) {
   auto actual = HttpGetBinary("localhost", "8020");
   EXPECT_EQ(actual.result_int(), functions::HttpResponse::kOkay);
   try {
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
     (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
@@ -257,6 +260,7 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   EXPECT_THAT(log.value("message", ""), HasSubstr("/exception/test-string"));
 
   try {
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
     (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
@@ -289,6 +293,7 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
 
   try {
     (void)HttpPost("localhost", "8020", "/quit/program/0");
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -301,6 +306,7 @@ TEST(RunIntegrationTest, ConformanceSmokeTest) {
   ASSERT_EQ(result, 0);
 
   try {
+    (void)HttpPost("localhost", "8020", "/quit/program/0");
     (void)HttpPost("localhost", "8020", "/quit/program/0");
   } catch (...) {
   }

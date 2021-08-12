@@ -12,22 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/framework.h"
-#include <nlohmann/json.hpp>
-#include <chrono>
-#include <cstdlib>
+#include "google/cloud/functions/internal/framework_impl.h"
+#include <atomic>
 #include <cstring>
 #include <iostream>
 #include <sstream>
-#include <thread>
 
 namespace functions = ::google::cloud::functions;
 using functions::HttpRequest;
 using functions::HttpResponse;
 
+std::atomic<bool> shutdown_server{false};
+
 HttpResponse EchoServer(HttpRequest const& request) {
   auto const& target = request.target();
-  if (target == "/quit/program/0") std::exit(0);
+  if (target == "/quit/program/0") {
+    shutdown_server = true;
+    return HttpResponse{}
+        .set_header("Content-Type", "text/plain")
+        .set_payload("OK");
+  }
   if (target.rfind("/exception/", 0) == 0) throw std::runtime_error(target);
   if (target.rfind("/unknown-exception/", 0) == 0) throw "uh-oh";
 
@@ -50,36 +54,24 @@ HttpResponse EchoServer(HttpRequest const& request) {
     std::clog << "stderr: " << target << "\n";
   }
 
-  auto const sleep_prefix = std::string{"/sleep/"};
-  if (target.rfind(sleep_prefix, 0) == 0) {
-    auto const delay = std::stoi(target.substr(sleep_prefix.size()));
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+  std::ostringstream payload;
+  payload << "{\n"
+          << R"js(  "target": ")js" << target << "\"\n"
+          << R"js(  "verb": ")js" << request.verb() << "\"\n"
+          << R"js(  "headers": [)js";
+  for (auto [k, v] : request.headers()) {
+    payload << '"' << k << ": " << v << '"' << "\n";
   }
-
-  auto tid = [] {
-    std::ostringstream os;
-    os << std::this_thread::get_id();
-    return std::move(os).str();
-  };
-  auto headers = [&] {
-    std::vector<std::string> h(request.headers().size());
-    std::transform(request.headers().begin(), request.headers().end(),
-                   h.begin(),
-                   [](auto const& kv) { return kv.first + ": " + kv.second; });
-    return h;
-  };
-  auto payload = nlohmann::json{
-      {"thread", tid()},
-      {"target", target},
-      {"verb", request.verb()},
-      {"headers", headers()},
-  };
+  payload << "}\n";
 
   return HttpResponse{}
       .set_header("Content-Type", "application/json")
-      .set_payload(payload.dump(2));
+      .set_payload(std::move(payload).str());
 }
 
 int main(int argc, char* argv[]) {
-  return functions::Run(argc, argv, EchoServer);
+  return google::cloud::functions_internal::RunForTest(
+      argc, argv, EchoServer,
+      std::function<bool()>{[] { return shutdown_server.load(); }},
+      std::function<void(int)>([](int) {}));
 }

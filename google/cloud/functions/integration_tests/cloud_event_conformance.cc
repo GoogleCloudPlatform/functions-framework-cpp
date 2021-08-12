@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/framework.h"
-#include <absl/time/time.h>
+#include "google/cloud/functions/internal/framework_impl.h"
+#include <absl/time/time.h>  // NOLINT(modernize-deprecated-headers)
 #include <nlohmann/json.hpp>
+#include <atomic>
 #include <fstream>
 
 namespace functions = ::google::cloud::functions;
+
+std::atomic<bool> shutdown_server{false};
+
 void CloudEventConformance(functions::CloudEvent const& ev) {
   // This output name is hard requirement from the conformance testing
   // framework.
@@ -54,9 +58,12 @@ void CloudEventConformance(functions::CloudEvent const& ev) {
   std::ofstream(kOutputFilename) << event.dump() << "\n";
 
   // This is here just to gracefully shutdown and collect coverage data.
-  if (ev.subject() == "/quit/program/0") std::exit(0);
+  if (ev.subject() == "/quit/program/0") shutdown_server.store(true);
 }
 
 int main(int argc, char* argv[]) {
-  return functions::Run(argc, argv, CloudEventConformance);
+  return google::cloud::functions_internal::RunForTest(
+      argc, argv, CloudEventConformance,
+      std::function<bool()>{[] { return shutdown_server.load(); }},
+      std::function<void(int)>([](int) {}));
 }
