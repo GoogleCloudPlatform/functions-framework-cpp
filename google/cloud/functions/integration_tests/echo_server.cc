@@ -71,7 +71,6 @@ HttpResponse EchoServer(HttpRequest const& request) {
 
 int main(int argc, char* argv[]) {
   return google::cloud::functions_internal::RunForTest(
-      argc, argv, EchoServer,
-      std::function<bool()>{[] { return shutdown_server.load(); }},
-      std::function<void(int)>([](int) {}));
+      argc, argv, EchoServer, [] { return shutdown_server.load(); },
+      [](int /*port*/) {});
 }

@@ -63,7 +63,6 @@ void CloudEventConformance(functions::CloudEvent const& ev) {
 
 int main(int argc, char* argv[]) {
   return google::cloud::functions_internal::RunForTest(
-      argc, argv, CloudEventConformance,
-      std::function<bool()>{[] { return shutdown_server.load(); }},
-      std::function<void(int)>([](int) {}));
+      argc, argv, CloudEventConformance, [] { return shutdown_server.load(); },
+      [](int /*port*/) {});
 }
