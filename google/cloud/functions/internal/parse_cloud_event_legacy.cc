@@ -180,6 +180,36 @@ functions::CloudEvent ParseLegacyPubSub(nlohmann::json const& json,
   return ParseLegacyCommon(std::move(gcf), gcf_data);
 }
 
+functions::CloudEvent ParseLegacyFirebaseAuth(nlohmann::json const& json,
+                                              LegacyCommonFields gcf) {
+  if (json.count("data") == 0) {
+    throw std::runtime_error(
+        "Missing `data` attribute for firebaseauth event");
+  }
+  if (json["data"].count("metadata") == 0) {
+    throw std::runtime_error(
+        "Missing `metadata/data` attribute for firebaseauth event");
+  }
+  auto const uid = GetNestedKey(json, {"data", "uid"});
+  if (uid.empty()) {
+    throw std::runtime_error(
+        "Missing `context/uid` attribute for firebaseauth event");
+  }
+  gcf.subject = "users/" + uid;
+
+  auto modified = json;
+  std::pair<std::string, std::string> renames[] = {
+      {"createdAt", "createTime"}, {"lastSignedInAt", "lastSignInTime"}};
+  auto& metadata = modified["data"]["metadata"];
+  for (auto const& [old_name, new_name] : renames) {
+    auto value = metadata.value(old_name, "");
+    if (value.empty()) continue;
+    metadata[new_name] = std::move(value);
+    metadata.erase(old_name);
+  }
+  return ParseLegacyCommon(std::move(gcf), modified);
+}
+
 functions::CloudEvent ParseCloudEventLegacy(nlohmann::json const& json) {
   auto gcf = ParseLegacyCommonFields(json);
 
@@ -191,8 +221,10 @@ functions::CloudEvent ParseCloudEventLegacy(nlohmann::json const& json) {
   if (gcf.service == "pubsub.googleapis.com") {
     return ParseLegacyPubSub(json, std::move(gcf));
   }
-  return ParseLegacyCommon(std::move(gcf),
-                           json.value("data", nlohmann::json{}));
+  if (gcf.service == "firebaseauth.googleapis.com") {
+    return ParseLegacyFirebaseAuth(json, std::move(gcf));
+  }
+  return ParseLegacyCommon(std::move(gcf), json);
 }
 
 }  // namespace

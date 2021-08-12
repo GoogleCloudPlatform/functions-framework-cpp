@@ -21,6 +21,23 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
+nlohmann::json FormatCloudEventForConformanceTest(
+    functions::CloudEvent const& ce) {
+  auto context = nlohmann::json{
+      {"eventId", ce.id()},
+      {"eventType", ce.type()},
+      {"resource", ce.source()},
+      {"specversion", ce.spec_version()},
+  };
+  if (ce.time()) {
+    context["timestamp"] = absl::FormatTime(
+        absl::RFC3339_full, absl::FromChrono(*ce.time()), absl::UTCTimeZone());
+  }
+  auto event = nlohmann::json{{"context", context}};
+  if (ce.data()) event["data"] = nlohmann::json::parse(*ce.data());
+  return event;
+}
+
 TEST(ParseCloudEventLegacy, Basic) {
   auto constexpr kInput = R"js({
     "data": {
@@ -176,7 +193,7 @@ TEST(ParseCloudEventLegacy, MapEventTypePrefixToEventType) {
          {{"eventType", test.gcf_event_type},
           {"eventId", "test-event-id"},
           {"resource", {{"name", "test-resource-name"}}}}},
-        {"data", {{"unused", "123456"}}},
+        {"data", {{"metadata", nlohmann::json{}}}},
     };
     auto const ce = ParseCloudEventLegacy(input_event.dump());
     EXPECT_EQ(ce.source(),
@@ -277,6 +294,61 @@ TEST(ParseCloudEventLegacy, MapPubSub) {
   ASSERT_TRUE(data.contains("message")) << "data=" << data.dump();
   auto const expected_message = nlohmann::json{{"data", {{"unused", "1234"}}}};
   ASSERT_EQ(data["message"], expected_message);
+}
+
+TEST(ParseCloudEventLegacy, MapFirebaseAuth) {
+  auto constexpr kInput = R"js({
+    "data": {
+      "email": "test@nowhere.com",
+      "metadata": {
+        "createdAt": "2020-05-26T10:42:27Z",
+        "lastSignedInAt": "2020-10-24T11:00:00Z"
+      },
+      "providerData": [
+        {
+          "email": "test@nowhere.com",
+          "providerId": "password",
+          "uid": "test@nowhere.com"
+        }
+      ],
+      "uid": "UUpby3s4spZre6kHsgVSPetzQ8l2"
+    },
+    "eventId": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+    "eventType": "providers/firebase.auth/eventTypes/user.create",
+    "notSupported": {
+    },
+    "resource": "projects/my-project-id",
+    "timestamp": "2020-09-29T11:32:00.000Z"
+    })js";
+  auto constexpr kOutputData = R"js({
+    "data": {
+      "email": "test@nowhere.com",
+      "metadata": {
+        "createdAt": "2020-05-26T10:42:27Z",
+        "lastSignedInAt": "2020-10-24T11:00:00Z"
+      },
+      "providerData": [
+        {
+          "email": "test@nowhere.com",
+          "providerId": "password",
+          "uid": "test@nowhere.com"
+        }
+      ],
+      "uid": "UUpby3s4spZre6kHsgVSPetzQ8l2"
+    },
+    "context": {
+      "eventId": "aaaaaa-1111-bbbb-2222-cccccccccccc",
+      "eventType": "providers/firebase.auth/eventTypes/user.create",
+      "resource": "projects/my-project-id",
+      "timestamp": "2020-09-29T11:32:00.000Z"
+    }
+    })js";
+
+  auto const ce = ParseCloudEventLegacy(kInput);
+  auto const actual_data = FormatCloudEventForConformanceTest(ce);
+  auto const expected_data = nlohmann::json::parse(kOutputData);
+  EXPECT_EQ(expected_data, actual_data)
+      << "diff=" << nlohmann::json::diff(expected_data, actual_data);
 }
 
 }  // namespace
