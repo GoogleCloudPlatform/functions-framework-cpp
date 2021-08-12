@@ -75,9 +75,9 @@ int RunForTestImpl(int argc, char const* const argv[], UserFunction&& function,
   auto address = asio::ip::make_address(vm["address"].as<std::string>());
   auto port = vm["port"].as<int>();
 
-  // TODO(#35) - maybe replace with Boost.Log
-  asio::io_context ioc{/*concurrency_hint=*/1};
+  asio::io_context ioc{1};
   tcp::acceptor acceptor{ioc, {address, static_cast<std::uint16_t>(port)}};
+  acceptor.listen(boost::asio::socket_base::max_connections);
   actual_port(acceptor.local_endpoint().port());
 
   auto handle_session =
@@ -85,11 +85,36 @@ int RunForTestImpl(int argc, char const* const argv[], UserFunction&& function,
         HandleSession(std::move(socket), h);
       };
 
+  auto cleanup = [](std::vector<std::future<void>> sessions, auto wait) {
+    std::vector<std::future<void>> running;
+    for (auto& s : sessions) {
+      if (s.wait_for(wait) == std::future_status::timeout) {
+        running.push_back(std::move(s));
+        continue;
+      }
+      s.get();
+    }
+    return running;
+  };
+
+  // Reaching this number of sessions triggers a cleanup of any sessions that
+  // may have finished already.
+  auto constexpr kSessionCleanupThreshold = 32;
+  // If we reach this number of sessions we block until we are below the count.
+  auto constexpr kMaximumSessions = 64;
+  std::vector<std::future<void>> sessions;
   while (!shutdown()) {
+    if (sessions.size() >= kSessionCleanupThreshold) {
+      sessions = cleanup(std::move(sessions), std::chrono::milliseconds(0));
+    }
+    while (sessions.size() >= kMaximumSessions) {
+      sessions = cleanup(std::move(sessions), std::chrono::seconds(1));
+    }
     auto socket = acceptor.accept(ioc);
     if (!socket.is_open()) break;
     // Run a thread per-session, transferring ownership of the socket
-    (void)std::async(std::launch::async, handle_session, std::move(socket));
+    sessions.push_back(
+        std::async(std::launch::async, handle_session, std::move(socket)));
   }
   return 0;
 }

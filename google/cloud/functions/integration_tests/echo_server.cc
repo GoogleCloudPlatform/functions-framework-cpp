@@ -13,10 +13,13 @@
 // limitations under the License.
 
 #include "google/cloud/functions/framework.h"
+#include <nlohmann/json.hpp>
+#include <chrono>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 namespace functions = ::google::cloud::functions;
 using functions::HttpRequest;
@@ -47,19 +50,34 @@ HttpResponse EchoServer(HttpRequest const& request) {
     std::clog << "stderr: " << target << "\n";
   }
 
-  std::ostringstream payload;
-  payload << "{\n"
-          << R"js(  "target": ")js" << target << "\"\n"
-          << R"js(  "verb": ")js" << request.verb() << "\"\n"
-          << R"js(  "headers": [)js";
-  for (auto [k, v] : request.headers()) {
-    payload << '"' << k << ": " << v << '"' << "\n";
+  auto const sleep_prefix = std::string{"/sleep/"};
+  if (target.rfind(sleep_prefix, 0) == 0) {
+    auto const delay = std::stoi(target.substr(sleep_prefix.size()));
+    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
   }
-  payload << "}\n";
+
+  auto tid = [] {
+    std::ostringstream os;
+    os << std::this_thread::get_id();
+    return std::move(os).str();
+  };
+  auto headers = [&] {
+    std::vector<std::string> h(request.headers().size());
+    std::transform(request.headers().begin(), request.headers().end(),
+                   h.begin(),
+                   [](auto const& kv) { return kv.first + ": " + kv.second; });
+    return h;
+  };
+  auto payload = nlohmann::json{
+      {"thread", tid()},
+      {"target", target},
+      {"verb", request.verb()},
+      {"headers", headers()},
+  };
 
   return HttpResponse{}
       .set_header("Content-Type", "application/json")
-      .set_payload(std::move(payload).str());
+      .set_payload(payload.dump(2));
 }
 
 int main(int argc, char* argv[]) {
