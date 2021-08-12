@@ -23,6 +23,12 @@ inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
 functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
+  if (!json.contains("id") || !json.contains("source") ||
+      !json.contains("type")) {
+    throw std::runtime_error(
+        "JSON message missing `id`, `source`, and/or `type` fields");
+  }
+
   auto event = functions::CloudEvent(
       json.at("id").get<std::string>(), json.at("source").get<std::string>(),
       json.at("type").get<std::string>(),
