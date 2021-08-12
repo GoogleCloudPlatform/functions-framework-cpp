@@ -142,7 +142,7 @@ TEST(ParseCloudEventHttp, Json) {
   EXPECT_EQ(ce.spec_version(), functions::CloudEvent::kDefaultSpecVersion);
 }
 
-TEST(ParseCloudEventJson, EmulateStorage) {
+TEST(ParseCloudEventHttp, EmulateStorage) {
   auto const data = nlohmann::json::parse(R"js({
     "bucket": "some-bucket",
     "contentType": "text/plain",
