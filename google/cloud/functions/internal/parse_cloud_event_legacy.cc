@@ -193,16 +193,18 @@ functions::CloudEvent ParseLegacyFirebaseAuth(nlohmann::json const& json,
   auto const uid = GetNestedKey(json, {"data", "uid"});
   if (uid.empty()) {
     throw std::runtime_error(
-        "Missing `context/uid` attribute for firebaseauth event");
+        "Missing `data/uid` attribute for firebaseauth event");
   }
   gcf.subject = "users/" + uid;
 
-  auto modified = json;
+  auto modified = json["data"];
   std::pair<std::string, std::string> renames[] = {
       {"createdAt", "createTime"}, {"lastSignedInAt", "lastSignInTime"}};
-  auto& metadata = modified["data"]["metadata"];
+  auto& metadata = modified["metadata"];
   for (auto const& [old_name, new_name] : renames) {
-    auto value = metadata.value(old_name, "");
+    auto l = metadata.find(old_name);
+    if (l == metadata.end()) continue;
+    auto value = l->get<std::string>();
     if (value.empty()) continue;
     metadata[new_name] = std::move(value);
     metadata.erase(old_name);
@@ -212,9 +214,6 @@ functions::CloudEvent ParseLegacyFirebaseAuth(nlohmann::json const& json,
 
 functions::CloudEvent ParseCloudEventLegacy(nlohmann::json const& json) {
   auto gcf = ParseLegacyCommonFields(json);
-
-  auto gcf_subject = std::string{};
-
   if (gcf.service == "storage.googleapis.com") {
     return ParseLegacyStorage(json, std::move(gcf));
   }
