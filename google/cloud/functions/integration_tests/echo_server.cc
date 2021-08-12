@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/framework.h"
-#include <cstdlib>
+#include "google/cloud/functions/internal/framework_impl.h"
+#include <atomic>
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -22,9 +22,16 @@ namespace functions = ::google::cloud::functions;
 using functions::HttpRequest;
 using functions::HttpResponse;
 
+std::atomic<bool> shutdown_server{false};
+
 HttpResponse EchoServer(HttpRequest const& request) {
   auto const& target = request.target();
-  if (target == "/quit/program/0") std::exit(0);
+  if (target == "/quit/program/0") {
+    shutdown_server = true;
+    return HttpResponse{}
+        .set_header("Content-Type", "text/plain")
+        .set_payload("OK");
+  }
   if (target.rfind("/exception/", 0) == 0) throw std::runtime_error(target);
   if (target.rfind("/unknown-exception/", 0) == 0) throw "uh-oh";
 
@@ -63,5 +70,7 @@ HttpResponse EchoServer(HttpRequest const& request) {
 }
 
 int main(int argc, char* argv[]) {
-  return functions::Run(argc, argv, EchoServer);
+  return google::cloud::functions_internal::RunForTest(
+      argc, argv, EchoServer, [] { return shutdown_server.load(); },
+      [](int /*port*/) {});
 }

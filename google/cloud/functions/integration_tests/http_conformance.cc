@@ -12,18 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/framework.h"
+#include "google/cloud/functions/internal/framework_impl.h"
+#include <atomic>
 #include <fstream>
 
 namespace functions = ::google::cloud::functions;
+
+std::atomic<bool> shutdown_server{false};
+
 functions::HttpResponse HttpConformance(functions::HttpRequest const& request) {
   auto constexpr kOutputFilename = "function_output.json";
   std::ofstream(kOutputFilename) << request.payload() << "\n";
   // This is here just to gracefully shutdown and collect coverage data.
-  if (request.target() == "/quit/program/0") std::exit(0);
+  if (request.target() == "/quit/program/0") shutdown_server = true;
   return functions::HttpResponse{};
 }
 
 int main(int argc, char* argv[]) {
-  return functions::Run(argc, argv, HttpConformance);
+  return google::cloud::functions_internal::RunForTest(
+      argc, argv, HttpConformance, [] { return shutdown_server.load(); },
+      [](int /*port*/) {});
 }

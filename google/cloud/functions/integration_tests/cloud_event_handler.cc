@@ -12,16 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/framework.h"
-#include <cstdlib>
+#include "google/cloud/functions/internal/framework_impl.h"
+#include <atomic>
 #include <iostream>
 
-namespace functions = google::cloud::functions;
 using ::google::cloud::functions::CloudEvent;
+
+std::atomic<bool> shutdown_server{false};
 
 void CloudEventHandler(CloudEvent const& event) {
   auto const& subject = event.subject().value_or("");
-  if (subject == "/quit/program/0") std::exit(0);
+  if (subject == "/quit/program/0") {
+    shutdown_server.store(true);
+    return;
+  }
   if (subject.rfind("/exception/", 0) == 0) throw std::runtime_error(subject);
   if (subject.rfind("/unknown-exception/", 0) == 0) throw "uh-oh";
   if (subject.rfind("/buffered-stdout/", 0) == 0) {
@@ -33,5 +37,7 @@ void CloudEventHandler(CloudEvent const& event) {
 }
 
 int main(int argc, char* argv[]) {
-  return functions::Run(argc, argv, CloudEventHandler);
+  return google::cloud::functions_internal::RunForTest(
+      argc, argv, CloudEventHandler, [] { return shutdown_server.load(); },
+      [](int /*port*/) {});
 }

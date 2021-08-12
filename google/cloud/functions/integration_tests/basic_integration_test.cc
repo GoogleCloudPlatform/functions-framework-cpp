@@ -20,14 +20,18 @@
 #include <boost/process.hpp>
 #include <gmock/gmock.h>
 #include <nlohmann/json.hpp>
+#include <algorithm>
 #include <chrono>
+#include <future>
 #include <string>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
+using ::testing::Each;
 using ::testing::HasSubstr;
+
 namespace bp = boost::process;
 // Even with C++17, we have to use the Boost version because Boost.Process
 // expects it.
@@ -120,6 +124,7 @@ TEST(RunIntegrationTest, Basic) {
 
   try {
     (void)HttpGet("localhost", "8010", "/quit/program/0");
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -147,6 +152,7 @@ TEST(RunIntegrationTest, ExceptionLogsToStderr) {
   EXPECT_THAT(log.value("message", ""), HasSubstr("/exception/test-string"));
 
   try {
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
     (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
@@ -179,6 +185,7 @@ TEST(RunIntegrationTest, OutputIsFlushed) {
 
   try {
     (void)HttpGet("localhost", "8010", "/quit/program/0");
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
   server.wait();
@@ -191,6 +198,37 @@ TEST(RunIntegrationTest, ConformanceSmokeTest) {
   ASSERT_EQ(result, 0);
 
   try {
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
+  } catch (...) {
+  }
+  server.wait();
+  EXPECT_EQ(server.exit_code(), 0);
+}
+
+TEST(RunIntegrationTest, SomeParallelism) {
+  auto server = bp::child(ExePath(kServer), "--port=8010");
+  auto result = WaitForServerReady("localhost", "8010");
+  ASSERT_EQ(result, 0);
+
+  auto constexpr kTaskCount = 16;
+  auto task = [] {
+    auto start = std::chrono::steady_clock::now();
+    (void)HttpGet("localhost", "8010", "/sleep/1000");
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now() - start);
+  };
+  std::vector<std::future<std::chrono::milliseconds>> tasks(kTaskCount);
+  std::generate(tasks.begin(), tasks.end(),
+                [&] { return std::async(std::launch::async, task); });
+  std::vector<std::chrono::milliseconds> elapsed(tasks.size());
+  std::transform(tasks.begin(), tasks.end(), elapsed.begin(),
+                 [](auto& f) { return f.get(); });
+  // We ask for a 1s delay, but we tolerate up to 5.
+  EXPECT_THAT(elapsed, Each(::testing::Le(std::chrono::seconds(5))));
+
+  try {
+    (void)HttpGet("localhost", "8010", "/quit/program/0");
     (void)HttpGet("localhost", "8010", "/quit/program/0");
   } catch (...) {
   }
