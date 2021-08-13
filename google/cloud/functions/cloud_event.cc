@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "google/cloud/functions/cloud_event.h"
-#include <absl/time/time.h>  // NOLINT
+#include <absl/time/time.h>  // NOLINT(modernize-deprecated-headers)
 
 namespace google::cloud::functions {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {

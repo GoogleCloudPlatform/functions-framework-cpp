@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/parse_cloud_event_legacy.h"
-#include <absl/time/time.h>  // NOLINT
+#include <absl/time/time.h>  // NOLINT(modernize-deprecated-headers)
 #include <gmock/gmock.h>
 #include <nlohmann/json.hpp>
 
