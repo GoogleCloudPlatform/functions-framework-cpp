@@ -79,10 +79,10 @@ std::vector<functions::CloudEvent> ParseCloudEventHttp(
     return {ParseCloudEventJson(request.body())};
   }
   if (content_type.rfind("application/json", 0) == 0 &&
-      HasMinimalCloudEventHeaders(request)) {
-    return {ParseCloudEventStorage(ParseCloudEventHttpBinary(request))};
+      !HasMinimalCloudEventHeaders(request)) {
+    return {ParseCloudEventLegacy(request.body())};
   }
-  return {ParseCloudEventLegacy(request.body())};
+  return {ParseCloudEventStorage(ParseCloudEventHttpBinary(request))};
 }
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
