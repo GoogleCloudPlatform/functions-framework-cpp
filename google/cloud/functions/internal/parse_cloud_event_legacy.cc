@@ -160,9 +160,9 @@ functions::CloudEvent ParseLegacyStorage(nlohmann::json const& json,
       "//storage\\.googleapis\\.com/"
       "projects/_/buckets/([^/]+)/objects/(.+)");
   std::smatch m;
-  if (std::regex_match(gcf.source, m, re) && m.size() >= 2) {
-    gcf.source = "//storage.googleapis.com/projects/_/buckets/" + m[1].str();
+  if (std::regex_match(gcf.source, m, re) && m.size() > 2) {
     gcf.subject = "objects/" + m[2].str();
+    gcf.source = "//storage.googleapis.com/projects/_/buckets/" + m[1].str();
     auto const p = gcf.subject.find_last_of('#');
     if (p != std::string::npos &&
         gcf.subject.find_first_not_of("0123456789", p + 1) ==
@@ -208,9 +208,9 @@ functions::CloudEvent ParseLegacyFirebaseDatabase(nlohmann::json const& json,
       "projects/_/instances/([^/]+)/refs/(.+)");
   std::smatch m;
   if (std::regex_match(gcf.source, m, re) && m.size() >= 2) {
-    gcf.source = "//firebasedatabase.googleapis.com/projects/_/locations/" +
-                 location + "/instances/" + m[1].str();
     gcf.subject = "refs/" + m[2].str();
+    gcf.source = "//firebasedatabase.googleapis.com/projects/_/locations/" +
+        location + "/instances/" + m[1].str();
   }
   return ParseLegacyCommon(std::move(gcf),
                            json.value("data", nlohmann::json{}));
