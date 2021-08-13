@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "google/cloud/functions/cloud_event.h"
-#include <absl/time/time.h>  // NOLINT(modernize-deprecated-headers)
+#ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_PARSE_CLOUD_EVENT_LEGACY_H
+#define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_PARSE_CLOUD_EVENT_LEGACY_H
 
-namespace google::cloud::functions {
+#include "google/cloud/functions/cloud_event.h"
+#include "google/cloud/functions/version.h"
+#include <string_view>
+
+namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 
-void CloudEvent::set_time(std::string const& timestamp) {
-  std::string err;
-  absl::Time time;
-  if (!absl::ParseTime(absl::RFC3339_full, timestamp, &time, &err)) {
-    throw std::invalid_argument(err);
-  }
-  set_time(absl::ToChronoTime(time));
-}
+/// Parse @p json_string as one of the legacy GCF event formats.
+functions::CloudEvent ParseCloudEventLegacy(std::string_view json_string);
 
 }  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
-}  // namespace google::cloud::functions
+}  // namespace google::cloud::functions_internal
+
+#endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_PARSE_CLOUD_EVENT_LEGACY_H
