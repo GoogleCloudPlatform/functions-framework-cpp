@@ -268,16 +268,20 @@ TEST(ParseCloudEventLegacy, MapStorage) {
 }
 
 TEST(ParseCloudEventLegacy, MapPubSub) {
-  auto input_event = nlohmann::json{
+  auto const input_event = nlohmann::json{
       {"context",
        {{"eventType", "providers/cloud.pubsub/eventTypes/topic.publish"},
-        {"eventId", "test-event-id"}}},
+        {"eventId", "test-event-id"},
+        {"timestamp", "2021-02-03T04:05:06.789Z"}}},
       {"data", {{"unused", "1234"}}},
   };
+  auto const expected_message =
+      nlohmann::json{{"unused", "1234"},
+                     {"messageId", "test-event-id"},
+                     {"publishTime", "2021-02-03T04:05:06.789Z"}};
   auto const ce = ParseCloudEventLegacy(input_event.dump());
   auto data = nlohmann::json::parse(ce.data().value_or("{}"));
   ASSERT_TRUE(data.contains("message")) << "data=" << data.dump();
-  auto const expected_message = nlohmann::json{{"data", {{"unused", "1234"}}}};
   ASSERT_EQ(data["message"], expected_message);
 }
 
@@ -313,9 +317,9 @@ TEST(ParseCloudEventLegacy, MapFirebaseDatabase) {
   // TODO(#306) - for now, workaround conformance tests bugs.
   //     EXPECT_EQ(ce.type(), "google.firebase.database.ref.v1.written");
   EXPECT_EQ(ce.type(), "google.firebase.database.document.v1.written");
-  EXPECT_EQ(
-      ce.source(),
-      "//firebasedatabase.googleapis.com/projects/_/locations/us-central1/instances/my-project-id");
+  EXPECT_EQ(ce.source(),
+            "//firebasedatabase.googleapis.com/projects/_/locations/"
+            "us-central1/instances/my-project-id");
   EXPECT_EQ(ce.subject(), "refs/gcf-test/xyz");
   auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
   auto const expected_data = nlohmann::json::parse(kOutputData);
@@ -355,9 +359,9 @@ TEST(ParseCloudEventLegacy, MapFirebaseDatabaseNonDefaultDomain) {
   // TODO(#...) - for now, workaround conformance tests bugs.
   //    EXPECT_EQ(ce.type(), "google.firebase.database.ref.v1.written");
   EXPECT_EQ(ce.type(), "google.firebase.database.document.v1.written");
-  EXPECT_EQ(
-      ce.source(),
-      "//firebasedatabase.googleapis.com/projects/_/locations/europe-west1/instances/my-project-id");
+  EXPECT_EQ(ce.source(),
+            "//firebasedatabase.googleapis.com/projects/_/locations/"
+            "europe-west1/instances/my-project-id");
   EXPECT_EQ(ce.subject(), "refs/gcf-test/xyz");
   auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
   auto const expected_data = nlohmann::json::parse(kOutputData);
@@ -536,7 +540,7 @@ TEST(ParseCloudEventLegacy, MapFirestore) {
   auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
   auto const expected_data = nlohmann::json::parse(kOutputData);
   EXPECT_EQ(expected_data, actual_data)
-  << "diff=" << nlohmann::json::diff(expected_data, actual_data);
+      << "diff=" << nlohmann::json::diff(expected_data, actual_data);
 }
 
 }  // namespace

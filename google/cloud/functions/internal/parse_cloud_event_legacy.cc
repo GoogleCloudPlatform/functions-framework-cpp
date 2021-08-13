@@ -178,7 +178,10 @@ functions::CloudEvent ParseLegacyStorage(nlohmann::json const& json,
 functions::CloudEvent ParseLegacyPubSub(nlohmann::json const& json,
                                         LegacyCommonFields gcf) {
   auto gcf_data = nlohmann::json{
-      {"message", {{"data", json.value("data", nlohmann::json{})}}}};
+      {"message", json.value("data", nlohmann::json{})}};
+  auto& message = gcf_data["message"];
+  if (!gcf.event_id.empty()) message["messageId"] = gcf.event_id;
+  if (!gcf.timestamp.empty()) message["publishTime"] = gcf.timestamp;
   return ParseLegacyCommon(std::move(gcf), gcf_data);
 }
 
