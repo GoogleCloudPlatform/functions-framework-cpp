@@ -16,7 +16,6 @@
 #include "google/cloud/functions/internal/parse_cloud_event_json.h"
 #include "google/cloud/functions/internal/parse_cloud_event_legacy.h"
 #include "google/cloud/functions/internal/parse_cloud_event_storage.h"
-#include <iostream> // DO NOT MERGE
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
@@ -70,24 +69,19 @@ functions::CloudEvent ParseCloudEventHttpBinary(BeastRequest const& request) {
 std::vector<functions::CloudEvent> ParseCloudEventHttp(
     BeastRequest const& request) {
   if (!HasHeader(request, "content-type")) {
-    std::cerr << "trying binary parsing with no content type" << std::endl;
     return {ParseCloudEventStorage(ParseCloudEventHttpBinary(request))};
   }
   auto const content_type = request["content-type"];
   if (content_type.rfind("application/cloudevents-batch+json", 0) == 0) {
-    std::cerr << "trying single batch JSON event parsing" << std::endl;
     return ParseCloudEventJsonBatch(request.body());
   }
   if (content_type.rfind("application/cloudevents+json", 0) == 0) {
-    std::cerr << "trying single JSON event parsing" << std::endl;
     return {ParseCloudEventJson(request.body())};
   }
   if (content_type.rfind("application/json", 0) == 0 &&
       HasMinimalCloudEventHeaders(request)) {
-    std::cerr << "trying binary parsing" << std::endl;
     return {ParseCloudEventStorage(ParseCloudEventHttpBinary(request))};
   }
-  std::cerr << "trying legacy parsing" << std::endl;
   return {ParseCloudEventLegacy(request.body())};
 }
 
