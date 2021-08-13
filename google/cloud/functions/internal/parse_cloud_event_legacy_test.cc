@@ -220,7 +220,7 @@ TEST(ParseCloudEventLegacy, MapEventType) {
        "google.firebase.remoteconfig.remoteConfig.v1.updated"},
       {"providers/google.firebase.analytics/eventTypes/event.log",
        "google.firebase.analytics.log.v1.written"},
-      // TODO(#...) - for now, workaround conformance test bugs (s/document/ref)
+      // TODO(#306) - for now, workaround conformance test bugs (s/document/ref)
       {"providers/google.firebase.database/eventTypes/ref.create",
        "google.firebase.database.document.v1.created"},
       {"providers/google.firebase.database/eventTypes/ref.write",
@@ -310,7 +310,7 @@ TEST(ParseCloudEventLegacy, MapFirebaseDatabase) {
 
   auto const ce = ParseCloudEventLegacy(kInput);
   EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
-  // TODO(#...) - for now, workaround conformance tests bugs.
+  // TODO(#306) - for now, workaround conformance tests bugs.
   //     EXPECT_EQ(ce.type(), "google.firebase.database.ref.v1.written");
   EXPECT_EQ(ce.type(), "google.firebase.database.document.v1.written");
   EXPECT_EQ(
@@ -432,6 +432,111 @@ TEST(ParseCloudEventLegacy, MapFirebaseAuth) {
   auto const expected_data = nlohmann::json::parse(kOutputData);
   EXPECT_EQ(expected_data, actual_data)
       << "diff=" << nlohmann::json::diff(expected_data, actual_data);
+}
+
+TEST(ParseCloudEventLegacy, MapFirestore) {
+  auto constexpr kInput = R"js({
+     "data":{
+        "oldValue":{
+           "createTime":"2020-04-23T09:58:53.211035Z",
+           "fields":{
+              "another test":{
+                 "stringValue":"asd"
+              },
+              "count":{
+                 "integerValue":"3"
+              },
+              "foo":{
+                 "stringValue":"bar"
+              }
+           },
+           "name":"projects/project-id/databases/(default)/documents/gcf-test/2Vm2mI1d0wIaK2Waj5to",
+           "updateTime":"2020-04-23T12:00:27.247187Z"
+        },
+        "updateMask":{
+           "fieldPaths":[
+              "count"
+           ]
+        },
+        "value":{
+           "createTime":"2020-04-23T09:58:53.211035Z",
+           "fields":{
+              "another test":{
+                 "stringValue":"asd"
+              },
+              "count":{
+                 "integerValue":"4"
+              },
+              "foo":{
+                 "stringValue":"bar"
+              }
+           },
+           "name":"projects/project-id/databases/(default)/documents/gcf-test/2Vm2mI1d0wIaK2Waj5to",
+           "updateTime":"2020-04-23T12:00:27.247187Z"
+        }
+     },
+     "eventId":"aaaaaa-1111-bbbb-2222-cccccccccccc",
+     "eventType":"providers/cloud.firestore/eventTypes/document.write",
+     "notSupported":{
+
+     },
+     "params":{
+        "doc":"2Vm2mI1d0wIaK2Waj5to"
+     },
+     "resource":"projects/project-id/databases/(default)/documents/gcf-test/2Vm2mI1d0wIaK2Waj5to",
+     "timestamp":"2020-09-29T11:32:00.000Z"
+    })js";
+  auto constexpr kOutputData = R"js({
+      "oldValue":{
+         "createTime":"2020-04-23T09:58:53.211035Z",
+         "fields":{
+            "another test":{
+               "stringValue":"asd"
+            },
+            "count":{
+               "integerValue":"3"
+            },
+            "foo":{
+               "stringValue":"bar"
+            }
+         },
+         "name":"projects/project-id/databases/(default)/documents/gcf-test/2Vm2mI1d0wIaK2Waj5to",
+         "updateTime":"2020-04-23T12:00:27.247187Z"
+      },
+      "updateMask":{
+         "fieldPaths":[
+            "count"
+         ]
+      },
+      "value":{
+         "createTime":"2020-04-23T09:58:53.211035Z",
+         "fields":{
+            "another test":{
+               "stringValue":"asd"
+            },
+            "count":{
+               "integerValue":"4"
+            },
+            "foo":{
+               "stringValue":"bar"
+            }
+         },
+         "name":"projects/project-id/databases/(default)/documents/gcf-test/2Vm2mI1d0wIaK2Waj5to",
+         "updateTime":"2020-04-23T12:00:27.247187Z"
+      }
+    })js";
+
+  auto const ce = ParseCloudEventLegacy(kInput);
+  EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
+  EXPECT_EQ(ce.type(), "google.cloud.firestore.document.v1.written");
+  EXPECT_EQ(
+      ce.source(),
+      "//firestore.googleapis.com/projects/project-id/databases/(default)");
+  EXPECT_EQ(ce.subject(), "documents/gcf-test/2Vm2mI1d0wIaK2Waj5to");
+  auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
+  auto const expected_data = nlohmann::json::parse(kOutputData);
+  EXPECT_EQ(expected_data, actual_data)
+  << "diff=" << nlohmann::json::diff(expected_data, actual_data);
 }
 
 }  // namespace

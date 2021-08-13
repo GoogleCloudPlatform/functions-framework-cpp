@@ -90,7 +90,7 @@ std::string MapGCFTypeToCloudEventType(std::string const& gcf_event_type) {
            "google.firebase.remoteconfig.remoteConfig.v1.updated"},
           {"providers/google.firebase.analytics/eventTypes/event.log",
            "google.firebase.analytics.log.v1.written"},
-          // TODO(#...) - for now, workaround conformance tests bugs.
+          // TODO(#306) - for now, workaround conformance tests bugs.
           {"providers/google.firebase.database/eventTypes/ref.create",
            "google.firebase.database.document.v1.created"},
           {"providers/google.firebase.database/eventTypes/ref.write",
@@ -246,6 +246,19 @@ functions::CloudEvent ParseLegacyFirebaseAuth(nlohmann::json const& json,
   return ParseLegacyCommon(std::move(gcf), modified);
 }
 
+functions::CloudEvent ParseLegacyFirestore(nlohmann::json const& json,
+                                           LegacyCommonFields gcf) {
+  auto const re = std::regex(
+      "projects/([^/]+)/databases/([^/]+)/documents/(.+)");
+  std::smatch m;
+  if (std::regex_match(gcf.resource_name, m, re) && m.size() >= 3) {
+    gcf.source = "//firestore.googleapis.com/projects/" + m[1].str() + "/databases/" + m[2].str();
+    gcf.subject = "documents/" + m[3].str();
+  }
+  return ParseLegacyCommon(std::move(gcf),
+                           json.value("data", nlohmann::json{}));
+}
+
 functions::CloudEvent ParseCloudEventLegacy(nlohmann::json const& json) {
   auto gcf = ParseLegacyCommonFields(json);
   if (gcf.service == "storage.googleapis.com") {
@@ -259,6 +272,9 @@ functions::CloudEvent ParseCloudEventLegacy(nlohmann::json const& json) {
   }
   if (gcf.service == "firebaseauth.googleapis.com") {
     return ParseLegacyFirebaseAuth(json, std::move(gcf));
+  }
+  if (gcf.service == "firestore.googleapis.com") {
+    return ParseLegacyFirestore(json, std::move(gcf));
   }
   return ParseLegacyCommon(std::move(gcf), json);
 }
