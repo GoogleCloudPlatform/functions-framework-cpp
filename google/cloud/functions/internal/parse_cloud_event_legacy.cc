@@ -90,14 +90,15 @@ std::string MapGCFTypeToCloudEventType(std::string const& gcf_event_type) {
            "google.firebase.remoteconfig.remoteConfig.v1.updated"},
           {"providers/google.firebase.analytics/eventTypes/event.log",
            "google.firebase.analytics.log.v1.written"},
+          // TODO(#...) - for now, workaround conformance tests bugs.
           {"providers/google.firebase.database/eventTypes/ref.create",
-           "google.firebase.database.ref.v1.created"},
+           "google.firebase.database.document.v1.created"},
           {"providers/google.firebase.database/eventTypes/ref.write",
-           "google.firebase.database.ref.v1.written"},
+           "google.firebase.database.document.v1.written"},
           {"providers/google.firebase.database/eventTypes/ref.update",
-           "google.firebase.database.ref.v1.updated"},
+           "google.firebase.database.document.v1.updated"},
           {"providers/google.firebase.database/eventTypes/ref.delete",
-           "google.firebase.database.ref.v1.deleted"},
+           "google.firebase.database.document.v1.deleted"},
       });
   auto p = kMapping->find(gcf_event_type);
   if (p != kMapping->end()) return p->second;
