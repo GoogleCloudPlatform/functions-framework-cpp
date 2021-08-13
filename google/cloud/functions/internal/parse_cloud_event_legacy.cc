@@ -176,8 +176,8 @@ functions::CloudEvent ParseLegacyStorage(nlohmann::json const& json,
 
 functions::CloudEvent ParseLegacyPubSub(nlohmann::json const& json,
                                         LegacyCommonFields gcf) {
-  auto gcf_data = nlohmann::json{
-      {"message", json.value("data", nlohmann::json{})}};
+  auto gcf_data =
+      nlohmann::json{{"message", json.value("data", nlohmann::json{})}};
   auto& message = gcf_data["message"];
   if (!gcf.event_id.empty()) message["messageId"] = gcf.event_id;
   if (!gcf.timestamp.empty()) message["publishTime"] = gcf.timestamp;
@@ -250,11 +250,12 @@ functions::CloudEvent ParseLegacyFirebaseAuth(nlohmann::json const& json,
 
 functions::CloudEvent ParseLegacyFirestore(nlohmann::json const& json,
                                            LegacyCommonFields gcf) {
-  auto const re = std::regex(
-      "projects/([^/]+)/databases/([^/]+)/documents/(.+)");
+  auto const re =
+      std::regex("projects/([^/]+)/databases/([^/]+)/documents/(.+)");
   std::smatch m;
   if (std::regex_match(gcf.resource_name, m, re) && m.size() >= 3) {
-    gcf.source = "//firestore.googleapis.com/projects/" + m[1].str() + "/databases/" + m[2].str();
+    gcf.source = "//firestore.googleapis.com/projects/" + m[1].str() +
+                 "/databases/" + m[2].str();
     gcf.subject = "documents/" + m[3].str();
   }
   return ParseLegacyCommon(std::move(gcf),
