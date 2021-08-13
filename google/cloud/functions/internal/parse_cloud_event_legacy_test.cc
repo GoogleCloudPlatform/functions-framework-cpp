@@ -21,6 +21,7 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
+// NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
 MATCHER_P(IsJsonEqual, value, "Checks whether JSON objects are equal") {
   if (arg == value) return true;
   *result_listener << "\n" << nlohmann::json::diff(arg, value).dump();
