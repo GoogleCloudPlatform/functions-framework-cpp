@@ -42,7 +42,7 @@ std::string GetAlternatives(nlohmann::json const& json,
 
 std::string MapGCFTypeToService(std::string const& gcf_event_type) {
   static auto const* const kPrefixes =
-      new auto(std::vector<std::pair<std::string, std::string>>{
+      new std::vector<std::pair<std::string, std::string>>{
           {"providers/cloud.firestore/", "firestore.googleapis.com"},
           {"providers/google.firebase.analytics/",
            "firebaseanalytics.googleapis.com"},
@@ -51,7 +51,7 @@ std::string MapGCFTypeToService(std::string const& gcf_event_type) {
            "firebasedatabase.googleapis.com"},
           {"providers/cloud.pubsub/", "pubsub.googleapis.com"},
           {"google.storage.object.", "storage.googleapis.com"},
-      });
+      };
   for (auto const& [prefix, service] : *kPrefixes) {
     if (gcf_event_type.rfind(prefix, 0) == 0) return service;
   }
@@ -60,45 +60,44 @@ std::string MapGCFTypeToService(std::string const& gcf_event_type) {
 }
 
 std::string MapGCFTypeToCloudEventType(std::string const& gcf_event_type) {
-  static auto const* const kMapping =
-      new auto(std::map<std::string, std::string>{
-          {"google.pubsub.topic.publish",
-           "google.cloud.pubsub.topic.v1.messagePublished"},
-          {"providers/cloud.pubsub/eventTypes/topic.publish",
-           "google.cloud.pubsub.topic.v1.messagePublished"},
-          {"google.storage.object.finalize",
-           "google.cloud.storage.object.v1.finalized"},
-          {"google.storage.object.delete",
-           "google.cloud.storage.object.v1.deleted"},
-          {"google.storage.object.archive",
-           "google.cloud.storage.object.v1.archived"},
-          {"google.storage.object.metadataUpdate",
-           "google.cloud.storage.object.v1.metadataUpdated"},
-          {"providers/cloud.firestore/eventTypes/document.write",
-           "google.cloud.firestore.document.v1.written"},
-          {"providers/cloud.firestore/eventTypes/document.create",
-           "google.cloud.firestore.document.v1.created"},
-          {"providers/cloud.firestore/eventTypes/document.update",
-           "google.cloud.firestore.document.v1.updated"},
-          {"providers/cloud.firestore/eventTypes/document.delete",
-           "google.cloud.firestore.document.v1.deleted"},
-          {"providers/firebase.auth/eventTypes/user.create",
-           "google.firebase.auth.user.v1.created"},
-          {"providers/firebase.auth/eventTypes/user.delete",
-           "google.firebase.auth.user.v1.deleted"},
-          {"providers/firebase.remoteConfig/remoteconfig.update",
-           "google.firebase.remoteconfig.remoteConfig.v1.updated"},
-          {"providers/google.firebase.analytics/eventTypes/event.log",
-           "google.firebase.analytics.log.v1.written"},
-          {"providers/google.firebase.database/eventTypes/ref.create",
-           "google.firebase.database.ref.v1.created"},
-          {"providers/google.firebase.database/eventTypes/ref.write",
-           "google.firebase.database.ref.v1.written"},
-          {"providers/google.firebase.database/eventTypes/ref.update",
-           "google.firebase.database.ref.v1.updated"},
-          {"providers/google.firebase.database/eventTypes/ref.delete",
-           "google.firebase.database.ref.v1.deleted"},
-      });
+  static auto const* const kMapping = new std::map<std::string, std::string>{
+      {"google.pubsub.topic.publish",
+       "google.cloud.pubsub.topic.v1.messagePublished"},
+      {"providers/cloud.pubsub/eventTypes/topic.publish",
+       "google.cloud.pubsub.topic.v1.messagePublished"},
+      {"google.storage.object.finalize",
+       "google.cloud.storage.object.v1.finalized"},
+      {"google.storage.object.delete",
+       "google.cloud.storage.object.v1.deleted"},
+      {"google.storage.object.archive",
+       "google.cloud.storage.object.v1.archived"},
+      {"google.storage.object.metadataUpdate",
+       "google.cloud.storage.object.v1.metadataUpdated"},
+      {"providers/cloud.firestore/eventTypes/document.write",
+       "google.cloud.firestore.document.v1.written"},
+      {"providers/cloud.firestore/eventTypes/document.create",
+       "google.cloud.firestore.document.v1.created"},
+      {"providers/cloud.firestore/eventTypes/document.update",
+       "google.cloud.firestore.document.v1.updated"},
+      {"providers/cloud.firestore/eventTypes/document.delete",
+       "google.cloud.firestore.document.v1.deleted"},
+      {"providers/firebase.auth/eventTypes/user.create",
+       "google.firebase.auth.user.v1.created"},
+      {"providers/firebase.auth/eventTypes/user.delete",
+       "google.firebase.auth.user.v1.deleted"},
+      {"providers/firebase.remoteConfig/remoteconfig.update",
+       "google.firebase.remoteconfig.remoteConfig.v1.updated"},
+      {"providers/google.firebase.analytics/eventTypes/event.log",
+       "google.firebase.analytics.log.v1.written"},
+      {"providers/google.firebase.database/eventTypes/ref.create",
+       "google.firebase.database.ref.v1.created"},
+      {"providers/google.firebase.database/eventTypes/ref.write",
+       "google.firebase.database.ref.v1.written"},
+      {"providers/google.firebase.database/eventTypes/ref.update",
+       "google.firebase.database.ref.v1.updated"},
+      {"providers/google.firebase.database/eventTypes/ref.delete",
+       "google.firebase.database.ref.v1.deleted"},
+  };
   auto p = kMapping->find(gcf_event_type);
   if (p != kMapping->end()) return p->second;
   if (gcf_event_type.rfind("google.storage.object.", 0) == 0) {
@@ -160,7 +159,7 @@ functions::CloudEvent ParseLegacyStorage(nlohmann::json const& json,
       "//storage\\.googleapis\\.com/"
       "projects/_/buckets/([^/]+)/objects/(.+)");
   std::smatch m;
-  if (std::regex_match(gcf.source, m, re) && m.size() > 2) {
+  if (std::regex_match(gcf.source, m, re) && m.size() == 3) {
     gcf.subject = "objects/" + m[2].str();
     gcf.source = "//storage.googleapis.com/projects/_/buckets/" + m[1].str();
     auto const p = gcf.subject.find_last_of('#');
@@ -207,7 +206,7 @@ functions::CloudEvent ParseLegacyFirebaseDatabase(nlohmann::json const& json,
       "//firebasedatabase\\.googleapis\\.com/"
       "projects/_/instances/([^/]+)/refs/(.+)");
   std::smatch m;
-  if (std::regex_match(gcf.source, m, re) && m.size() >= 2) {
+  if (std::regex_match(gcf.source, m, re) && m.size() == 3) {
     gcf.subject = "refs/" + m[2].str();
     gcf.source = "//firebasedatabase.googleapis.com/projects/_/locations/" +
                  location + "/instances/" + m[1].str();
@@ -253,7 +252,7 @@ functions::CloudEvent ParseLegacyFirestore(nlohmann::json const& json,
   auto const re =
       std::regex("projects/([^/]+)/databases/([^/]+)/documents/(.+)");
   std::smatch m;
-  if (std::regex_match(gcf.resource_name, m, re) && m.size() >= 3) {
+  if (std::regex_match(gcf.resource_name, m, re) && m.size() == 4) {
     gcf.source = "//firestore.googleapis.com/projects/" + m[1].str() +
                  "/databases/" + m[2].str();
     gcf.subject = "documents/" + m[3].str();
