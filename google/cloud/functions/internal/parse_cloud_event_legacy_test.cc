@@ -177,7 +177,7 @@ TEST(ParseCloudEventLegacy, MapEventTypePrefixToEventType) {
 
   for (auto const& test : cases) {
     SCOPED_TRACE("Testing with gcf_event_type=" + test.gcf_event_type);
-    auto input_event = nlohmann::json{
+    auto const input_event = nlohmann::json{
         {"context",
          {{"eventType", test.gcf_event_type},
           {"eventId", "test-event-id"},
@@ -191,6 +191,16 @@ TEST(ParseCloudEventLegacy, MapEventTypePrefixToEventType) {
     EXPECT_EQ(ce.id(), "test-event-id");
     EXPECT_EQ(ce.spec_version(), "1.0");
   }
+
+  auto const invalid_event = nlohmann::json{
+      {"context",
+       {{"eventType", "google.pubsub.topic.foo"},
+        {"eventId", "test-event-id"},
+        {"resource", {{"name", "test-resource-name"}}}}},
+      {"domain", "unused.firebase.app"},
+      {"data", {{"uid", "test-uid"}, {"metadata", nlohmann::json{}}}},
+  };
+  EXPECT_THROW(ParseCloudEventLegacy(invalid_event.dump()), std::runtime_error);
 }
 
 TEST(ParseCloudEventLegacy, MapEventType) {
@@ -234,11 +244,12 @@ TEST(ParseCloudEventLegacy, MapEventType) {
        "google.firebase.database.ref.v1.updated"},
       {"providers/google.firebase.database/eventTypes/ref.delete",
        "google.firebase.database.ref.v1.deleted"},
+      {"google.storage.object.finalized", "google.storage.object.finalized"},
   };
 
   for (auto const& test : cases) {
     SCOPED_TRACE("Testing with gcf_event_type=" + test.gcf_event_type);
-    auto input_event =
+    auto const input_event =
         nlohmann::json{{"context",
                         {{"eventType", test.gcf_event_type},
                          {"eventId", "test-event-id"},
@@ -252,6 +263,17 @@ TEST(ParseCloudEventLegacy, MapEventType) {
     EXPECT_EQ(ce.source(), "//firebase.googleapis.com/test-resource-name");
     EXPECT_EQ(ce.spec_version(), "1.0");
   }
+
+  auto const invalid_event_type =
+      nlohmann::json{{"context",
+                      {{"eventType", "test-invalid-event-type"},
+                       {"eventId", "test-event-id"},
+                       {"resource",
+                        {{"service", "firebase.googleapis.com"},
+                         {"name", "test-resource-name"}}}}},
+                     {"data", {{"unused", "123456"}}}};
+  EXPECT_THROW(ParseCloudEventLegacy(invalid_event_type.dump()),
+               std::runtime_error);
 }
 
 TEST(ParseCloudEventLegacy, MapStorage) {
@@ -386,6 +408,23 @@ TEST(ParseCloudEventLegacy, MapFirebaseDatabaseInvalidDomain) {
   EXPECT_THROW(ParseCloudEventLegacy(kInput), std::runtime_error);
 }
 
+TEST(ParseCloudEventLegacy, MapFirebaseDatabaseMissingDomain) {
+  auto constexpr kInput = R"js({
+      "eventType": "providers/google.firebase.database/eventTypes/ref.write",
+      "data": {
+        "data": null,
+        "delta": {
+          "grandchild": "other"
+        }
+      },
+      "resource": "projects/_/instances/my-project-id/refs/gcf-test/xyz",
+      "timestamp": "2020-09-29T11:32:00.000Z",
+      "eventId": "aaaaaa-1111-bbbb-2222-cccccccccccc"
+  })js";
+
+  EXPECT_THROW(ParseCloudEventLegacy(kInput), std::runtime_error);
+}
+
 TEST(ParseCloudEventLegacy, MapFirebaseAuth) {
   auto constexpr kInput = R"js({
     "data": {
@@ -434,6 +473,16 @@ TEST(ParseCloudEventLegacy, MapFirebaseAuth) {
   auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
   auto const expected_data = nlohmann::json::parse(kOutputData);
   EXPECT_THAT(actual_data, IsJsonEqual(expected_data));
+}
+
+TEST(ParseCloudEventLegacy, MapFirebaseAuthMissingAttributes) {
+  EXPECT_THROW(ParseCloudEventLegacy("{}"), std::runtime_error);
+  EXPECT_THROW(ParseCloudEventLegacy(R"js({"data": {}})js"),
+               std::runtime_error);
+  EXPECT_THROW(ParseCloudEventLegacy(R"js({"data": {"metadata": {}}})js"),
+               std::runtime_error);
+  EXPECT_THROW(ParseCloudEventLegacy(R"js({"data": {"uid": {}}})js"),
+               std::runtime_error);
 }
 
 TEST(ParseCloudEventLegacy, MapFirestore) {
