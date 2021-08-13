@@ -21,6 +21,12 @@ namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
 namespace {
 
+MATCHER_P(IsJsonEqual, value, "Checks whether JSON objects are equal") {
+  if (arg == value) return true;
+  *result_listener << "\n" << nlohmann::json::diff(arg, value).dump();
+  return false;
+}
+
 TEST(ParseCloudEventLegacy, Basic) {
   auto constexpr kInput = R"js({
     "data": {
@@ -320,8 +326,7 @@ TEST(ParseCloudEventLegacy, MapFirebaseDatabase) {
   EXPECT_EQ(ce.subject(), "refs/gcf-test/xyz");
   auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
   auto const expected_data = nlohmann::json::parse(kOutputData);
-  EXPECT_EQ(expected_data, actual_data)
-      << "diff=" << nlohmann::json::diff(expected_data, actual_data);
+  EXPECT_THAT(actual_data, IsJsonEqual(expected_data));
 }
 
 TEST(ParseCloudEventLegacy, MapFirebaseDatabaseNonDefaultDomain) {
@@ -360,8 +365,7 @@ TEST(ParseCloudEventLegacy, MapFirebaseDatabaseNonDefaultDomain) {
   EXPECT_EQ(ce.subject(), "refs/gcf-test/xyz");
   auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
   auto const expected_data = nlohmann::json::parse(kOutputData);
-  EXPECT_EQ(expected_data, actual_data)
-      << "diff=" << nlohmann::json::diff(expected_data, actual_data);
+  EXPECT_THAT(actual_data, IsJsonEqual(expected_data));
 }
 
 TEST(ParseCloudEventLegacy, MapFirebaseDatabaseInvalidDomain) {
@@ -429,8 +433,7 @@ TEST(ParseCloudEventLegacy, MapFirebaseAuth) {
             "//firebaseauth.googleapis.com/projects/my-project-id");
   auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
   auto const expected_data = nlohmann::json::parse(kOutputData);
-  EXPECT_EQ(expected_data, actual_data)
-      << "diff=" << nlohmann::json::diff(expected_data, actual_data);
+  EXPECT_THAT(actual_data, IsJsonEqual(expected_data));
 }
 
 TEST(ParseCloudEventLegacy, MapFirestore) {
@@ -534,8 +537,7 @@ TEST(ParseCloudEventLegacy, MapFirestore) {
   EXPECT_EQ(ce.subject(), "documents/gcf-test/2Vm2mI1d0wIaK2Waj5to");
   auto const actual_data = nlohmann::json::parse(ce.data().value_or("{}"));
   auto const expected_data = nlohmann::json::parse(kOutputData);
-  EXPECT_EQ(expected_data, actual_data)
-      << "diff=" << nlohmann::json::diff(expected_data, actual_data);
+  EXPECT_THAT(actual_data, IsJsonEqual(expected_data));
 }
 
 }  // namespace
