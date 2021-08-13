@@ -210,7 +210,7 @@ functions::CloudEvent ParseLegacyFirebaseDatabase(nlohmann::json const& json,
   if (std::regex_match(gcf.source, m, re) && m.size() >= 2) {
     gcf.subject = "refs/" + m[2].str();
     gcf.source = "//firebasedatabase.googleapis.com/projects/_/locations/" +
-        location + "/instances/" + m[1].str();
+                 location + "/instances/" + m[1].str();
   }
   return ParseLegacyCommon(std::move(gcf),
                            json.value("data", nlohmann::json{}));
