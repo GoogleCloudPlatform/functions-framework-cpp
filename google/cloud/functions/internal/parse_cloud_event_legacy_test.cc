@@ -220,15 +220,14 @@ TEST(ParseCloudEventLegacy, MapEventType) {
        "google.firebase.remoteconfig.remoteConfig.v1.updated"},
       {"providers/google.firebase.analytics/eventTypes/event.log",
        "google.firebase.analytics.log.v1.written"},
-      // TODO(#306) - for now, workaround conformance test bugs (s/document/ref)
       {"providers/google.firebase.database/eventTypes/ref.create",
-       "google.firebase.database.document.v1.created"},
+       "google.firebase.database.ref.v1.created"},
       {"providers/google.firebase.database/eventTypes/ref.write",
-       "google.firebase.database.document.v1.written"},
+       "google.firebase.database.ref.v1.written"},
       {"providers/google.firebase.database/eventTypes/ref.update",
-       "google.firebase.database.document.v1.updated"},
+       "google.firebase.database.ref.v1.updated"},
       {"providers/google.firebase.database/eventTypes/ref.delete",
-       "google.firebase.database.document.v1.deleted"},
+       "google.firebase.database.ref.v1.deleted"},
   };
 
   for (auto const& test : cases) {
@@ -314,9 +313,7 @@ TEST(ParseCloudEventLegacy, MapFirebaseDatabase) {
 
   auto const ce = ParseCloudEventLegacy(kInput);
   EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
-  // TODO(#306) - for now, workaround conformance tests bugs.
-  //     EXPECT_EQ(ce.type(), "google.firebase.database.ref.v1.written");
-  EXPECT_EQ(ce.type(), "google.firebase.database.document.v1.written");
+  EXPECT_EQ(ce.type(), "google.firebase.database.ref.v1.written");
   EXPECT_EQ(ce.source(),
             "//firebasedatabase.googleapis.com/projects/_/locations/"
             "us-central1/instances/my-project-id");
@@ -356,9 +353,7 @@ TEST(ParseCloudEventLegacy, MapFirebaseDatabaseNonDefaultDomain) {
 
   auto const ce = ParseCloudEventLegacy(kInput);
   EXPECT_EQ(ce.id(), "aaaaaa-1111-bbbb-2222-cccccccccccc");
-  // TODO(#...) - for now, workaround conformance tests bugs.
-  //    EXPECT_EQ(ce.type(), "google.firebase.database.ref.v1.written");
-  EXPECT_EQ(ce.type(), "google.firebase.database.document.v1.written");
+  EXPECT_EQ(ce.type(), "google.firebase.database.ref.v1.written");
   EXPECT_EQ(ce.source(),
             "//firebasedatabase.googleapis.com/projects/_/locations/"
             "europe-west1/instances/my-project-id");
