@@ -1,3 +1,6 @@
 # Remove repository name from paths
 fixes:
   - "functions-framework-cpp/::"
+
+ignore:
+  - "build/vcpkg_installed/**/*"
