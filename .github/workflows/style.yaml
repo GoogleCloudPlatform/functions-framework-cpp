@@ -49,13 +49,10 @@ jobs:
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       - name: tidy
-        run: |
-          ls -l ${{runner.temp}} || echo "no runner.temp"
-          ls -l ${{runner.temp}}/ctcache || echo "no runner.temp/ctcache"
-#        run: >
-#          git ls-files -z |
-#          grep -zE '\.cc$' |
-#          xargs --verbose -P 2 -n 1 -0 ${{runner.temp}}/ctcache/clang-tidy-cache clang-tidy-10 -p="${{runner.temp}}/build"
+        run: >
+          git ls-files -z |
+          grep -zE '\.cc$' |
+          xargs --verbose -P 2 -n 1 -0 "${{runner.temp}}/ctcache/clang-tidy-cache" clang-tidy-10 -p="${{runner.temp}}/build"
 
   werror-build:
     # Using a blank name produces better output on
