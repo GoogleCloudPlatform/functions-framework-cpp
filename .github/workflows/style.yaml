@@ -16,20 +16,27 @@ jobs:
       - name: install ninja
         run: sudo apt install ninja-build clang-tidy-10
       - uses: actions/checkout@v2
+      - name: install-ctcache
+        working-directory: "${{runner.temp}}"
+        run: >
+          mkdir -p ctcache &&
+          curl -sSL https://github.com/matus-chochlik/ctcache/archive/0ad2e227e8a981a9c1a6060ee6c8ec144bb976c6.tar.gz |
+          tar -xzf - --strip-components=1
       - name: clone-vcpkg
         working-directory: "${{runner.temp}}"
         run: >
           mkdir -p vcpkg &&
           curl -sSL "https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.tar.gz" |
           tar -C vcpkg --strip-components=1 -zxf -
-      - name: cache-vcpkg
-        id: cache-vcpkg
+      - name: save-restore-cache
+        id: save-restore-cache
         uses: actions/cache@v2
         with:
-          # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
+          # Preserve the vcpkg binary, the vcpkg binary cache, and clang-tidy's cache in the build cache
           path: |
             ~/.cache/vcpkg
             ~/.cache/bin
+            ~/.cache/ctcache
           key: |
             vcpkg-${{ env.vcpkg_SHA }}-style-clang-tidy-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
@@ -45,7 +52,7 @@ jobs:
         run: >
           git ls-files -z |
           grep -zE '\.cc$' |
-          xargs --verbose -P 2 -n 1 -0 clang-tidy-10 -p="${{runner.temp}}/build"
+          xargs --verbose -P 2 -n 1 -0 ${{runner.temp}}/ctcache/clang-tidy-cache clang-tidy-10 -p="${{runner.temp}}/build"
 
   werror-build:
     # Using a blank name produces better output on
