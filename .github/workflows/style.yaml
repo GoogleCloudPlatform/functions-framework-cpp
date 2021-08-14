@@ -21,7 +21,7 @@ jobs:
         run: >
           mkdir -p ctcache &&
           curl -sSL https://github.com/matus-chochlik/ctcache/archive/0ad2e227e8a981a9c1a6060ee6c8ec144bb976c6.tar.gz |
-          tar -xzf - --strip-components=1
+          tar -C ctcache --strip-components=1 -zxf -
       - name: clone-vcpkg
         working-directory: "${{runner.temp}}"
         run: >
@@ -49,10 +49,13 @@ jobs:
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       - name: tidy
-        run: >
-          git ls-files -z |
-          grep -zE '\.cc$' |
-          xargs --verbose -P 2 -n 1 -0 ${{runner.temp}}/ctcache/clang-tidy-cache clang-tidy-10 -p="${{runner.temp}}/build"
+        run: |
+          ls -l ${{runner.temp}} || echo "no runner.temp"
+          ls -l ${{runner.temp}}/ctcache || echo "no runner.temp/ctcache"
+#        run: >
+#          git ls-files -z |
+#          grep -zE '\.cc$' |
+#          xargs --verbose -P 2 -n 1 -0 ${{runner.temp}}/ctcache/clang-tidy-cache clang-tidy-10 -p="${{runner.temp}}/build"
 
   werror-build:
     # Using a blank name produces better output on
