@@ -28,6 +28,8 @@ MATCHER_P(IsJsonEqual, value, "Checks whether JSON objects are equal") {
   return false;
 }
 
+// TODO(coran): DO NOT MERGE, testing ctcache
+
 TEST(ParseCloudEventLegacy, Basic) {
   auto constexpr kInput = R"js({
     "data": {
