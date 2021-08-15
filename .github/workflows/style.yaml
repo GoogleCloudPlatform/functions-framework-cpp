@@ -61,7 +61,7 @@ jobs:
           git ls-files -z | \
             grep -zE '\.cc$' | \
             xargs --verbose -P 2 -n 1 -0 "${{runner.temp}}/ctcache/clang-tidy-cache" \
-              clang-tidy-10 -p="${{runner.temp}}/build"
+              /usr/bin/clang-tidy-10 -p="${{runner.temp}}/build"
           echo "CTCACHE_DIR=${CTCACHE_DIR}"
       - name: post-cache-stats
         run: |
