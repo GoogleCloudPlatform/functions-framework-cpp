@@ -59,14 +59,12 @@ jobs:
           export CTCACHE_DIR="${HOME}/.cache/ctcache"
           echo "CTCACHE_DIR=${CTCACHE_DIR}"
           "${{runner.temp}}/ctcache/clang-tidy-cache" --cache-dir
-          "${{runner.temp}}/ctcache/clang-tidy-cache" --show-stats
           git ls-files -z | \
             grep -zE '\.cc$' | \
             xargs --verbose -P 2 -n 1 -0 "${{runner.temp}}/ctcache/clang-tidy-cache" \
               /usr/bin/clang-tidy-10 -p="${{runner.temp}}/build"
           echo "CTCACHE_DIR=${CTCACHE_DIR}"
           "${{runner.temp}}/ctcache/clang-tidy-cache" --cache-dir
-          "${{runner.temp}}/ctcache/clang-tidy-cache" --show-stats
       - name: post-cache-stats
         run: |
           printf "%s: %s\n" "ctcache total size" "$(du -sh "${HOME}/.cache/ctcache")"
