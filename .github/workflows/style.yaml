@@ -49,10 +49,14 @@ jobs:
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       - name: tidy
+        env:
+          CTCACHE_DIR: ${{env.HOME}}/.cache/ctcache
         run: >
           git ls-files -z |
           grep -zE '\.cc$' |
           xargs --verbose -P 2 -n 1 -0 "${{runner.temp}}/ctcache/clang-tidy-cache" clang-tidy-10 -p="${{runner.temp}}/build"
+          printf "%s: %s\n" "total size" "$(du -sh "${CTCACHE_DIR}")"
+          printf "%s: %s\n" " num files" "$(find "${CTCACHE_DIR}" | wc -l)"
 
   werror-build:
     # Using a blank name produces better output on
