@@ -50,7 +50,7 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       - name: pre-cache-stats
         run: |
-          printf "%s: %s\n" "ctcache total size" "$(du -sh "${$HOME}/.cache/ctcache")"
+          printf "%s: %s\n" "ctcache total size" "$(du -sh "${HOME}/.cache/ctcache")"
           printf "%s: %s\n" "ctcache  num files" "$(find "${HOME}/.cache/ctcache" | wc -l)"
           printf "%s: %s\n" "total size" "$(du -sh "${HOME}/.cache")"
           printf "%s: %s\n" " num files" "$(find "${HOME}/.cache" | wc -l)"
@@ -62,7 +62,7 @@ jobs:
           xargs --verbose -P 2 -n 1 -0 "${{runner.temp}}/ctcache/clang-tidy-cache" clang-tidy-10 -p="${{runner.temp}}/build"
       - name: post-cache-stats
         run: |
-          printf "%s: %s\n" "ctcache total size" "$(du -sh "${$HOME}/.cache/ctcache")"
+          printf "%s: %s\n" "ctcache total size" "$(du -sh "${HOME}/.cache/ctcache")"
           printf "%s: %s\n" "ctcache  num files" "$(find "${HOME}/.cache/ctcache" | wc -l)"
           printf "%s: %s\n" "total size" "$(du -sh "${HOME}/.cache")"
           printf "%s: %s\n" " num files" "$(find "${HOME}/.cache" | wc -l)"
