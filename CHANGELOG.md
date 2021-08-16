@@ -1,6 +1,14 @@
 # Changelog
 
-## v0.6.0 - TBD
+## v0.7.0 - TBD
+
+## v0.6.0 - 2021-08
+
+* feat: support mapping of legacy GCF events (#313)
+* fix: actually handle sessions in parallel (#308)
+* feat: improve error message for CloudEvent (#310)
+* doc: simplify how-to guides (#304)
+* feat: more efficient access to HttpRequest data (#300)
 
 ## v0.5.0 - 2021-03
 
