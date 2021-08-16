@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env:
-  vcpkg_SHA: "9b9a6680b25872989c8eb0303d670f32e5cfe6a4"
+  vcpkg_SHA: "7e396645d919f463ef6f0f2ad6a8c5272c1f9b27"
   VCPKG_TOOL_VERSION: "2021-02-24-d67989bce1043b98092ac45996a8230a059a2d7e"
 
 jobs:
@@ -65,13 +65,9 @@ jobs:
           path: |
             ~/.cache/vcpkg
           key: |
-            vcpkg-${{ runner.os }}-${{ github.job }}-${{ hashFiles(
-                '/usr/local/share/vcpkg/**/vcpkg.json',
-                '/usr/local/share/vcpkg/**/CONTROL',
-                'vcpkg.json') }}
+            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ runner.os }}-${{ github.job }}-
-            vcpkg-${{ runner.os }}-
+            vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ github.job }}-
       - name: create-overlay
         # We want to test with the *current* version of
         # `functions-framework-cpp`, not with the version published by vcpkg.
@@ -109,9 +105,7 @@ jobs:
           7z x '${{env.vcpkg_SHA}}.zip' -aoa -bsp0
           if ($LastExitCode) { Write-Host -ForegroundColor Red "error extracting vcpkg zipball: ${LastExitCode}"; Exit 1; }
           Rename-Item 'vcpkg-${{env.vcpkg_SHA}}' 'vcpkg'
-          (New-Object System.Net.WebClient).Downloadfile(
-                  'https://github.com/microsoft/vcpkg-tool/releases/download/${{env.VCPKG_TOOL_VERSION}}/vcpkg.exe',
-                  'vcpkg/vcpkg.exe')
+          & vcpkg/bootstrap-vcpkg.bat
 
       - name: cache-vcpkg
         id: cache-vcpkg

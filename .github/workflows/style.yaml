@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env:
-  vcpkg_SHA: "9b9a6680b25872989c8eb0303d670f32e5cfe6a4"
+  vcpkg_SHA: "7e396645d919f463ef6f0f2ad6a8c5272c1f9b27"
 
 jobs:
   clang-tidy:
