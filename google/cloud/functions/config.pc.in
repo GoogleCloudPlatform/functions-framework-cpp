@@ -20,7 +20,7 @@ includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 Name: Functions Framework for C++
 Description: A framework to support C++ Google Cloud Functions
 Requires:
-Version: @FUNCTIONS_FRAMEWORK_CPP_VERSION@
+Version: @PROJECT_VERSION@
 
 Libs: -L${libdir} -lboost_program_options -lboost_beast
 Cflags: -I${includedir}
