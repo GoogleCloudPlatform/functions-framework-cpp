@@ -24,6 +24,7 @@
 #include <chrono>
 #include <future>
 #include <string>
+#include <thread>
 
 namespace google::cloud::functions_internal {
 inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
