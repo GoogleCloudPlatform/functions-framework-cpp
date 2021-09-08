@@ -1,0 +1,13 @@
+filename: ci/cloudbuild/cloudbuild.yaml
+github:
+  name: functions-framework-cpp
+  owner: GoogleCloudPlatform
+  push:
+    branch: ^(master|main|v\d+\..*)$
+name: check-api-ci
+substitutions:
+  _BUILD_NAME: check-api
+  _DISTRO: fedora-34
+  _TRIGGER_TYPE: ci
+tags:
+- ci

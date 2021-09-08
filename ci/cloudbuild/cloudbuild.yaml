@@ -1,0 +1,107 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+timeout: 3600s
+options:
+  workerPool: 'projects/cloud-cpp-testing-gcf/locations/us-east1/workerPools/functions-framework-cpp-pool'
+  dynamic_substitutions: true
+  env: [
+      'HOME=/h',
+      'TZ=UTC0',
+      'GOOGLE_CLOUD_BUILD=yes',
+      'PROJECT_ID=${PROJECT_ID}',
+      'BUILD_ID=${BUILD_ID}',
+      'BRANCH_NAME=${BRANCH_NAME}',
+      'COMMIT_SHA=${COMMIT_SHA}',
+      'PR_NUMBER=${_PR_NUMBER}',
+      'TRIGGER_TYPE=${_TRIGGER_TYPE}',
+      'CONSOLE_LOG_URL=https://console.cloud.google.com/cloud-build/builds;region=us-east1/${BUILD_ID};tab=detail?project=${PROJECT_ID}',
+      'RAW_LOG_URL=https://storage.googleapis.com/${_LOGS_BUCKET}/logs/functions-framework-cpp/${_TRIGGER_SOURCE}/${COMMIT_SHA}/${_DISTRO}-${_BUILD_NAME}/log-${BUILD_ID}.txt'
+  ]
+  volumes:
+    - name: 'home'
+      path: '/h'
+
+# Variables that can be overridden from the `gcloud builds ...` command using
+# the `--substitutions=_FOO=bar` flag.
+substitutions:
+  _DISTRO: 'fedora-34'
+  _BUILD_NAME: 'check-api'
+  _CACHE_BUCKET: '${PROJECT_ID}_cloudbuild'
+  _IMAGE: 'functions-framework-cpp/${_DISTRO}'
+  _TRIGGER_SOURCE: '${_PR_NUMBER:-main}'
+  _TRIGGER_TYPE: 'manual'
+  _LOGS_BUCKET: 'cloud-cpp-community-publiclogs'
+
+steps:
+  - name: 'gcr.io/kaniko-project/executor:v1.6.0-debug'
+    args: [
+        '--log-format=text',
+        '--context=dir:///workspace/ci',
+        '--dockerfile=ci/cloudbuild/dockerfiles/${_DISTRO}.Dockerfile',
+        '--cache=true',
+        '--destination=gcr.io/${PROJECT_ID}/${_IMAGE}:${BUILD_ID}',
+        '--push-retry=3',
+    ]
+    waitFor: ['-']
+    timeout: 1800s
+
+  # Pull the docker image. The step running 'ci/cloud/build.sh' would do this
+  # automatically, and also fill the log with about 2-3 pages of noise.
+  - name: 'gcr.io/${PROJECT_ID}/${_IMAGE}:${BUILD_ID}'
+    entrypoint: '/bin/true'
+
+  # Restores the homedir cache into /h in parallel with the previous step.
+  # Won't break the build if this step fails.
+  - name: 'gcr.io/cloud-builders/gsutil'
+    waitFor: [ '-' ]
+    entrypoint: 'bash'
+    dir: '/h'
+    args:
+      - '-c'
+      - >
+        /workspace/ci/cloudbuild/cache.sh restore
+        --bucket_url=gs://${_CACHE_BUCKET}/build-cache/functions-framework-cpp
+        --key=${_TRIGGER_SOURCE}/${_DISTRO}-${_BUILD_NAME}/h
+        --fallback_key=main/${_DISTRO}-${_BUILD_NAME}/h
+        || true
+
+  # Remove the images created by this build.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set +e
+        gcloud container images delete -q gcr.io/${PROJECT_ID}/${_IMAGE}:${BUILD_ID}
+        exit 0
+
+    # The previous step may not run if the build fails. Garbage collect any
+    # images created by this script, and/or similar scripts in this repository.
+    # The main idea is to remove images created over 4 weeks ago. Because the
+    # current builds create images with current timestamps, such images are not
+    # likely to be in use. This step should not break the build on error, and it
+    # can start running as soon as the build does.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    waitFor: [ '-' ]
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set +e
+        gcloud container images list-tags gcr.io/${PROJECT_ID}/${_IMAGE} \
+          --format='get(digest)' --filter='timestamp.datetime < -P4W' | \
+          xargs -r printf "gcr.io/${PROJECT_ID}/${_IMAGE}@%s\n" | \
+          xargs -r -P 4 -L 32 gcloud container images delete -q --force-delete-tags
+        exit 0
