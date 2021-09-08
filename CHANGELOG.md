@@ -1,8 +1,14 @@
 # Changelog
 
+## v1.1.0 - TBD
+
 ## v1.0.0 - 2021-09
 
+We are pleased to announce that the C++ Functions Framework is
+now generally available (GA). We think the code is ready for
+production use, and that the public APIs are stable.
 
+* fix: use correct version macro for pkg-config (#322)
 
 ## v0.6.0 - 2021-08
 
