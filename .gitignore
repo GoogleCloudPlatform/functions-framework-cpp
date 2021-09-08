@@ -17,3 +17,5 @@ cmake-build-*/
 .vscode/
 build/
 
+build-out/
+cmake-out/
