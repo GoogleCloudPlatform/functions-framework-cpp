@@ -35,11 +35,6 @@ https://cloud.google.com/run/docs/quickstarts/build-and-deploy
 [quickstart-cloud-run]: /examples/site/howto_deploy_to_cloud_run/README.md
 [quickstart-pubsub]: /examples/site/howto_deploy_cloud_event/README.md
 
-> :warning: This is not ready for production. Expect breaking changes.
-> We're sharing our progress with the developer community and appreciate
-> your feedback. Feel free to start a [discussion][github-discussions] to share
-> thoughts or open [issues][github-issue] for bugs.
-
 |Functions Framework|Unit Tests|Lint Test|Conformance Tests|
 |---|---|---|---|
 | [C++][github-repo] | [![][ff_cpp_unit_img]][ff_cpp_unit_link] | [![][ff_cpp_lint_img]][ff_cpp_lint_link] | [![][ff_cpp_conformance_img]][ff_cpp_conformance_link] |
@@ -100,8 +95,10 @@ See more demos under the [examples] directory.
 
 ## Versions and Status
 
-> :warning: This library is considered **experimental** its API and other
-> interfaces are subject to change without notice.
+This library is considered generally available. We do not expect breaking
+changes to its public APIs. See [below](#public-api-and-api-breaking-changes)
+for a description of what is included in the public API, and what parts of the
+library may change without notice.
 
 This library does **not** follow the [Semantic Versioning](https://semver.org)
 conventions.
@@ -137,7 +134,7 @@ will announce these changes prominently in our `CHANGELOG.md` file and in the
 affected release's notes. Nevertheless, though we take commercially reasonable
 efforts to prevent this, it is possible that backwards incompatible changes go
 undetected and, therefore, undocumented. We apologize if this is the case and
-welcome feedback or bug reports to rectify the problem.
+welcome feedback (or bug reports) to rectify the problem.
 
 By "API" we mean the C++ API exposed by public header files in this repo. We
 are not talking about the gRPC or REST APIs exposed by Google Cloud servers. We
@@ -152,10 +149,10 @@ We request that our customers adhere to the following guidelines to avoid
 accidentally depending on parts of the library we do not consider to be part of
 the public API and therefore may change (including removal) without notice:
 
-* You should only include headers matching the `google/cloud/framework/*.h`,
-  or `google/cloud/framework/mock/*.h` patterns.
+* You should only include headers matching the `google/cloud/functions/*.h`,
+  or `google/cloud/functions/mock/*.h` patterns.
 * You should **NOT** directly include headers in any subdirectories, such as
-  `google/cloud/framework/internal`.
+  `google/cloud/functions/internal`.
 * The files *included from* our public headers are **not part of our public
   API**. Depending on indirect includes may break your build in the future, as
   we may change a header "foo.h" to stop including "bar.h" if "foo.h" no longer
@@ -182,13 +179,13 @@ name of some object in the file system.
 
 As with the C++ API, we try to avoid breaking changes to these interface
 points. Sometimes such changes yield benefits to our customers, in the form of
-easier-to-understand what names go with with services, or more consistency
+easier-to-understand what names go with services, or more consistency
 across services. When these benefits warrant it, we will announce these changes
 prominently in our `CHANGELOG.md` file and in the affected release's notes.
 Nevertheless, though we take commercially reasonable efforts to prevent this,
 it is possible that backwards incompatible changes go undetected and,
 therefore, undocumented. We apologize if this is the case and welcome feedback
-or bug reports to rectify the problem.
+(or bug reports) to rectify the problem.
 
 ### Experimental Libraries
 
@@ -222,7 +219,7 @@ We try to provide stable names for the previously described mechanisms:
 * CMake targets loaded via `find_package()`,
 * pkg-config modules
 
-It is certainly possible to use the the library through other mechanisms,
+It is certainly possible to use the library through other mechanisms,
 and while these may work, we may accidentally break these from time to time.
 Examples of such, and the recommended alternatives, include:
 
