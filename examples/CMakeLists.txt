@@ -73,8 +73,11 @@ target_link_libraries(
     absl::strings
     fmt::fmt
     functions-framework-cpp::framework
+    Boost::filesystem
+    Boost::log
     google-cloud-cpp::bigtable
     google-cloud-cpp::pubsub
+    google-cloud-cpp::spanner
     google-cloud-cpp::storage)
 
 if (BUILD_TESTING)
