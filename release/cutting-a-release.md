@@ -5,7 +5,7 @@ developers in the `functions-framework-cpp` project.
 
 [GitHub repository]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
 [GitHub workflow]: https://github.com/googleapis/google-cloud-cpp/blob/main/doc/contributor/howto-guide-forks-and-pull-requests.md
-[#317]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/pull/317
+[#326]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/pull/326
 [#318]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/pull/318
 [GCP builpacks]: https://github.com/GoogleCloudPlatform/buildpacks/
 
@@ -36,7 +36,17 @@ git remote add upstream https://github.com/GoogleCloudPlatform/functions-framewo
 git fetch upstream
 ```
 
-## Updating CHANGELOG.md
+## Updating CHANGELOG.md and the API baseline
+
+We keep a dump of the ABI in the repository. One of our CI builds uses this baseline to detect API breaks (and yes, we
+dump the A**B**I, but try to detect only A**P**I breaks). Before each release we need to update this baseline to detect
+any future breaks. Running the CI build locally, on your workstation, updates the baseline:
+
+```sh
+ci/cloudbuild/build.sh --trigger check-api-pr
+```
+
+This will create a new baseline file in `ci/abi-dumps/functions_framework_cpp.expected.abi.dump.gz`.
 
 Update the local `CHANGELOG.md` file with a **user-level** description of the changes.  Do not think of this as a chore
 that could be replaced with a summary generated from GitHub. This is an opportunity to write a summary of the changes
@@ -46,11 +56,12 @@ you a start for this document, but the output is just a reminder, not the actual
 
 ```sh
 last_tag="$(git describe --tags --abbrev=0 upstream/main)"
-git log --no-merges --format="format:%s" "${last_tag}"..HEAD upstream/main
+git log --no-merges --format="format:%s" "${last_tag}"..HEAD upstream/main | grep -E -v '^(refactor|cleanup|ci)'
 ```
 
-Remember to leave room in the `CHANGELOG.md` for the changes related to the next release. Send a PR with the changes to
-`CHANGELOG.md` to update the main repository. An example from a previous release is [#317]
+Remember to leave room in the `CHANGELOG.md` for the changes related to the next release.
+
+Send a PR with the changes to `CHANGELOG.md` and the API baseline. An example from a previous release is [#326]
 
 ## Create the GitHub release
 
