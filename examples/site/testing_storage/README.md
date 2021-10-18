@@ -18,7 +18,7 @@ We will use this function throughout this guide:
 
 namespace gcf = ::google::cloud::functions;
 
-void hello_world_storage(gcf::CloudEvent event) {  // NOLINT
+void hello_world_storage(gcf::CloudEvent event) {
   if (event.data_content_type().value_or("") != "application/json") {
     BOOST_LOG_TRIVIAL(error) << "expected application/json data";
     return;

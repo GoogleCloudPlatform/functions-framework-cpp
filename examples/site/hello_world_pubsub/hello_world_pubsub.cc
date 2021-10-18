@@ -20,6 +20,8 @@
 
 namespace gcf = ::google::cloud::functions;
 
+// Though not used in this example, the event is passed by value to support
+// applications that move-out its data.
 void hello_world_pubsub(gcf::CloudEvent event) {  // NOLINT
   if (event.data_content_type().value_or("") != "application/json") {
     BOOST_LOG_TRIVIAL(error) << "expected application/json data";

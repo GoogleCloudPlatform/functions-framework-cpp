@@ -20,6 +20,8 @@
 
 namespace gcf = ::google::cloud::functions;
 
+// Though not used in this example, the request is passed by value to support
+// applications that move-out its data.
 gcf::HttpResponse hello_world_error(gcf::HttpRequest request) {  // NOLINT
   if (request.target() == "/return500") {
     // An error response code does NOT create entries in Error Reporting
