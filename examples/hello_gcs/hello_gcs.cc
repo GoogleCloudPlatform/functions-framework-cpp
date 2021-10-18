@@ -21,6 +21,8 @@ using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
 namespace gcs = ::google::cloud::storage;
 
+// Though not used in this example, the request is passed by value to support
+// applications that move-out its data.
 HttpResponse HelloGcs(HttpRequest request) {  // NOLINT
   auto error = [] {
     return HttpResponse{}.set_result(HttpResponse::kBadRequest);

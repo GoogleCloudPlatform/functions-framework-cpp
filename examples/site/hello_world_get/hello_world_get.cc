@@ -18,6 +18,8 @@
 
 namespace gcf = ::google::cloud::functions;
 
+// Though not used in this example, the request is passed by value to support
+// applications that move-out its data.
 gcf::HttpResponse hello_world_get(gcf::HttpRequest) {  // NOLINT
   return gcf::HttpResponse{}
       .set_header("content-type", "text/plain")

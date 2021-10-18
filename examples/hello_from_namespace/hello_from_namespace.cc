@@ -20,6 +20,8 @@ namespace hello_from_namespace {
 using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
 
+// Though not used in this example, the request is passed by value to support
+// applications that move-out its data.
 HttpResponse HelloWorld(HttpRequest) {  // NOLINT
   return HttpResponse{}
       .set_header("Content-Type", "text/plain")

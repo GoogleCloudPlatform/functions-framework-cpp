@@ -17,6 +17,8 @@
 
 using ::google::cloud::functions::CloudEvent;
 
+// Though not used in this function, `event` is passed by value to support
+// applications that move-out its data.
 void HelloCloudEvent(CloudEvent event) {  // NOLINT
   std::cout << "Received event"
             << "\n id: " << event.id()
