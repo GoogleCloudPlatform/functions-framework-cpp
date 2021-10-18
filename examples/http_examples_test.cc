@@ -22,6 +22,7 @@ gcf::HttpResponse HelloGcs(gcf::HttpRequest);
 gcf::HttpResponse HelloMultipleSources(gcf::HttpRequest);
 gcf::HttpResponse HelloWithThirdParty(gcf::HttpRequest request);
 gcf::HttpResponse HelloWorld(gcf::HttpRequest);
+gcf::HttpResponse HowtoUseLegacyCode(gcf::HttpRequest);
 
 namespace hello_from_namespace {
 gcf::HttpResponse HelloWorld(gcf::HttpRequest);
@@ -65,6 +66,11 @@ TEST(HttpExamplesTest, HelloFromNestedNamespace) {
   auto const actual =
       hello_from_nested_namespace::ns0::ns1::HelloWorld(gcf::HttpRequest{});
   EXPECT_THAT(actual.payload(), HasSubstr("C++ namespace"));
+}
+
+TEST(HttpExampleTest, HowtoUseLegacyCode) {
+  auto const actual = HowtoUseLegacyCode(gcf::HttpRequest{});
+  EXPECT_THAT(actual.payload(), HasSubstr("C++"));
 }
 
 }  // namespace

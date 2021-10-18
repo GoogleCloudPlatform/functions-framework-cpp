@@ -134,6 +134,7 @@ generic_example hello_gcs HelloGcs http
 generic_example hello_with_third_party HelloWithThirdParty http
 generic_example hello_world HelloWorld http
 generic_example hello_world ::HelloWorld http hello-world-rooted
+generic_example howto_use_legacy_code HowtoUseLegacyCode http howto-use-legacy-code
 
 cat <<_EOF_
   # Build the cloud site examples.

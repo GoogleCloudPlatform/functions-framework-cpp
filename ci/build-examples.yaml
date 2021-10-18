@@ -150,6 +150,16 @@ steps:
       'hello-world-rooted',
     ]
 
+  - name: 'pack'
+    waitFor: ['gcf-builder-ready']
+    id: 'howto-use-legacy-code'
+    args: ['build',
+      '--env', 'FUNCTION_SIGNATURE_TYPE=http',
+      '--env', 'TARGET_FUNCTION=HowtoUseLegacyCode',
+      '--path', 'examples/howto_use_legacy_code',
+      'howto-use-legacy-code',
+    ]
+
   # Build the cloud site examples.
   - name: 'pack'
     waitFor: ['gcf-builder-ready']

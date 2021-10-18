@@ -30,6 +30,8 @@ add_library(
     hello_multiple_sources/greeting.cc
     hello_multiple_sources/greeting.h
     hello_multiple_sources/hello_multiple_sources.cc
+    howto_use_legacy_code/howto_use_legacy_code.cc
+    howto_use_legacy_code/legacy/legacy.cc
     hello_with_third_party/hello_with_third_party.cc
     hello_world/hello_world.cc
     site/bearer_token/bearer_token.cc
