@@ -21,4 +21,4 @@ namespace legacy {
 std::string LegacyMessage();
 }  // namespace legacy
 
-#endif // FUNCTIONS_FRAMEWORK_CPP_EXAMPLES_HOWTO_USE_LEGACY_CODE_LEGACY_LEGACY_H
+#endif  // FUNCTIONS_FRAMEWORK_CPP_EXAMPLES_HOWTO_USE_LEGACY_CODE_LEGACY_LEGACY_H

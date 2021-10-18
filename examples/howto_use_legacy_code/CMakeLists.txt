@@ -24,22 +24,22 @@ find_package(Threads REQUIRED)
 find_package(functions_framework_cpp REQUIRED)
 
 include(ExternalProject)
-ExternalProject_Add(legacy
-        PREFIX "${CMAKE_CURRENT_BINARY_DIR}/legacy"
-        DEPENDS ""
-        SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/legacy"
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND "make" "CXX=${CMAKE_CXX_COMPILER}" "default"
-        BUILD_IN_SOURCE ON
-        BUILD_BYPRODUCTS "<SOURCE_DIR>/liblegacy.a"
-        INSTALL_COMMAND "")
+externalproject_add(
+    legacy
+    PREFIX "${CMAKE_CURRENT_BINARY_DIR}/legacy"
+    DEPENDS "" SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/legacy"
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND "make" "CXX=${CMAKE_CXX_COMPILER}" "default" BUILD_IN_SOURCE
+                  ON
+    BUILD_BYPRODUCTS "<SOURCE_DIR>/liblegacy.a"
+    INSTALL_COMMAND "")
 ExternalProject_Get_Property(legacy SOURCE_DIR)
 
 add_library(functions_framework_cpp_function howto_use_legacy_code.cc)
 add_dependencies(functions_framework_cpp_function legacy)
-target_link_libraries(functions_framework_cpp_function PUBLIC
-                      "${SOURCE_DIR}/liblegacy.a"
-                      functions-framework-cpp::framework)
+target_link_libraries(
+    functions_framework_cpp_function PUBLIC "${SOURCE_DIR}/liblegacy.a"
+                                            functions-framework-cpp::framework)
 
 add_executable(main main.cc)
 target_link_libraries(main PRIVATE functions_framework_cpp_function)
