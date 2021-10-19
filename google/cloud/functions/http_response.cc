@@ -16,11 +16,11 @@
 #include "google/cloud/functions/internal/wrap_response.h"
 
 namespace google::cloud::functions {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 HttpResponse::HttpResponse() : impl_(functions_internal::MakeHttpResponse()) {}
 
 HttpResponse::Impl::~Impl() = default;
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions

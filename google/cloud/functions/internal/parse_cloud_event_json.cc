@@ -19,7 +19,7 @@
 #include <algorithm>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 namespace {
 
 functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
@@ -84,5 +84,5 @@ std::vector<functions::CloudEvent> ParseCloudEventJsonBatch(
   return events;
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal

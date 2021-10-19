@@ -16,7 +16,7 @@
 #include <sstream>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 /**
  * The macros for determining the compiler ID are taken from:
@@ -89,5 +89,5 @@ std::string LanguageVersion() {
   }
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal

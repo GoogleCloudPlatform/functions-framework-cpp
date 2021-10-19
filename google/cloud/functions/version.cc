@@ -17,7 +17,7 @@
 #include <sstream>
 
 namespace google::cloud::functions {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 std::string VersionString() {
   static std::string const kVersion = [] {
@@ -33,5 +33,5 @@ std::string VersionString() {
   return kVersion;
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions

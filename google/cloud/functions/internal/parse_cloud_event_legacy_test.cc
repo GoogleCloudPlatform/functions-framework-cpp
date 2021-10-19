@@ -18,7 +18,7 @@
 #include <nlohmann/json.hpp>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 namespace {
 
 // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
@@ -591,5 +591,5 @@ TEST(ParseCloudEventLegacy, MapFirestore) {
 }
 
 }  // namespace
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal

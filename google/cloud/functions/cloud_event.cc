@@ -16,7 +16,7 @@
 #include <absl/time/time.h>  // NOLINT(modernize-deprecated-headers)
 
 namespace google::cloud::functions {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 void CloudEvent::set_time(std::string const& timestamp) {
   std::string err;
@@ -27,5 +27,5 @@ void CloudEvent::set_time(std::string const& timestamp) {
   set_time(absl::ToChronoTime(time));
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions

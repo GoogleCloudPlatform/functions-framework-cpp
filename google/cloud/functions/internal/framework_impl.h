@@ -20,7 +20,7 @@
 #include <functional>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 /// Implement functions::Run(), with additional helpers for testing.
 int RunForTest(int argc, char const* const argv[],
@@ -34,7 +34,7 @@ int RunForTest(int argc, char const* const argv[],
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port);
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_FRAMEWORK_IMPL_H

@@ -19,12 +19,12 @@
 #include "google/cloud/functions/version.h"
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 /// Parse @p e as a Cloud Storage event if possible, otherwise return @p e.
 functions::CloudEvent ParseCloudEventStorage(functions::CloudEvent e);
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_PARSE_CLOUD_EVENT_STORAGE_H

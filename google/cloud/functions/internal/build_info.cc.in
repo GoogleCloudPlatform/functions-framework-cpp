@@ -17,7 +17,7 @@
 #include <algorithm>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 std::string Compiler() {
   return CompilerId() + " " + CompilerVersion();
@@ -36,5 +36,5 @@ std::string BuildMetadata() {
   return kBuildMetadata;
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal
