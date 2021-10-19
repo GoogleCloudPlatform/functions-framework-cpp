@@ -15,12 +15,12 @@
 #include "google/cloud/functions/internal/wrap_response.h"
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 /// Wrap a Boost.Beast request into a functions framework HTTP request.
 std::shared_ptr<functions::HttpResponse::Impl> MakeHttpResponse() {
   return std::make_shared<WrapResponseImpl>();
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal

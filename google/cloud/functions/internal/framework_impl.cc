@@ -28,7 +28,7 @@
 #include <thread>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 namespace {
 namespace be = boost::beast;
 namespace asio = boost::asio;
@@ -153,11 +153,11 @@ int RunForTest(int argc, char const* const argv[],
   return RunForTestImpl(argc, argv, std::move(handler), shutdown, actual_port);
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal
 
 namespace google::cloud::functions {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept {
   return functions_internal::RunImpl(argc, argv, std::move(handler));
@@ -168,5 +168,5 @@ int Run(int argc, char const* const argv[],
   return functions_internal::RunImpl(argc, argv, std::move(handler));
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions

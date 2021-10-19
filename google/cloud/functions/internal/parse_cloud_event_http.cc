@@ -18,7 +18,7 @@
 #include "google/cloud/functions/internal/parse_cloud_event_storage.h"
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 bool HasHeader(BeastRequest const& request, std::string_view header) {
   return request.count(header) != 0;
@@ -85,5 +85,5 @@ std::vector<functions::CloudEvent> ParseCloudEventHttp(
   return {ParseCloudEventStorage(ParseCloudEventHttpBinary(request))};
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal

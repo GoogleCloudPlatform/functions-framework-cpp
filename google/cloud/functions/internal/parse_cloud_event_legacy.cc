@@ -19,7 +19,7 @@
 #include <utility>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 namespace {
 std::string GetNestedKey(nlohmann::json const& json,
                          std::deque<std::string> path) {
@@ -289,5 +289,5 @@ functions::CloudEvent ParseCloudEventLegacy(std::string_view json_string) {
   return ParseCloudEventLegacy(json);
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal

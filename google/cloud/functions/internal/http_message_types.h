@@ -19,7 +19,7 @@
 #include <boost/beast/http.hpp>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 using BeastRequest =
     boost::beast::http::request<boost::beast::http::string_body>;
@@ -27,7 +27,7 @@ using BeastRequest =
 using BeastResponse =
     boost::beast::http::response<boost::beast::http::string_body>;
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_HTTP_MESSAGE_TYPES_H

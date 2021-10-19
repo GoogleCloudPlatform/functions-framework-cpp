@@ -18,7 +18,7 @@
 #include "google/cloud/functions/version.h"
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 /**
  * Returns the compiler ID.
  *
@@ -39,7 +39,7 @@ std::string CompilerVersion();
  */
 std::string LanguageVersion();
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_COMPILER_INFO_H

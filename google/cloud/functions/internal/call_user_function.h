@@ -19,7 +19,7 @@
 #include "google/cloud/functions/user_functions.h"
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 BeastResponse CallUserFunction(functions::UserHttpFunction const& function,
                                BeastRequest request);
@@ -28,7 +28,7 @@ BeastResponse CallUserFunction(
     functions::UserCloudEventFunction const& function,
     BeastRequest const& request);
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_CALL_USER_FUNCTION_H

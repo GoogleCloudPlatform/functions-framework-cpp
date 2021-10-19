@@ -20,7 +20,7 @@
 #include <iterator>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 namespace {
 
 using ::testing::ElementsAre;
@@ -261,5 +261,5 @@ TEST(ParseCloudEventHttp, BinaryWithUnknownContentType) {
 }
 
 }  // namespace
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal

@@ -21,7 +21,7 @@
 #include <vector>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 /// Parse @p json_string as a Cloud Event
 functions::CloudEvent ParseCloudEventJson(std::string_view json_string);
@@ -30,7 +30,7 @@ functions::CloudEvent ParseCloudEventJson(std::string_view json_string);
 std::vector<functions::CloudEvent> ParseCloudEventJsonBatch(
     std::string_view json_string);
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_PARSE_CLOUD_EVENT_JSON_H

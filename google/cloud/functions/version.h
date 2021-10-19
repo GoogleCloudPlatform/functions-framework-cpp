@@ -24,12 +24,13 @@
 #define FUNCTIONS_FRAMEWORK_CPP_NS                                     \
   FUNCTIONS_FRAMEWORK_CPP_VEVAL(FUNCTIONS_FRAMEWORK_CPP_VERSION_MAJOR, \
                                 FUNCTIONS_FRAMEWORK_CPP_VERSION_MINOR)
+#define FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN \
+  inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+#define FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END \
+  } /* namespace FUNCTIONS_FRAMEWORK_CPP_NS */
 
 namespace google::cloud::functions {
-/**
- * The C++ Functions Framework inlined, versioned namespace.
- */
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 /// The C++ Functions Framework major version.
 int constexpr VersionMajor() { return FUNCTIONS_FRAMEWORK_CPP_VERSION_MAJOR; }
 
@@ -58,7 +59,7 @@ int constexpr Version() {
 /// The version as a string, in MAJOR.MINOR.PATCH+gitrev format.
 std::string VersionString();
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_VERSION_H

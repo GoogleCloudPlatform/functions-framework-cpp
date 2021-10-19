@@ -21,7 +21,7 @@
 #include <string>
 
 namespace google::cloud::functions {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 /**
  * Represents a Cloud Event.
@@ -95,7 +95,7 @@ class CloudEvent {
   std::optional<std::string> data_;
 };
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_CLOUD_EVENT_H

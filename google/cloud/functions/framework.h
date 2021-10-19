@@ -20,7 +20,7 @@
 #include <functional>
 
 namespace google::cloud::functions {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 /**
  * Run the given function, invoking it to handle HTTP requests.
@@ -83,7 +83,7 @@ int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept;
 int Run(int argc, char const* const argv[],
         UserCloudEventFunction handler) noexcept;
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_FRAMEWORK_H

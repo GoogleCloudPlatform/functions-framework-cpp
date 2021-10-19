@@ -19,7 +19,7 @@
 #include <stdexcept>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 namespace po = boost::program_options;
 
 auto constexpr kDefaultPort = 8080;
@@ -73,5 +73,5 @@ po::variables_map ParseOptions(int argc, char const* const argv[]) {
   throw std::invalid_argument(std::move(os).str());
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal

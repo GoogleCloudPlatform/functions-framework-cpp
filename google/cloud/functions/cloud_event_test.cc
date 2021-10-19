@@ -17,7 +17,7 @@
 #include <gmock/gmock.h>
 
 namespace google::cloud::functions {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 namespace {
 
 TEST(CloudEventTest, Basic) {
@@ -116,5 +116,5 @@ TEST(CloudEventTest, DataMove) {
 }
 
 }  // namespace
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions

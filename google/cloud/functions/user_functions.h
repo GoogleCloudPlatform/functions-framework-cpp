@@ -22,14 +22,14 @@
 #include <functional>
 
 namespace google::cloud::functions {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 using UserHttpFunction =
     std::function<functions::HttpResponse(functions::HttpRequest)>;
 
 using UserCloudEventFunction = std::function<void(functions::CloudEvent)>;
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions
 
 #endif  // FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_USER_FUNCTIONS_H

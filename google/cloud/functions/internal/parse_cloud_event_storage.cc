@@ -17,7 +17,7 @@
 #include <nlohmann/json.hpp>
 
 namespace google::cloud::functions_internal {
-inline namespace FUNCTIONS_FRAMEWORK_CPP_NS {
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 functions::CloudEvent ParseCloudEventStorage(functions::CloudEvent e) {
   if (e.type() != "google.cloud.pubsub.topic.v1.messagePublished") return e;
@@ -64,5 +64,5 @@ functions::CloudEvent ParseCloudEventStorage(functions::CloudEvent e) {
   return event;
 }
 
-}  // namespace FUNCTIONS_FRAMEWORK_CPP_NS
+FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 }  // namespace google::cloud::functions_internal
