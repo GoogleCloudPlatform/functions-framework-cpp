@@ -34,7 +34,7 @@ steps:
   # Workaround a kaniko bug using the "edge" builder:
   #     https://github.com/GoogleContainerTools/kaniko/issues/1058
   # Create the docker images for the buildpacks builder.
-  - name: 'gcr.io/kaniko-project/executor:edge'
+  - name: 'gcr.io/kaniko-project/executor:v1.6.0-debug'
     args: [
         "--context=dir:///workspace/",
         "--dockerfile=build_scripts/Dockerfile",
@@ -48,7 +48,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['pull', 'gcr.io/${PROJECT_ID}/ci/run-image:${BUILD_ID}']
 
-  - name: 'gcr.io/kaniko-project/executor:edge'
+  - name: 'gcr.io/kaniko-project/executor:v1.6.0-debug'
     args: [
         "--context=dir:///workspace/",
         "--dockerfile=build_scripts/Dockerfile",
