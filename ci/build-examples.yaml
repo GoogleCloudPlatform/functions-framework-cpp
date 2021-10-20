@@ -13,8 +13,6 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'pack', '-f', 'build_scripts/pack.Dockerfile', 'build_scripts']
 
-  # Workaround a kaniko bug using the "edge" builder:
-  #     https://github.com/GoogleContainerTools/kaniko/issues/1058
   # Create the docker images for the buildpacks builder.
   - name: 'gcr.io/kaniko-project/executor:v1.6.0-debug'
     args: [
