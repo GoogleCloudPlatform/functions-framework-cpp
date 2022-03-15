@@ -103,7 +103,7 @@ auto MakeTestMapFunction() {
     return functions::HttpResponse{}.set_payload("a");
   };
   auto b = [](functions::HttpRequest const& /*r*/) {
-    return functions::HttpResponse{}.set_payload("c");
+    return functions::HttpResponse{}.set_payload("b");
   };
   auto c = [](functions::CloudEvent const& /*e*/) {
     throw std::runtime_error("testing");
@@ -120,6 +120,10 @@ TEST(FunctionImpl, MapNormal) {
   auto handler = FunctionImpl::GetImpl(function)->GetHandler("a");
   auto response = handler(BeastRequest());
   EXPECT_EQ(response.body(), "a");
+
+  handler = FunctionImpl::GetImpl(function)->GetHandler("b");
+  response = handler(BeastRequest());
+  EXPECT_EQ(response.body(), "b");
 }
 
 TEST(FunctionImpl, MapThrow) {
@@ -129,7 +133,7 @@ TEST(FunctionImpl, MapThrow) {
   EXPECT_EQ(response.result(), http::status::internal_server_error);
 }
 
-TEST(FunctionImpl, MapInvalid) {
+TEST(FunctionImpl, MapInvalidName) {
   auto function = MakeTestMapFunction();
   EXPECT_THROW((void)FunctionImpl::GetImpl(function)->GetHandler("invalid"),
                std::exception);
