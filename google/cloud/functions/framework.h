@@ -26,7 +26,7 @@ FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 /**
  * Runs function wrapped by @p handler.
  *
- * Starts a HTTP server at the address and listening endpoint described by
+ * Starts an HTTP server at the address and listening endpoint described by
  * @p argv, invoking @p handler to handle any HTTP request.
  *
  * If @p handler wraps a function with the Cloud Event signature, then the
@@ -34,11 +34,11 @@ FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
  * binding specification][cloud-events-spec].
  *
  * @note
- * When deploying code to Google Cloud Functions applications should **not** use
- * this function directly. The buildpack will automatically create a `main()`
- * and invoke `Run()` with the correct parameters. We recommend that application
- * developers use this function only for local development and integration
- * tests.
+ * When deploying code to Google Cloud Functions applications should **not**
+ * call this function directly. The buildpack will automatically create a
+ * `main()` and invoke `Run()` with the correct parameters. We recommend that
+ * application developers use this function only for local development and
+ * integration tests.
  *
  * @par Example
  * @code
@@ -64,14 +64,15 @@ int Run(int argc, char const* const argv[], Function const& handler) noexcept;
  *
  * @deprecated Prefer using the overload consuming a `Function` object.
  *
- * Starts a HTTP server at the address and listening endpoint described by
+ * Starts an HTTP server at the address and listening endpoint described by
  * @p argv, invoking @p handler to handle any HTTP request.
  *
- * When deploying code to Google Cloud Functions applications should **not** use
- * this function directly. The buildpack will automatically create a `main()`
- * and invoke `Run()` with the correct parameters. We recommend that application
- * developers use this function only for local development and integration
- * tests.
+ * @note
+ * When deploying code to Google Cloud Functions applications should **not**
+ * call this function directly. The buildpack will automatically create a
+ * `main()` and invoke `Run()` with the correct parameters. We recommend that
+ * application developers use this function only for local development and
+ * integration tests.
  *
  * @par Example
  * @code
@@ -94,15 +95,16 @@ int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept;
  *
  * @deprecated Prefer using the overload consuming a `Function` object.
  *
- * Starts a HTTP server at the address and listening endpoint described by
+ * Starts an HTTP server at the address and listening endpoint described by
  * @p argv, invoking @p handler to handle any HTTP request which *MUST* conform
  * to the Cloud Events [HTTP protocol binding][cloud-events-spec].
  *
- * When deploying code to Google Cloud Functions applications should **not** use
- * this function directly. The buildpack will automatically create a `main()`
- * and invoke `Run()` with the correct parameters. We recommend that application
- * developers use this function only for local development and integration
- * tests.
+ * @note
+ * When deploying code to Google Cloud Functions applications should **not**
+ * call this function directly. The buildpack will automatically create a
+ * `main()` and invoke `Run()` with the correct parameters. We recommend that
+ * application developers use this function only for local development and
+ * integration tests.
  *
  * @par Example
  * @code

@@ -26,7 +26,7 @@
 namespace gcf = ::google::cloud::functions;
 
 namespace {
-/// A helper function to perform a HTTP GET request.
+/// A helper function to perform an HTTP GET request.
 gcf::HttpResponse HttpGet(std::string const& url,
                           std::string const& authorization_header);
 }  // namespace

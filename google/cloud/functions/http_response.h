@@ -31,9 +31,9 @@ namespace google::cloud::functions {
 FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 /**
- * Represents a HTTP request.
+ * Represents an HTTP response.
  *
- * Functions to handle HTTP requests receive an object of this class.
+ * Functions to handle HTTP requests return an object of this type.
  */
 class HttpResponse {
  public:
