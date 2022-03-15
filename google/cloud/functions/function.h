@@ -36,7 +36,7 @@ FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
  * `Function` objects from application defined functions.
  *
  * When using the functions framework for local development applications can
- * create a HTTP server using:
+ * create an HTTP server using:
  *
  * @code
  * namespace gcf = google::cloud::functions;
@@ -51,10 +51,10 @@ FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
  *
  * @code
  * namespace my_namespace {
- * gcf::HttpResponse Handler(gcf::Request const&) { ... code here ... }
+ * gcf::HttpResponse MyHandler(gcf::Request const&) { ... code here ... }
  *
  * // Use by setting GOOGLE_FUNCTION_TARGET to "my_namespace::MyFunction"
- * auto MyFunction() { return gcf::MakeFunction(Handler); }
+ * auto MyFunction() { return gcf::MakeFunction(MyHandler); }
  * } //
  * @endcode
  */
@@ -76,7 +76,7 @@ class Function {
   std::shared_ptr<functions_internal::FunctionImpl> impl_;
 };
 
-/// Wraps a `http` handler.
+/// Wraps an `http` handler.
 Function MakeFunction(UserHttpFunction function);
 
 /// Wraps a `cloud event` handler.
