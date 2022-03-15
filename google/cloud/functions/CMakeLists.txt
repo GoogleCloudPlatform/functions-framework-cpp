@@ -30,6 +30,8 @@ add_library(
     cloud_event.cc
     cloud_event.h
     framework.h
+    function.cc
+    function.h
     http_request.h
     http_response.cc
     http_response.h
@@ -42,6 +44,8 @@ add_library(
     internal/compiler_info.h
     internal/framework_impl.cc
     internal/framework_impl.h
+    internal/function_impl.cc
+    internal/function_impl.h
     internal/http_message_types.h
     internal/parse_cloud_event_http.cc
     internal/parse_cloud_event_http.h
@@ -97,6 +101,7 @@ if (BUILD_TESTING)
         internal/call_user_function_test.cc
         internal/compiler_info_test.cc
         internal/framework_impl_test.cc
+        internal/function_impl_test.cc
         internal/parse_cloud_event_http_test.cc
         internal/parse_cloud_event_json_test.cc
         internal/parse_cloud_event_legacy_test.cc
