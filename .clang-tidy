@@ -52,6 +52,7 @@ Checks: >
   -google-readability-braces-around-statements,
   -google-runtime-references,
   -readability-braces-around-statements,
+  -readability-identifier-length,
   -readability-redundant-declaration,
   -modernize-use-trailing-return-type,
   -modernize-return-braced-init-list,
