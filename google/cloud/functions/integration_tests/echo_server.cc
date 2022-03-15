@@ -71,6 +71,6 @@ HttpResponse EchoServer(HttpRequest const& request) {
 
 int main(int argc, char* argv[]) {
   return google::cloud::functions_internal::RunForTest(
-      argc, argv, EchoServer, [] { return shutdown_server.load(); },
-      [](int /*port*/) {});
+      argc, argv, google::cloud::functions::MakeFunction(EchoServer),
+      [] { return shutdown_server.load(); }, [](int /*port*/) {});
 }

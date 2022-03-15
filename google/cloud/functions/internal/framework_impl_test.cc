@@ -110,7 +110,8 @@ TEST(FrameworkTest, Http) {
   auto run = [&](int argc, char const* const argv[],
                  functions::UserHttpFunction f) {
     return RunForTest(
-        argc, argv, std::move(f), [&shutdown]() { return shutdown.load(); },
+        argc, argv, functions::MakeFunction(std::move(f)),
+        [&shutdown]() { return shutdown.load(); },
         [&port_p](int port) mutable { port_p.set_value(port); });
   };
   auto done = std::async(std::launch::async, run, static_cast<int>(kTestArgc),
@@ -143,7 +144,8 @@ TEST(FrameworkTest, CloudEvent) {
   auto run = [&](int argc, char const* const argv[],
                  functions::UserCloudEventFunction f) {
     return RunForTest(
-        argc, argv, std::move(f), [&shutdown]() { return shutdown.load(); },
+        argc, argv, functions::MakeFunction(std::move(f)),
+        [&shutdown]() { return shutdown.load(); },
         [&port_p](int port) mutable { port_p.set_value(port); });
   };
   auto done = std::async(std::launch::async, run, static_cast<int>(kTestArgc),

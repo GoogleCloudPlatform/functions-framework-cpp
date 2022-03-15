@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "google/cloud/functions/internal/framework_impl.h"
-#include "google/cloud/functions/internal/call_user_function.h"
+#include "google/cloud/functions/internal/function_impl.h"
 #include "google/cloud/functions/internal/parse_options.h"
 #include "google/cloud/functions/version.h"
 #include <boost/asio/ip/tcp.hpp>
@@ -34,12 +34,12 @@ namespace be = boost::beast;
 namespace asio = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
-template <typename UserFunction>
-void HandleSession(tcp::socket socket, UserFunction const& user_function) {
+void HandleSession(tcp::socket socket, Handler const& handler) {
   auto report_error = [](be::error_code ec, char const* what) {
     // TODO(#35) - maybe replace with Boost.Log
     std::cerr << what << ": " << ec.message() << "\n";
   };
+
   be::error_code ec;
   for (;;) {
     be::flat_buffer buffer;
@@ -49,7 +49,7 @@ void HandleSession(tcp::socket socket, UserFunction const& user_function) {
     if (ec == be::http::error::end_of_stream) break;
     if (ec) return report_error(ec, "read");
     auto const keep_alive = request.keep_alive();
-    auto response = CallUserFunction(user_function, std::move(request));
+    auto response = handler(std::move(request));
     // Flush any buffered output, as the application may be shutdown immediately
     // after the HTTP response is sent.
     std::cout << std::flush;
@@ -65,8 +65,8 @@ void HandleSession(tcp::socket socket, UserFunction const& user_function) {
   socket.shutdown(tcp::socket::shutdown_send, ec);
 }
 
-template <typename UserFunction>
-int RunForTestImpl(int argc, char const* const argv[], UserFunction&& function,
+int RunForTestImpl(int argc, char const* const argv[],
+                   functions::Function const& function,
                    std::function<bool()> const& shutdown,
                    std::function<void(int)> const& actual_port) {
   auto vm = ParseOptions(argc, argv);
@@ -74,16 +74,18 @@ int RunForTestImpl(int argc, char const* const argv[], UserFunction&& function,
 
   auto address = asio::ip::make_address(vm["address"].as<std::string>());
   auto port = vm["port"].as<int>();
+  auto target = vm["target"].as<std::string>();
 
   asio::io_context ioc{1};
   tcp::acceptor acceptor{ioc, {address, static_cast<std::uint16_t>(port)}};
   acceptor.listen(boost::asio::socket_base::max_connections);
   actual_port(acceptor.local_endpoint().port());
 
-  auto handle_session =
-      [h = std::forward<UserFunction>(function)](tcp::socket socket) {
-        HandleSession(std::move(socket), h);
-      };
+  auto handler = FunctionImpl::GetImpl(function)->GetHandler(target);
+
+  auto handle_session = [h = std::move(handler)](tcp::socket socket) {
+    HandleSession(std::move(socket), h);
+  };
 
   auto cleanup = [](std::vector<std::future<void>> sessions, auto wait) {
     std::vector<std::future<void>> running;
@@ -124,11 +126,10 @@ int RunForTestImpl(int argc, char const* const argv[], UserFunction&& function,
   return 0;
 }
 
-template <typename UserFunction>
-int RunImpl(int argc, char const* const argv[], UserFunction&& f) noexcept try {
+int RunImpl(int argc, char const* const argv[],
+            functions::Function const& f) noexcept try {
   return RunForTestImpl(
-      argc, argv, std::forward<UserFunction>(f), [] { return false; },
-      [](int /*unused*/) {});
+      argc, argv, f, [] { return false; }, [](int /*unused*/) {});
 } catch (std::exception const& ex) {
   std::cerr << "Standard C++ exception thrown " << ex.what() << "\n";
   return 1;
@@ -140,17 +141,10 @@ int RunImpl(int argc, char const* const argv[], UserFunction&& f) noexcept try {
 }  // namespace
 
 int RunForTest(int argc, char const* const argv[],
-               functions::UserHttpFunction handler,
+               functions::Function const& handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port) {
-  return RunForTestImpl(argc, argv, std::move(handler), shutdown, actual_port);
-}
-
-int RunForTest(int argc, char const* const argv[],
-               functions::UserCloudEventFunction handler,
-               std::function<bool()> const& shutdown,
-               std::function<void(int)> const& actual_port) {
-  return RunForTestImpl(argc, argv, std::move(handler), shutdown, actual_port);
+  return RunForTestImpl(argc, argv, handler, shutdown, actual_port);
 }
 
 FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
@@ -159,13 +153,19 @@ FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
 namespace google::cloud::functions {
 FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
+int Run(int argc, char const* const argv[], Function const& handler) noexcept {
+  return functions_internal::RunImpl(argc, argv, handler);
+}
+
 int Run(int argc, char const* const argv[], UserHttpFunction handler) noexcept {
-  return functions_internal::RunImpl(argc, argv, std::move(handler));
+  return functions_internal::RunImpl(
+      argc, argv, functions::MakeFunction(std::move(handler)));
 }
 
 int Run(int argc, char const* const argv[],
         UserCloudEventFunction handler) noexcept {
-  return functions_internal::RunImpl(argc, argv, std::move(handler));
+  return functions_internal::RunImpl(
+      argc, argv, functions::MakeFunction(std::move(handler)));
 }
 
 FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_END
