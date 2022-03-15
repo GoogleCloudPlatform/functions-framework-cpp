@@ -38,6 +38,6 @@ void CloudEventHandler(CloudEvent const& event) {
 
 int main(int argc, char* argv[]) {
   return google::cloud::functions_internal::RunForTest(
-      argc, argv, CloudEventHandler, [] { return shutdown_server.load(); },
-      [](int /*port*/) {});
+      argc, argv, google::cloud::functions::MakeFunction(CloudEventHandler),
+      [] { return shutdown_server.load(); }, [](int /*port*/) {});
 }

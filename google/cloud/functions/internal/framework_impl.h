@@ -15,6 +15,7 @@
 #ifndef FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_FRAMEWORK_IMPL_H
 #define FUNCTIONS_FRAMEWORK_CPP_GOOGLE_CLOUD_FUNCTIONS_INTERNAL_FRAMEWORK_IMPL_H
 
+#include "google/cloud/functions/function.h"
 #include "google/cloud/functions/user_functions.h"
 #include "google/cloud/functions/version.h"
 #include <functional>
@@ -24,13 +25,7 @@ FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
 /// Implement functions::Run(), with additional helpers for testing.
 int RunForTest(int argc, char const* const argv[],
-               functions::UserHttpFunction handler,
-               std::function<bool()> const& shutdown,
-               std::function<void(int)> const& actual_port);
-
-/// Implement functions::Run(), with additional helpers for testing.
-int RunForTest(int argc, char const* const argv[],
-               functions::UserCloudEventFunction handler,
+               functions::Function const& handler,
                std::function<bool()> const& shutdown,
                std::function<void(int)> const& actual_port);
 
