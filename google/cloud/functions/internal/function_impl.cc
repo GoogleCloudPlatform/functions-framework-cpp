@@ -39,6 +39,11 @@ BaseFunctionImpl::BaseFunctionImpl(functions::UserCloudEventFunction function)
         return CallUserFunction(fun, request);
       }) {}
 
+[[nodiscard]] Handler BaseFunctionImpl::GetHandler(
+    std::string_view /*target*/) const {
+  return handler_;
+}
+
 MapFunctionImpl::MapFunctionImpl(
     std::map<std::string, functions::Function> mapping)
     : mapping_(std::move(mapping)) {}

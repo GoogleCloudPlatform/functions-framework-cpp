@@ -43,13 +43,11 @@ class FunctionImpl {
 
 class BaseFunctionImpl : public FunctionImpl {
  public:
-  explicit BaseFunctionImpl(functions::UserHttpFunction handler);
-  explicit BaseFunctionImpl(functions::UserCloudEventFunction handler);
+  explicit BaseFunctionImpl(functions::UserHttpFunction function);
+  explicit BaseFunctionImpl(functions::UserCloudEventFunction function);
   ~BaseFunctionImpl() override = default;
 
-  [[nodiscard]] Handler GetHandler(std::string_view /*target*/) const override {
-    return handler_;
-  }
+  [[nodiscard]] Handler GetHandler(std::string_view /*target*/) const override;
 
  private:
   Handler handler_;

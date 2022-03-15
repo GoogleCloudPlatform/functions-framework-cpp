@@ -72,7 +72,7 @@ class Function {
  private:
   friend class functions_internal::FunctionImpl;
 
-  explicit Function(std::shared_ptr<functions_internal::FunctionImpl>);
+  explicit Function(std::shared_ptr<functions_internal::FunctionImpl> impl);
   std::shared_ptr<functions_internal::FunctionImpl> impl_;
 };
 
