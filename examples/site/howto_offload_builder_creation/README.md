@@ -98,8 +98,8 @@ Build a Docker image from your function using this buildpack:
 ```shell
 pack build \
     --builder gcr.io/${GOOGLE_CLOUD_PROJECT}/functions-framework-cpp/builder:bionic \
-    --env FUNCTION_SIGNATURE_TYPE=http \
-    --env TARGET_FUNCTION=hello_world_http \
+    --env GOOGLE_FUNCTION_SIGNATURE_TYPE=http \
+    --env GOOGLE_FUNCTION_TARGET=hello_world_http \
     --path examples/site/hello_world_http \
     gcf-cpp-hello-world-http
 ```
@@ -116,8 +116,8 @@ Then the command becomes:
 
 ```shell
 pack build \
-    --env FUNCTION_SIGNATURE_TYPE=http \
-    --env TARGET_FUNCTION=hello_world_http \
+    --env GOOGLE_FUNCTION_SIGNATURE_TYPE=http \
+    --env GOOGLE_FUNCTION_TARGET=hello_world_http \
     --path examples/site/hello_world_http \
     gcf-cpp-hello-world-http
 ```

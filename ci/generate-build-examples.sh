@@ -92,8 +92,8 @@ generic_example() {
     waitFor: ['gcf-builder-ready']
     id: '${container}'
     args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=${signature}',
-      '--env', 'TARGET_FUNCTION=${function}',
+      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',
+      '--env', 'GOOGLE_FUNCTION_TARGET=${function}',
       '--path', 'examples/${example}',
       '${container}',
     ]
@@ -115,8 +115,8 @@ site_example() {
     waitFor: ['gcf-builder-ready']
     id: '${container}'
     args: ['build',
-      '--env', 'FUNCTION_SIGNATURE_TYPE=${signature}',
-      '--env', 'TARGET_FUNCTION=${function}',
+      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',
+      '--env', 'GOOGLE_FUNCTION_TARGET=${function}',
       '--path', '${example}',
       '${container}',
     ]

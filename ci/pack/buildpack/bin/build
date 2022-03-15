@@ -233,7 +233,7 @@ generate_main() {
 }
 
 generate_main \
-    "${TARGET_FUNCTION}" "${FUNCTION_SIGNATURE_TYPE:-http}" >"${layers}/source/main.cc"
+    "${GOOGLE_FUNCTION_TARGET}" "${GOOGLE_FUNCTION_SIGNATURE_TYPE:-http}" >"${layers}/source/main.cc"
 
 echo "-----> Configure Function"
 cat >"${layers}/binary.toml" <<_EOF_

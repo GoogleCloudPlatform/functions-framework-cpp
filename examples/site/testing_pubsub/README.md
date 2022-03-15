@@ -68,8 +68,8 @@ This guide assumes that you have:
 ```shell
 pack build \
     --builder gcf-cpp-builder:bionic \
-    --env "FUNCTION_SIGNATURE_TYPE=cloudevent" \
-    --env "TARGET_FUNCTION=hello_world_pubsub" \
+    --env "GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent" \
+    --env "GOOGLE_FUNCTION_TARGET=hello_world_pubsub" \
     --path "examples/site/hello_world_pubsub" \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-pubsub"
 ```

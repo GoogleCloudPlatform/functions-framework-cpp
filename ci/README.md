@@ -122,17 +122,17 @@ Create containers for the Hello World examples:
 
 ```sh
 pack build -v \
-    --env FUNCTION_SIGNATURE_TYPE=cloudevent \
-    --env TARGET_FUNCTION=hello_world_pubsub \
+    --env GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent \
+    --env GOOGLE_FUNCTION_TARGET=hello_world_pubsub \
     --path examples/site/hello_world_pubsub \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-pubsub"
 pack build -v \
-    --env FUNCTION_SIGNATURE_TYPE=cloudevent \
-    --env TARGET_FUNCTION=hello_world_storage \
+    --env GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent \
+    --env GOOGLE_FUNCTION_TARGET=hello_world_storage \
     --path examples/site/hello_world_storage \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-storage"
 pack build -v \
-    --env TARGET_FUNCTION=hello_world_http \
+    --env GOOGLE_FUNCTION_TARGET=hello_world_http \
     --path examples/site/hello_world_http \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-http"
 ```
@@ -301,7 +301,7 @@ Build & deploy the Bigtable tutorial function:
 
 ```shell
 pack build -v \
-    --env TARGET_FUNCTION=tutorial_cloud_bigtable \
+    --env GOOGLE_FUNCTION_TARGET=tutorial_cloud_bigtable \
     --path examples/site/tutorial_cloud_bigtable \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-bigtable"
 docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-bigtable"
@@ -345,7 +345,7 @@ To populate the database, use the spanner examples from the C++ client library:
 
 ```shell
 pack build -v \
-    --env TARGET_FUNCTION=tutorial_cloud_spanner \
+    --env GOOGLE_FUNCTION_TARGET=tutorial_cloud_spanner \
     --path examples/site/tutorial_cloud_spanner \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-spanner"
 docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-spanner"
