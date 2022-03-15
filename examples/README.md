@@ -41,8 +41,8 @@ Compile any HTTP example using:
 
 ```sh
 pack build "my-image" \
-  --env TARGET_FUNCTION=$EXAMPLE_FUNCTION_NAME \
-  --env FUNCTION_SIGNATURE_TYPE=http \
+  --env GOOGLE_FUNCTION_TARGET=$EXAMPLE_FUNCTION_NAME \
+  --env GOOGLE_FUNCTION_SIGNATURE_TYPE=http \
   --path examples/$EXAMPLE_DIRECTORY
 ```
 
@@ -50,8 +50,8 @@ for example:
 
 ```sh
 pack build "hello-world" \
-  --env TARGET_FUNCTION=HelloWorld \
-  --env FUNCTION_SIGNATURE_TYPE=http \
+  --env GOOGLE_FUNCTION_TARGET=HelloWorld \
+  --env GOOGLE_FUNCTION_SIGNATURE_TYPE=http \
   --path examples/hello_world
 ```
 
@@ -76,8 +76,8 @@ Create the Docker image, with a tag suitable for deployment to Cloud Run:
 
 ```sh
 pack build "gcr.io/${GOOGLE_CLOUD_PROJECT}/hello-world" \
-  --env TARGET_FUNCTION=HelloWorld \
-  --env FUNCTION_SIGNATURE_TYPE=http \
+  --env GOOGLE_FUNCTION_TARGET=HelloWorld \
+  --env GOOGLE_FUNCTION_SIGNATURE_TYPE=http \
   --path examples/hello_world
 ```
 

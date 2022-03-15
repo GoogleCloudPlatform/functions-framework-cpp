@@ -67,8 +67,8 @@ steps:
   - name: 'pack'
     args: ['build', 'test-builder',
            '--builder', 'gcr.io/${PROJECT_ID}/functions-framework-cpp/builder:bionic',
-           '--env', 'FUNCTION_SIGNATURE_TYPE=http',
-           '--env', 'TARGET_FUNCTION=HelloWorld',
+           '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
+           '--env', 'GOOGLE_FUNCTION_TARGET=HelloWorld',
            '--path', 'examples/hello_world',
     ]
 
