@@ -55,7 +55,8 @@ actual list of changes:
 
 ```sh
 last_tag="$(git describe --tags --abbrev=0 upstream/main)"
-git log --no-merges --format="format:%s" "${last_tag}"..HEAD upstream/main | grep -E -v '^(refactor|cleanup|ci)'
+git log --no-merges --format="format:%s" "${last_tag}"..HEAD upstream/main | 
+  grep -E -v '^(refactor|cleanup|ci|impl|chore):'
 ```
 
 Remember to leave room in the `CHANGELOG.md` for the changes related to the next
