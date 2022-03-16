@@ -62,15 +62,17 @@ io::log_h2 "Searching for API changes in functions_framework_cpp"
 actual_dump_file="functions_framework_cpp.actual.abi.dump"
 expected_dump_file="functions_framework_cpp.expected.abi.dump"
 expected_dump_path="${PROJECT_ROOT}/ci/abi-dumps/${expected_dump_file}.gz"
+exit_status=0
 if [[ -r "${expected_dump_path}" ]]; then
   zcat "${expected_dump_path}" >"cmake-out/${expected_dump_file}"
   report="cmake-out/compat_reports/functions_framework_cpp/expected_to_actual/src_compat_report.html"
   # We ignore all symbols in internal namespaces, because these are not part
   # of our public API. We do this by specifying a regex that matches against
-  # the mangled symbol names. For example, 8 is the number of characters in
-  # the string "internal", and it should again be followed by some other
-  # number indicating the length of the symbol within the "internal"
-  # namespace. See: https://en.wikipedia.org/wiki/Name_mangling
+  # the mangled symbol names. For example, 18 is the number of characters in
+  # the string "functions_internal", and it should again be followed by some
+  # other number indicating the length of the symbol within the
+  # `functions_internal` namespace.
+  # See: https://en.wikipedia.org/wiki/Name_mangling
   if ! abi-compliance-checker \
     -skip-internal-symbols "(18functions_internal)\d" \
     -report-path "${report}" \
@@ -80,10 +82,11 @@ if [[ -r "${expected_dump_path}" ]]; then
     io::log_red "ABI Compliance error: functions_framework_cpp"
     io::log "Report file: ${report}"
     w3m -dump "${report}"
-    exit 1
+    exit_status=1
   fi
 fi
 
 # Replaces the (old) expected dump file with the (new) actual one.
 gzip -n "cmake-out/${actual_dump_file}"
 mv -f "cmake-out/${actual_dump_file}.gz" "${expected_dump_path}"
+exit ${exit_status}
