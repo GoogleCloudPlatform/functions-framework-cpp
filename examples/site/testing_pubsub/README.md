@@ -1,15 +1,16 @@
 # How-to Guide: Testing Event-driven Functions (Pub/Sub triggered)
 
 Event-driven functions do not return values, their only observable behavior are
-side-effects. All tests, therefore, are looking at the side-effects of these
+side effects. All tests, therefore, are looking at the side effects of these
 functions. Depending on where the function is deployed this might be more or
 less involved.
 
 ## Function under Test
 
-We will use this function throughput this guide:
+We will use this [function][snippet source] throughput this guide:
 
-[/examples/site/hello_world_pubsub/hello_world_pubsub.cc]
+<!-- inject-snippet-start -->
+[snippet source]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
 ```cc
 #include <google/cloud/functions/cloud_event.h>
 #include <boost/log/trivial.hpp>
@@ -29,6 +30,7 @@ void hello_world_pubsub(gcf::CloudEvent event) {
   BOOST_LOG_TRIVIAL(info) << "Hello " << (name.empty() ? "World" : name);
 }
 ```
+<!-- inject-snippet-end -->
 
 ## Writing a Unit Test
 
@@ -110,7 +112,6 @@ env "GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}" \
 
 [buildpacks]: https://buildpacks.io
 [boost-log-gh]: https://github.com/boostorg/log
-[/examples/site/hello_world_pubsub/hello_world_pubsub.cc]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
 [pubsub_unit_test.cc]: pubsub_unit_test.cc
 [pubsub_integration_server.cc]: pubsub_integration_server.cc
 [pubsub_integration_test.cc]: pubsub_integration_test.cc

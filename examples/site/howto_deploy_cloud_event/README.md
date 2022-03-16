@@ -28,8 +28,10 @@ pack version
 # Output: a version number, e.g., 0.17.0+git-d9cb4e7.build-2045
 ```
 
-In this guide we will be using the [Pub/Sub hello word][hello-world-pubsub] function:
+In this guide we will be using this [function][snippet source]:
 
+<!-- inject-snippet-start -->
+[snippet source]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
 ```cc
 #include <google/cloud/functions/cloud_event.h>
 #include <boost/log/trivial.hpp>
@@ -49,6 +51,7 @@ void hello_world_pubsub(gcf::CloudEvent event) {
   BOOST_LOG_TRIVIAL(info) << "Hello " << (name.empty() ? "World" : name);
 }
 ```
+<!-- inject-snippet-end -->
 
 ## Getting the code for this example
 
@@ -207,6 +210,5 @@ gcloud container images delete \
 [docker-install]: https://store.docker.com/search?type=edition&offering=community
 [sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
 [pack-install]: https://buildpacks.io/docs/install-pack/
-[hello-world-pubsub]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
 [gcloud-eventarc-create]: https://cloud.google.com/sdk/gcloud/reference/beta/eventarc/triggers/create
 [Google Cloud buildpack]: https://github.com/GoogleCloudPlatform/buildpacks

@@ -24,7 +24,6 @@
 [CloudEvents]: https://cloudevents.io/
 [docs]: docs
 [examples]: examples
-[examples/hello_world/hello_world.cc]: examples/hello_world/hello_world.cc
 [Google Cloud Run]:
 https://cloud.google.com/run/docs/quickstarts/build-and-deploy
 [Google App Engine]: https://cloud.google.com/appengine/docs/go/
@@ -56,9 +55,10 @@ language runtime, but we're working to make running on [Google Cloud Run] as
 seamless and symmetric an experience as possible for your C++ Functions
 Framework projects.
 
-The framework allows you to go from:
+The framework allows you to go [from][snippet source]:
 
-[examples/hello_world/hello_world.cc]
+<!-- inject-snippet-start -->
+[snippet source]: /examples/hello_world/hello_world.cc
 ```cc
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
@@ -66,12 +66,13 @@ The framework allows you to go from:
 using ::google::cloud::functions::HttpRequest;
 using ::google::cloud::functions::HttpResponse;
 
-HttpResponse HelloWorld(HttpRequest) {  // NOLINT
+HttpResponse HelloWorld(HttpRequest) {
   return HttpResponse{}
       .set_header("Content-Type", "text/plain")
       .set_payload("Hello World\n");
 }
 ```
+<!-- inject-snippet-end -->
 
 To:
 

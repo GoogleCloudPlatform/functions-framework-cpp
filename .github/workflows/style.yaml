@@ -129,5 +129,8 @@ jobs:
       - name: regenerate-build-examples
         run: >
           ./ci/generate-build-examples.sh >ci/build-examples.yaml
+      - name: update-markdown-code-snippets
+        run: >
+          ./ci/update-markdown-code-snippets.sh
       - name: check-diff
         run: git diff --ignore-submodules=all --color --exit-code .

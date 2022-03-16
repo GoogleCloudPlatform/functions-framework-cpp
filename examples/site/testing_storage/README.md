@@ -8,9 +8,10 @@ more or less involved.
 
 ## Function under Test
 
-We will use this function throughout this guide:
+We will use this [function][snippet source] throughout this guide:
 
-[/examples/site/hello_world_storage/hello_world_storage.cc]
+<!-- inject-snippet-start -->
+[snippet source]: /examples/site/hello_world_storage/hello_world_storage.cc
 ```cc
 #include <google/cloud/functions/cloud_event.h>
 #include <boost/log/trivial.hpp>
@@ -34,6 +35,7 @@ void hello_world_storage(gcf::CloudEvent event) {
   BOOST_LOG_TRIVIAL(info) << "Updated: " << payload.value("updated", "");
 }
 ```
+<!-- inject-snippet-end -->
 
 This test receives storage events and logs a few of the fields in these
 events.
@@ -133,7 +135,6 @@ gcloud container images delete \
 
 [buildpacks]: https://buildpacks.io
 [boost-log-gh]: https://github.com/boostorg/log
-[/examples/site/hello_world_storage/hello_world_storage.cc]: /examples/site/hello_world_storage/hello_world_storage.cc
 [storage_unit_test.cc]: storage_unit_test.cc
 [storage_integration_server.cc]: storage_integration_server.cc
 [storage_integration_test.cc]: storage_integration_test.cc
