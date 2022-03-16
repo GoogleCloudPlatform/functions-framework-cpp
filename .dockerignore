@@ -1,6 +1,8 @@
 # Common build output directory names
 .build/
 _build/
+cmake-out/
+build-out/
 
 # Used by some IDEs and LSP plugins
 compile_commands.json
