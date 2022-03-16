@@ -87,17 +87,16 @@ generic_example() {
     container="${4}"
   fi
 
-  local signature_arg=""
-  if [[ "${signature}" != "declarative" ]] && [[ "${signature}" != "" ]]; then
-    signature_arg="'--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',"
-  fi
-
   cat <<_EOF_
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
     id: '${container}'
     args: ['build',
-      ${signature_arg}
+_EOF_
+  if [[ "${signature}" != "declarative" ]] && [[ "${signature}" != "" ]]; then
+    echo "      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',"
+  fi
+  cat <<_EOF_
       '--env', 'GOOGLE_FUNCTION_TARGET=${function}',
       '--path', 'examples/${example}',
       '${container}',
@@ -115,17 +114,17 @@ site_example() {
     signature="cloudevent"
   fi
   local container="site-${function}"
-  local signature_arg=""
-  if [[ "${signature}" != "declarative" ]] && [[ "${signature}" != "" ]]; then
-    signature_arg="'--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',"
-  fi
 
   cat <<_EOF_
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
     id: '${container}'
     args: ['build',
-      ${signature_arg}
+_EOF_
+  if [[ "${signature}" != "declarative" ]] && [[ "${signature}" != "" ]]; then
+    echo "      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',"
+  fi
+  cat <<_EOF_
       '--env', 'GOOGLE_FUNCTION_TARGET=${function}',
       '--path', '${example}',
       '${container}',
