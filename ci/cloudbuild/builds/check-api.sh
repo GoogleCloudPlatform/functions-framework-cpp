@@ -80,6 +80,7 @@ if [[ -r "${expected_dump_path}" ]]; then
     io::log_red "ABI Compliance error: functions_framework_cpp"
     io::log "Report file: ${report}"
     w3m -dump "${report}"
+    exit 1
   fi
 fi
 
