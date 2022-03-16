@@ -12,37 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <google/cloud/storage/client.h>
 #include <sstream>
 
-using ::google::cloud::functions::HttpRequest;
-using ::google::cloud::functions::HttpResponse;
+namespace gcf = ::google::cloud::functions;
 namespace gcs = ::google::cloud::storage;
 
-// Though not used in this example, the request is passed by value to support
-// applications that move-out its data.
-HttpResponse HelloGcs(HttpRequest request) {  // NOLINT
-  auto error = [] {
-    return HttpResponse{}.set_result(HttpResponse::kBadRequest);
-  };
+gcf::Function HelloGcs() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& request) {
+    auto error = [] {
+      return gcf::HttpResponse{}.set_result(gcf::HttpResponse::kBadRequest);
+    };
 
-  std::vector<std::string> components;
-  std::istringstream split(request.target());
-  for (std::string c; std::getline(split, c, '/'); components.push_back(c)) {
-  }
+    std::vector<std::string> components;
+    std::istringstream split(request.target());
+    for (std::string c; std::getline(split, c, '/'); components.push_back(c)) {
+    }
 
-  if (components.size() != 2) return error();
-  auto const bucket = components[0];
-  auto const object = components[1];
-  auto client = gcs::Client::CreateDefaultClient().value();
-  auto reader = client.ReadObject(bucket, object);
-  std::string contents(std::istreambuf_iterator<char>{reader},
-                       std::istreambuf_iterator<char>{});
-  if (!reader.status().ok()) return error();
+    if (components.size() != 2) return error();
+    auto const bucket = components[0];
+    auto const object = components[1];
+    auto client = gcs::Client::CreateDefaultClient().value();
+    auto reader = client.ReadObject(bucket, object);
+    std::string contents(std::istreambuf_iterator<char>{reader},
+                         std::istreambuf_iterator<char>{});
+    if (!reader.status().ok()) return error();
 
-  return HttpResponse{}
-      .set_header("Content-Type", "application/octet-stream")
-      .set_payload(std::move(contents));
+    return gcf::HttpResponse{}
+        .set_header("Content-Type", "application/octet-stream")
+        .set_payload(std::move(contents));
+  });
 }

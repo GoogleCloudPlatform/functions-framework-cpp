@@ -130,11 +130,8 @@ generate_http_main_no_namespace() {
   local function="${1}"
   cat <<_EOF_
 #include <google/cloud/functions/framework.h>
-
 namespace gcf = ::google::cloud::functions;
-
 extern gcf::HttpResponse ${function}(gcf::HttpRequest);
-
 int main(int argc, char* argv[]) {
   return gcf::Run(argc, argv, gcf::UserHttpFunction(${function}));
 }
@@ -147,13 +144,10 @@ generate_http_main_with_namespace() {
 
   cat <<_EOF_
 #include <google/cloud/functions/framework.h>
-
 namespace gcf = ::google::cloud::functions;
-
 namespace ${namespace} {
   extern gcf::HttpResponse ${function}(gcf::HttpRequest);
 } // namespace
-
 int main(int argc, char* argv[]) {
   return gcf::Run(argc, argv, gcf::UserHttpFunction(::${namespace}::${function}));
 }
@@ -164,11 +158,8 @@ generate_cloud_event_main_no_namespace() {
   local function="${1}"
   cat <<_EOF_
 #include <google/cloud/functions/framework.h>
-
 namespace gcf = ::google::cloud::functions;
-
 extern void ${function}(gcf::CloudEvent);
-
 int main(int argc, char* argv[]) {
   return gcf::Run(argc, argv, gcf::UserCloudEventFunction(${function}));
 }
@@ -181,15 +172,43 @@ generate_cloud_event_main_with_namespace() {
 
   cat <<_EOF_
 #include <google/cloud/functions/framework.h>
-
 namespace gcf = ::google::cloud::functions;
-
 namespace ${namespace} {
   extern void ${function}(gcf::CloudEvent);
 } // namespace
-
 int main(int argc, char* argv[]) {
   return gcf::Run(argc, argv, gcf::UserCloudEventFunction(::${namespace}::${function}));
+}
+_EOF_
+}
+
+generate_declarative_main_no_namespace() {
+  local function="${1}"
+  cat <<_EOF_
+#include <google/cloud/functions/framework.h>
+#include <google/cloud/functions/function.h>
+namespace gcf = ::google::cloud::functions;
+extern gcf::Function ${function}();
+int main(int argc, char* argv[]) {
+  return gcf::Run(argc, argv, ${function}());
+}
+_EOF_
+}
+
+generate_cloud_event_main_with_namespace() {
+  local function="${1}"
+  local namespace="${2}"
+
+  cat <<_EOF_
+#include <google/cloud/functions/framework.h>
+#include <google/cloud/functions/function.h>
+namespace gcf = ::google::cloud::functions;
+namespace ${namespace} {
+  extern gcf::Function ${function}();
+} // namespace
+
+int main(int argc, char* argv[]) {
+  return gcf::Run(argc, argv, ::${namespace}::${function}());
 }
 _EOF_
 }
@@ -224,12 +243,21 @@ generate_main() {
     return
   fi
 
+  if [[ "${signature}" == "declarative" ]] || [[ "${signature}" == "" ]]; then
+    if [[ -z "${namespace}" || "${namespace}" == "." ]]; then
+      generate_declarative_main_no_namespace "${function}"
+      return
+    fi
+    generate_declarative_main_with_namespace "${function}" "${namespace}"
+    return
+  fi
+
   >&2 echo "Unknown function signature type: ${signature}"
   exit 1
 }
 
 generate_main \
-    "${GOOGLE_FUNCTION_TARGET}" "${GOOGLE_FUNCTION_SIGNATURE_TYPE:-http}" >"${layers}/source/main.cc"
+    "${GOOGLE_FUNCTION_TARGET}" "${GOOGLE_FUNCTION_SIGNATURE_TYPE:-}" >"${layers}/source/main.cc"
 
 echo "-----> Configure Function"
 cat >"${layers}/binary.toml" <<_EOF_

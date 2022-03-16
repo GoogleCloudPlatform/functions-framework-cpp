@@ -87,12 +87,17 @@ generic_example() {
     container="${4}"
   fi
 
+  local signature_arg=""
+  if [[ "${signature}" != "declarative" ]] && [[ "${signature}" != "" ]]; then
+    signature_arg="'--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',"
+  fi
+
   cat <<_EOF_
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
     id: '${container}'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',
+      ${signature_arg}
       '--env', 'GOOGLE_FUNCTION_TARGET=${function}',
       '--path', 'examples/${example}',
       '${container}',
@@ -110,12 +115,17 @@ site_example() {
     signature="cloudevent"
   fi
   local container="site-${function}"
+  local signature_arg=""
+  if [[ "${signature}" != "declarative" ]] && [[ "${signature}" != "" ]]; then
+    signature_arg="'--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',"
+  fi
+
   cat <<_EOF_
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
     id: '${container}'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=${signature}',
+      ${signature_arg}
       '--env', 'GOOGLE_FUNCTION_TARGET=${function}',
       '--path', '${example}',
       '${container}',
@@ -128,7 +138,7 @@ generic_example hello_from_namespace hello_from_namespace::HelloWorld http
 generic_example hello_from_namespace ::hello_from_namespace::HelloWorld http hello-from-namespace-rooted
 generic_example hello_from_nested_namespace hello_from_nested_namespace::ns0::ns1::HelloWorld http
 generic_example hello_multiple_sources HelloMultipleSources http
-generic_example hello_gcs HelloGcs http
+generic_example hello_gcs HelloGcs declarative
 generic_example hello_with_third_party HelloWithThirdParty http
 generic_example hello_world HelloWorld http
 generic_example hello_world ::HelloWorld http hello-world-rooted

@@ -16,14 +16,13 @@ Functions Framework for C++. The main audience for these notes are developers
 ## Create the Development and Runtime Docker Images
 
 These notes assume the reader is familiar with GCP, the Google Cloud SDK
-command-line tool, and with the `docker(1)`
-command-line tool.
+command-line tool, and with the `docker(1)` command-line tool.
 
 To compile the examples you will need a Docker image with the development tools
 and core dependencies pre-compiled. To create this image run this command:
 
 ```sh
-docker build -t ci-build-image --target gcf-cpp-develop -f build_scripts/Dockerfile .
+docker build -t ci-build-image --target gcf-cpp-ci -f build_scripts/Dockerfile .
 ```
 
 The runtime image is contains just the minimal components to execute a program
