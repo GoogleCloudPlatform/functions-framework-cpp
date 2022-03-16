@@ -25,8 +25,10 @@ pack version
 # Output: a version number, e.g., 0.17.0+git-d9cb4e7.build-2045
 ```
 
-In this guide we will be using the [HTTP hello word][hello-world-http] function:
+In this guide we will be using this [function][snippet source]:
 
+<!-- inject-snippet-start -->
+[snippet source]: /examples/site/hello_world_http/hello_world_http.cc
 ```cc
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
@@ -49,6 +51,7 @@ gcf::HttpResponse hello_world_http(gcf::HttpRequest request) {
       .set_payload(greeting());
 }
 ```
+<!-- inject-snippet-end -->
 
 ## Getting the code for this example
 
@@ -126,5 +129,4 @@ docker image rm gcf-cpp-hello-world-http
 [docker-install]: https://store.docker.com/search?type=edition&offering=community
 [sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
 [pack-install]: https://buildpacks.io/docs/install-pack/
-[hello-world-http]: /examples/site/hello_world_http/hello_world_http.cc
 [Google Cloud buildpack]: https://github.com/GoogleCloudPlatform/buildpacks
