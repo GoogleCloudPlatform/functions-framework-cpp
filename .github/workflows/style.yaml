@@ -131,9 +131,6 @@ jobs:
           ./ci/generate-build-examples.sh >ci/build-examples.yaml
       - name: regenerate-buildpacks
         run: >
-          ./build_scripts/pack/generate-builder.sh 2020 gcf-cpp- pack
-      - name: regenerate-buildpacks
-        run: >
           ./build_scripts/pack/generate-builder.sh 2021 ci- ci/pack
       - name: check-diff
         run: git diff --ignore-submodules=all --color --exit-code .

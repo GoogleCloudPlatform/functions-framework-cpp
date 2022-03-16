@@ -1,14 +1,22 @@
 # Configuring the CI Environment
 
-We use several Google Cloud Platform services to perform integration tests.
-These notes describe how to setup a project to run these integration tests.
-The main audience for these notes are developers working to improve the
-Functions Framework for C++. They assume the reader is familiar with GCP and
-with the Google Cloud SDK command-line tool.
+These notes describe how to set up a GCP project to run these Functions
+Framework for C++ integration tests. The main audience for these notes are
+developers of the Functions Framework.
+
+- If you are looking for examples on how to **use** the Functions Framework for
+  C++, the [How-to Guides](/examples/howto-guides.md) should help you get
+  started.
+- If you want to compile and test the examples after making changes to the
+  framework, then read
+  [Testing the Functions Framework Examples](/examples/README.md)
+- If you are looking for detailed instructions to configure the CI
+  environment, this is the document you should read.
 
 ## Pre-requisites
 
-These notes assume you have setup a valid GCP project, with billing enabled.
+These notes assume you are familiar with GCP, with the Google Cloud SDK
+command-line too, and have set up a valid GCP project, with billing enabled.
 
 > :warning: Most of these services will incur billing costs, probably in the
 > hundreds of dollars per month. Do not run these steps unless you understand
@@ -51,8 +59,8 @@ gsutil mb -p "${GOOGLE_CLOUD_PROJECT}" \
 
 ### Grant the GCS service permissions to publish to Pub/Sub
 
-Get the GCS service account. This will print the service account
-as the `email_address` field in a JSON object:
+Get the GCS service account. This will print the service account as
+the `email_address` field in a JSON object:
 
 ```shell
 curl -X GET -H "Authorization: Bearer $(gcloud auth print-access-token)" \
@@ -65,7 +73,7 @@ Capture the field value in a variable:
 GCS_SA="... @gs-project-accounts.iam.gserviceaccount.com"
 ```
 
-Add this service account to the topic:Grant the 
+Add this service account to the topic:Grant the
 
 ```shell
 gcloud pubsub topics add-iam-policy-binding \
@@ -102,17 +110,16 @@ gcloud projects add-iam-policy-binding "${GOOGLE_CLOUD_PROJECT}" \
     "--role=roles/run.invoker"
 ```
 
-
 ## Verify the Resources
 
-Create the buildpack builder. Note that this uses the *CI* image, because
-you (most likely) want to build with the current version of the framework,
-not with the last release:
+Create the buildpack builder. Note that this uses the *CI* image, because you (
+most likely) want to build with the current version of the framework, not with
+the last release:
 
 ```sh
 cd functions-framework-cpp
-docker build -t gcf-cpp-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
-docker build -t gcf-cpp-build-image --target gcf-cpp-ci -f build_scripts/Dockerfile .
+docker build -t ci-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
+docker build -t ci-build-image --target gcf-cpp-ci -f build_scripts/Dockerfile .
 pack builder create gcf-cpp-builder:bionic --config ci/pack/builder.toml
 pack config trusted-builders add gcf-cpp-builder:bionic
 pack config default-builder gcf-cpp-builder:bionic
@@ -171,10 +178,10 @@ HTTP_SERVICE_URL=$(gcloud run services describe \
 curl "${HTTP_SERVICE_URL}"
 ```
 
-
 ### Verify Pub/Sub Configuration
 
-Create a Cloud Run deployment running the hello world example, and setup the triggers:
+Create a Cloud Run deployment running the hello world example, and set up the
+triggers:
 
 ```sh
 gcloud run deploy gcf-hello-world-pubsub \
@@ -221,7 +228,8 @@ gcloud logging read \
 
 ### Verify Storage Configuration
 
-Create a Cloud Run deployment running the hello world example, and setup the triggers:
+Create a Cloud Run deployment running the hello world example, and set up the
+triggers:
 
 ```sh
 gcloud run deploy gcf-hello-world-storage \
