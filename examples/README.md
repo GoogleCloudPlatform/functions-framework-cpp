@@ -1,23 +1,31 @@
-# Functions Framework Examples
+# Testing the Functions Framework Examples
 
-This directory contains a series of examples showing how to use the Functions Framework.
+These notes describe how build and tests these examples when developing the Functions Framework for C++. The main
+audience for these notes are developers *of* this project.
 
-A good place to start is [hello_world](hello_world). It contains a simple example, with a simple function in a single
-`.cc` file.
+- If you are looking for examples on how to **use** the Functions Framework for C++, the
+  [How-to Guides](/examples/howto-guides.md) should help you get started.
+- If you are looking for more detailed instructions to configure the CI environment, please see the
+  [Configuring the CI Environment](/ci/README.md) guide.
+- If you are a developer in the project and want to test how your changes affect the examples, this is the document you
+  should read.
 
 ## Create the Development and Runtime Docker Images
+
+These notes assume the reader is familiar with GCP, the Google Cloud SDK command-line tool, and with the `docker(1)`
+command-line tool.
 
 To compile the examples you will need a Docker image with the development tools and core dependencies pre-compiled.
 To create this image run this command:
 
 ```sh
-docker build -t gcf-cpp-build-image --target gcf-cpp-develop -f build_scripts/Dockerfile .
+docker build -t ci-build-image --target gcf-cpp-develop -f build_scripts/Dockerfile .
 ```
 
 The runtime image is contains just the minimal components to execute a program using the framework:
 
 ```sh
-docker build -t gcf-cpp-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
+docker build -t ci-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
 ```
 
 ## Create the buildpack builder
@@ -25,7 +33,7 @@ docker build -t gcf-cpp-run-image --target gcf-cpp-runtime -f build_scripts/Dock
 We use [buildpacks](https://buildpacks.io) to compile the functions into runnable Docker images. First create a builder:
 
 ```sh
-pack builder create gcf-cpp-builder:bionic --config pack/builder.toml
+pack builder create gcf-cpp-builder:bionic --config ci/pack/builder.toml
 pack config trusted-builders add gcf-cpp-builder:bionic
 ```
 

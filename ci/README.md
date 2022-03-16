@@ -1,14 +1,19 @@
 # Configuring the CI Environment
 
-We use several Google Cloud Platform services to perform integration tests.
-These notes describe how to setup a project to run these integration tests.
-The main audience for these notes are developers working to improve the
-Functions Framework for C++. They assume the reader is familiar with GCP and
-with the Google Cloud SDK command-line tool.
+These notes describe how to set up a GCP project to run these Functions Framework for C++ integration tests. The main
+audience for these notes are developers of the Functions Framework.
+
+- If you are looking for examples on how to **use** the Functions Framework for C++, the
+  [How-to Guides](/examples/howto-guides.md) should help you get started.
+- If you want to compile and test the examples after making changest to the framework, the read
+  [Testing the Functions Framework Examples](/examples/README.md)
+- If you are looking for more detailed instructions to configure the CI environment, this is the document you should
+  read.
 
 ## Pre-requisites
 
-These notes assume you have setup a valid GCP project, with billing enabled.
+These notes assume you are familiar with GCP, with the Google Cloud SDK command-line too, and have set up a valid GCP
+project, with billing enabled.
 
 > :warning: Most of these services will incur billing costs, probably in the
 > hundreds of dollars per month. Do not run these steps unless you understand
@@ -111,8 +116,8 @@ not with the last release:
 
 ```sh
 cd functions-framework-cpp
-docker build -t gcf-cpp-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
-docker build -t gcf-cpp-build-image --target gcf-cpp-ci -f build_scripts/Dockerfile .
+docker build -t ci-run-image --target gcf-cpp-runtime -f build_scripts/Dockerfile build_scripts
+docker build -t ci-build-image --target gcf-cpp-ci -f build_scripts/Dockerfile .
 pack builder create gcf-cpp-builder:bionic --config ci/pack/builder.toml
 pack config trusted-builders add gcf-cpp-builder:bionic
 pack config default-builder gcf-cpp-builder:bionic
