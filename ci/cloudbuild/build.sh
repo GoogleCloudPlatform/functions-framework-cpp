@@ -284,17 +284,21 @@ if [[ "${DOCKER_FLAG}" = "true" ]]; then
   # Creates the directories that docker will mount as a volumes, otherwise they
   # will be created by the docker daemon as root-owned directories.
   mkdir -p "${out_cmake}" "${out_home}/.config/gcloud"
-  image="gcb-${DISTRO_FLAG}:latest"
+  image="gcb-gcf-${DISTRO_FLAG}:latest"
   io::log_h2 "Building docker image: ${image}"
-  io::run \
-    docker build -t "${image}" "--build-arg=NCPU=$(nproc)" \
-    -f "ci/cloudbuild/dockerfiles/${DISTRO_FLAG}.Dockerfile" ci
+  build_flags=(
+    -t "${image}"
+    "--build-arg=NCPU=$(nproc)"
+    -f "ci/cloudbuild/dockerfiles/${DISTRO_FLAG}.Dockerfile"
+  )
+  export DOCKER_BUILDKIT=1
+  io::run docker build "${build_flags[@]}" ci
   io::log_h2 "Starting docker container: ${image}"
   run_flags=(
     "--interactive"
     "--tty=$([[ -t 0 ]] && echo true || echo false)"
     "--rm"
-    "--network=bridge"
+    "--network=${DOCKER_NETWORK:-bridge}"
     "--user=$(id -u):$(id -g)"
     "--env=PS1=docker:${DISTRO_FLAG}\$ "
     "--env=USER=$(id -un)"
