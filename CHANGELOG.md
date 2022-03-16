@@ -1,6 +1,20 @@
 # Changelog
 
-## v1.1.0 - TBD
+## v1.2.0 - TBD
+
+## v1.1.0 - 2022-03
+
+This release introduces `google::cloud::functions::Function`, an opaque wrapper
+to represent any C++ function.  Application developers can use this wrapper (via
+the `google::cloud::functions::MakeFunction()` factory functions) to capture the
+signature of their functions. Soon, the [GCP buildpacks] will no longer require
+`GOOGLE_FUNCTION_SIGNATURE_TYPE`, which can be error-prone.
+
+[GCP buildpacks]: https://github.com/GoogleCloudPlatform/buildpacks
+
+* feat: support `functions::Function` in `Run()` (#340)
+* feat: make pkg-config files relocatable (#336)
+* doc: how-to guide on using legacy code (#334)
 
 ## v1.0.0 - 2021-09
 
