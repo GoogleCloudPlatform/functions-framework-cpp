@@ -13,16 +13,14 @@
 // limitations under the License.
 
 #include "greeting.h"
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 
-using ::google::cloud::functions::HttpRequest;
-using ::google::cloud::functions::HttpResponse;
+namespace gcf = ::google::cloud::functions;
 
-// Though not used in this example, the request is passed by value to support
-// applications that move-out its data.
-HttpResponse HelloMultipleSources(HttpRequest) {  // NOLINT
-  return HttpResponse{}
-      .set_header("Content-Type", "text/plain")
-      .set_payload(Greeting());
+gcf::Function HelloMultipleSources() {
+  return gcf::MakeFunction([](gcf::HttpRequest const&) {
+    return gcf::HttpResponse{}
+        .set_header("Content-Type", "text/plain")
+        .set_payload(Greeting());
+  });
 }

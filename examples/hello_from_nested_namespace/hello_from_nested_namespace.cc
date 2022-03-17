@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 
 namespace hello_from_nested_namespace::ns0::ns1 {
 
-using ::google::cloud::functions::HttpRequest;
-using ::google::cloud::functions::HttpResponse;
+namespace gcf = ::google::cloud::functions;
 
-// Though not used in this example, the request is passed by value to support
-// applications that move-out its data.
-HttpResponse HelloWorld(HttpRequest) {  // NOLINT
-  return HttpResponse{}
-      .set_header("Content-Type", "text/plain")
-      .set_payload("Hello from a nested C++ namespace!\n");
+gcf::Function HelloWorld() {
+  return gcf::MakeFunction([](gcf::HttpRequest const&) {
+    return gcf::HttpResponse{}
+        .set_header("Content-Type", "text/plain")
+        .set_payload("Hello from a nested C++ namespace!\n");
+  });
 }
 
 }  // namespace hello_from_nested_namespace::ns0::ns1

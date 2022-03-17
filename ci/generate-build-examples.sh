@@ -132,16 +132,16 @@ _EOF_
 _EOF_
 }
 
-generic_example hello_cloud_event HelloCloudEvent cloudevent
-generic_example hello_from_namespace hello_from_namespace::HelloWorld http
-generic_example hello_from_namespace ::hello_from_namespace::HelloWorld http hello-from-namespace-rooted
-generic_example hello_from_nested_namespace hello_from_nested_namespace::ns0::ns1::HelloWorld http
-generic_example hello_multiple_sources HelloMultipleSources http
+generic_example hello_cloud_event HelloCloudEvent declarative
+generic_example hello_from_namespace hello_from_namespace::HelloWorld declarative
+generic_example hello_from_namespace ::hello_from_namespace::HelloWorld declarative hello-from-namespace-rooted
+generic_example hello_from_nested_namespace hello_from_nested_namespace::ns0::ns1::HelloWorld declarative
+generic_example hello_multiple_sources HelloMultipleSources declarative
 generic_example hello_gcs HelloGcs declarative
-generic_example hello_with_third_party HelloWithThirdParty http
-generic_example hello_world HelloWorld http
-generic_example hello_world ::HelloWorld http hello-world-rooted
-generic_example howto_use_legacy_code HowtoUseLegacyCode http howto-use-legacy-code
+generic_example hello_with_third_party HelloWithThirdParty declarative
+generic_example hello_world HelloWorld declarative
+generic_example hello_world ::HelloWorld declarative hello-world-rooted
+generic_example howto_use_legacy_code HowtoUseLegacyCode declarative howto-use-legacy-code
 
 cat <<_EOF_
   # Build the cloud site examples.
