@@ -13,15 +13,13 @@
 // limitations under the License.
 
 // [START functions_helloworld_storage]
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <boost/log/trivial.hpp>
 #include <nlohmann/json.hpp>
 
 namespace gcf = ::google::cloud::functions;
 
-// Though not used in this example, the event is passed by value to support
-// applications that move-out its data.
-void hello_world_storage(gcf::CloudEvent event) {  // NOLINT
+void hello_world_storage_impl(gcf::CloudEvent const& event) {
   if (event.data_content_type().value_or("") != "application/json") {
     BOOST_LOG_TRIVIAL(error) << "expected application/json data";
     return;
@@ -35,5 +33,9 @@ void hello_world_storage(gcf::CloudEvent event) {  // NOLINT
                           << payload.value("metageneration", "");
   BOOST_LOG_TRIVIAL(info) << "Created: " << payload.value("timeCreated", "");
   BOOST_LOG_TRIVIAL(info) << "Updated: " << payload.value("updated", "");
+}
+
+gcf::Function hello_world_storage() {
+  return gcf::MakeFunction(hello_world_storage_impl);
 }
 // [END functions_helloworld_storage]

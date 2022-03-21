@@ -24,7 +24,7 @@
 #include <sstream>
 
 namespace gcf = ::google::cloud::functions;
-extern void hello_world_pubsub(gcf::CloudEvent event);
+extern void hello_world_pubsub_impl(gcf::CloudEvent const& event);
 
 namespace {
 
@@ -65,7 +65,7 @@ TEST(PubsubUnitTest, Basic) {
     event.set_data_content_type("application/json");
     event.set_data(test.data);
     stream->str({});
-    EXPECT_NO_THROW(hello_world_pubsub(event));
+    EXPECT_NO_THROW(hello_world_pubsub_impl(event));
     auto log_lines = stream->str();
     EXPECT_THAT(log_lines, HasSubstr(test.expected));
   }

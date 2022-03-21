@@ -13,13 +13,12 @@
 // limitations under the License.
 
 // [START functions_helloworld_http]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <nlohmann/json.hpp>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse hello_world_http(gcf::HttpRequest request) {
+gcf::HttpResponse hello_world_http_impl(gcf::HttpRequest request) {
   auto greeting = [r = std::move(request)] {
     auto request_json = nlohmann::json::parse(r.payload(), /*cb=*/nullptr,
                                               /*allow_exceptions=*/false);
@@ -32,5 +31,9 @@ gcf::HttpResponse hello_world_http(gcf::HttpRequest request) {
   return gcf::HttpResponse{}
       .set_header("content-type", "text/plain")
       .set_payload(greeting());
+}
+
+gcf::Function hello_world_http() {
+  return gcf::MakeFunction(hello_world_http_impl);
 }
 // [END functions_helloworld_http]

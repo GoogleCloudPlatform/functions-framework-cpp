@@ -234,7 +234,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-hello_world_http'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_http',
       '--path', 'examples/site/hello_world_http',
       'site-hello_world_http',
@@ -243,7 +242,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-hello_world_pubsub'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_pubsub',
       '--path', 'examples/site/hello_world_pubsub',
       'site-hello_world_pubsub',
@@ -252,7 +250,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-hello_world_storage'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_storage',
       '--path', 'examples/site/hello_world_storage',
       'site-hello_world_storage',

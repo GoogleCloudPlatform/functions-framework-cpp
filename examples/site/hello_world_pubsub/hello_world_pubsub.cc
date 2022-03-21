@@ -13,16 +13,14 @@
 // limitations under the License.
 
 // [START functions_helloworld_pubsub]
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <boost/log/trivial.hpp>
 #include <cppcodec/base64_rfc4648.hpp>
 #include <nlohmann/json.hpp>
 
 namespace gcf = ::google::cloud::functions;
 
-// Though not used in this example, the event is passed by value to support
-// applications that move-out its data.
-void hello_world_pubsub(gcf::CloudEvent event) {  // NOLINT
+void hello_world_pubsub_impl(gcf::CloudEvent const& event) {
   if (event.data_content_type().value_or("") != "application/json") {
     BOOST_LOG_TRIVIAL(error) << "expected application/json data";
     return;
@@ -31,5 +29,9 @@ void hello_world_pubsub(gcf::CloudEvent event) {  // NOLINT
   auto const name = cppcodec::base64_rfc4648::decode<std::string>(
       payload["message"]["data"].get<std::string>());
   BOOST_LOG_TRIVIAL(info) << "Hello " << (name.empty() ? "World" : name);
+}
+
+gcf::Function hello_world_pubsub() {
+  return gcf::MakeFunction(hello_world_pubsub_impl);
 }
 // [END functions_helloworld_pubsub]
