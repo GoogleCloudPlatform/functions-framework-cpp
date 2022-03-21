@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <google/cloud/functions/function.h>
 #include <google/cloud/functions/http_request.h>
 #include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/internal/function_impl.h>
 #include <gmock/gmock.h>
 
 namespace gcf = ::google::cloud::functions;
+namespace gcf_internal = ::google::cloud::functions_internal;
 
-gcf::HttpResponse HelloGcs(gcf::HttpRequest);
+gcf::Function HelloGcs();
 gcf::HttpResponse HelloMultipleSources(gcf::HttpRequest);
 gcf::HttpResponse HelloWithThirdParty(gcf::HttpRequest request);
 gcf::HttpResponse HelloWorld(gcf::HttpRequest);
@@ -36,9 +39,19 @@ namespace {
 
 using ::testing::HasSubstr;
 
+auto TriggerFunction(gcf::Function const& function,
+                     std::optional<std::string> target = std::nullopt) {
+  gcf_internal::BeastRequest request;
+  if (target) request.target(std::move(*target));
+
+  auto handler =
+      gcf_internal::FunctionImpl::GetImpl(function)->GetHandler("unused");
+  return handler(gcf_internal::BeastRequest{});
+}
+
 TEST(HttpExamplesTest, HelloGcs) {
-  auto const actual = HelloGcs(gcf::HttpRequest{}.set_target("/"));
-  EXPECT_EQ(actual.result(), gcf::HttpResponse::kBadRequest);
+  auto const actual = TriggerFunction(HelloGcs(), "/");
+  EXPECT_EQ(actual.result_int(), 400);
 }
 
 TEST(HttpExamplesTest, HelloMultipleSources) {
