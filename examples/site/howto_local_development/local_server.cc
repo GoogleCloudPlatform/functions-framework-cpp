@@ -19,14 +19,14 @@ namespace gcf = ::google::cloud::functions;
 
 namespace {
 
-gcf::HttpResponse HelloWithShutdown(gcf::HttpRequest const& /*request*/) {
-  return gcf::HttpResponse{}
-      .set_header("Content-Type", "text/plain")
-      .set_payload("Hello World\n");
+gcf::Function HelloLocal() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
+    return gcf::HttpResponse{}
+        .set_header("Content-Type", "text/plain")
+        .set_payload("Hello World\n");
+  });
 }
 
 }  // namespace
 
-int main(int argc, char* argv[]) {
-  return ::google::cloud::functions::Run(argc, argv, HelloWithShutdown);
-}
+int main(int argc, char* argv[]) { return gcf::Run(argc, argv, HelloLocal()); }
