@@ -19,7 +19,7 @@ namespace hello_from_nested_namespace::ns0::ns1 {
 namespace gcf = ::google::cloud::functions;
 
 gcf::Function HelloWorld() {
-  return gcf::MakeFunction([](gcf::HttpRequest const&) {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
     return gcf::HttpResponse{}
         .set_header("Content-Type", "text/plain")
         .set_payload("Hello from a nested C++ namespace!\n");

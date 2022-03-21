@@ -17,7 +17,7 @@
 namespace gcf = ::google::cloud::functions;
 
 gcf::Function HelloWorld() {
-  return gcf::MakeFunction([](gcf::HttpRequest const&) {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
     return gcf::HttpResponse{}
         .set_header("Content-Type", "text/plain")
         .set_payload("Hello World\n");
