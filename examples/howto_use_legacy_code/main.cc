@@ -17,8 +17,8 @@
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse HowtoUseLegacyCode(gcf::HttpRequest);
+gcf::Function HowtoUseLegacyCode();
 
 int main(int argc, char* argv[]) {
-  return ::google::cloud::functions::Run(argc, argv, HowtoUseLegacyCode);
+  return ::google::cloud::functions::Run(argc, argv, HowtoUseLegacyCode());
 }
