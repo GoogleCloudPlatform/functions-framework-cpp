@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <iostream>
 
-using ::google::cloud::functions::CloudEvent;
+namespace gcf = ::google::cloud::functions;
 
-// Though not used in this function, `event` is passed by value to support
-// applications that move-out its data.
-void HelloCloudEvent(CloudEvent event) {  // NOLINT
-  std::cout << "Received event"
-            << "\n id: " << event.id()
-            << "\n subject: " << event.subject().value_or("") << std::endl;
+gcf::Function HelloCloudEvent() {
+  return gcf::MakeFunction([](gcf::CloudEvent const& event) {
+    std::cout << "Received event"
+              << "\n id: " << event.id()
+              << "\n subject: " << event.subject().value_or("") << std::endl;
+  });
 }

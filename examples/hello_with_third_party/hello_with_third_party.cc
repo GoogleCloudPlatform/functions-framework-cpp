@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <fmt/core.h>
 
-using ::google::cloud::functions::HttpRequest;
-using ::google::cloud::functions::HttpResponse;
+namespace gcf = ::google::cloud::functions;
 
-// Though not used in this example, the request is passed by value to support
-// applications that move-out its data.
-HttpResponse HelloWithThirdParty(HttpRequest request) {  // NOLINT
-  return HttpResponse{}
-      .set_header("Content-Type", "text/plain")
-      .set_payload(fmt::format("Hello at {}\n", request.target()));
+gcf::Function HelloWithThirdParty() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& request) {
+    return gcf::HttpResponse{}
+        .set_header("Content-Type", "text/plain")
+        .set_payload(fmt::format("Hello at {}\n", request.target()));
+  });
 }

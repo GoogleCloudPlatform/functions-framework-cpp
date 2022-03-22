@@ -60,16 +60,16 @@ The framework allows you to go [from][snippet source]:
 <!-- inject-snippet-start -->
 [snippet source]: /examples/hello_world/hello_world.cc
 ```cc
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 
-using ::google::cloud::functions::HttpRequest;
-using ::google::cloud::functions::HttpResponse;
+namespace gcf = ::google::cloud::functions;
 
-HttpResponse HelloWorld(HttpRequest) {
-  return HttpResponse{}
-      .set_header("Content-Type", "text/plain")
-      .set_payload("Hello World\n");
+gcf::Function HelloWorld() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
+    return gcf::HttpResponse{}
+        .set_header("Content-Type", "text/plain")
+        .set_payload("Hello World\n");
+  });
 }
 ```
 <!-- inject-snippet-end -->

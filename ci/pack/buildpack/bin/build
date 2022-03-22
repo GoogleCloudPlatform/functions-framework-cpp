@@ -195,7 +195,7 @@ int main(int argc, char* argv[]) {
 _EOF_
 }
 
-generate_cloud_event_main_with_namespace() {
+generate_declarative_main_with_namespace() {
   local function="${1}"
   local namespace="${2}"
 
