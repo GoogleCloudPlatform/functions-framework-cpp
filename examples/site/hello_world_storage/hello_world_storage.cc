@@ -19,23 +19,23 @@
 
 namespace gcf = ::google::cloud::functions;
 
-// Though not used in this example, the event is passed by value to support
-// applications that move-out its data.
+void hello_world_storage_impl(gcf::CloudEvent const& event) {
+  if (event.data_content_type().value_or("") != "application/json") {
+    BOOST_LOG_TRIVIAL(error) << "expected application/json data";
+    return;
+  }
+  auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
+  BOOST_LOG_TRIVIAL(info) << "Event: " << event.id();
+  BOOST_LOG_TRIVIAL(info) << "Event Type: " << event.type();
+  BOOST_LOG_TRIVIAL(info) << "Bucket: " << payload.value("bucket", "");
+  BOOST_LOG_TRIVIAL(info) << "Object: " << payload.value("name", "");
+  BOOST_LOG_TRIVIAL(info) << "Metageneration: "
+                          << payload.value("metageneration", "");
+  BOOST_LOG_TRIVIAL(info) << "Created: " << payload.value("timeCreated", "");
+  BOOST_LOG_TRIVIAL(info) << "Updated: " << payload.value("updated", "");
+}
+
 gcf::Function hello_world_storage() {
-  return gcf::MakeFunction([](gcf::CloudEvent const& event) {
-    if (event.data_content_type().value_or("") != "application/json") {
-      BOOST_LOG_TRIVIAL(error) << "expected application/json data";
-      return;
-    }
-    auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
-    BOOST_LOG_TRIVIAL(info) << "Event: " << event.id();
-    BOOST_LOG_TRIVIAL(info) << "Event Type: " << event.type();
-    BOOST_LOG_TRIVIAL(info) << "Bucket: " << payload.value("bucket", "");
-    BOOST_LOG_TRIVIAL(info) << "Object: " << payload.value("name", "");
-    BOOST_LOG_TRIVIAL(info)
-        << "Metageneration: " << payload.value("metageneration", "");
-    BOOST_LOG_TRIVIAL(info) << "Created: " << payload.value("timeCreated", "");
-    BOOST_LOG_TRIVIAL(info) << "Updated: " << payload.value("updated", "");
-  });
+  return gcf::MakeFunction(hello_world_storage_impl);
 }
 // [END functions_helloworld_storage]

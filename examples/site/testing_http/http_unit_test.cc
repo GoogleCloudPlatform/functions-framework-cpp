@@ -18,20 +18,20 @@
 #include <gtest/gtest.h>
 
 namespace gcf = ::google::cloud::functions;
-extern gcf::HttpResponse hello_world_http(gcf::HttpRequest request);
+extern gcf::HttpResponse hello_world_http_impl(gcf::HttpRequest request);
 
 namespace {
 
 TEST(HttpUnitTest, Success) {
-  auto actual = hello_world_http(
+  auto actual = hello_world_http_impl(
       gcf::HttpRequest{}.set_payload(R"js({ "name": "Foo" })js"));
   EXPECT_EQ(actual.payload(), "Hello Foo!");
 
-  actual = hello_world_http(
+  actual = hello_world_http_impl(
       gcf::HttpRequest{}.set_payload(R"js({ "unused": 7 })js"));
   EXPECT_EQ(actual.payload(), "Hello World!");
 
-  actual = hello_world_http(gcf::HttpRequest{}.set_payload("Bar"));
+  actual = hello_world_http_impl(gcf::HttpRequest{}.set_payload("Bar"));
   EXPECT_EQ(actual.payload(), "Hello World!");
 }
 
