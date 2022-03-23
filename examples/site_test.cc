@@ -14,6 +14,7 @@
 
 #include "google/cloud/functions/internal/function_impl.h"
 #include "google/cloud/functions/internal/http_message_types.h"
+#include "google/cloud/functions/internal/parse_cloud_event_json.h"
 #include "google/cloud/functions/internal/setenv.h"
 #include "google/cloud/functions/cloud_event.h"
 #include "google/cloud/functions/function.h"
@@ -207,12 +208,12 @@ TEST(ExamplesSiteTest, HelloWorldGet) {
 
 TEST(ExamplesSiteTest, HelloWorlHttp) {
   auto function = hello_world_http();
-  auto actual = TriggerFunctionHttp(function,
-      gcf::HttpRequest{}.set_payload(R"js({ "name": "Foo" })js"));
+  auto actual = TriggerFunctionHttp(
+      function, gcf::HttpRequest{}.set_payload(R"js({ "name": "Foo" })js"));
   EXPECT_EQ(actual.body(), "Hello Foo!");
 
-  actual = TriggerFunctionHttp(function,
-      gcf::HttpRequest{}.set_payload(R"js({ "unused": 7 })js"));
+  actual = TriggerFunctionHttp(
+      function, gcf::HttpRequest{}.set_payload(R"js({ "unused": 7 })js"));
   EXPECT_EQ(actual.body(), "Hello World!");
 
   actual = TriggerFunctionHttp(function, gcf::HttpRequest{}.set_payload("Bar"));
@@ -245,12 +246,17 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
   for (auto const* data : {"dGVzdCBtZXNzYWdlIDM=", "YWJjZA==", ""}) {
     auto json = base;
     json["data"]["message"]["data"] = data;
-    EXPECT_NO_THROW(hello_world_pubsub(
-        google::cloud::functions_internal::ParseCloudEventJson(json.dump())));
+    auto response =
+        TriggerFunctionHttp(hello_world_pubsub(),
+                            gcf::HttpRequest{}
+                                .set_payload(json.dump())
+                                .add_header("ce-type", "com.example.someevent")
+                                .add_header("ce-source", "/mycontext")
+                                .add_header("ce-id", "A234-1234-1234"));
+    EXPECT_EQ(response.result_int(), 200);
   }
 
-  EXPECT_NO_THROW(hello_world_pubsub(
-      google::cloud::functions_internal::ParseCloudEventJson(R"js({
+  auto constexpr kBodyDataText = R"js({
     "specversion": "1.0",
     "type": "test.invalid.invalid",
     "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
@@ -258,10 +264,8 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
     "time": "2020-09-29T11:32:00.000Z",
     "datacontenttype": "text/plain",
     "data": "some data"
-  })js")));
-
-  EXPECT_THROW(hello_world_pubsub(
-                   google::cloud::functions_internal::ParseCloudEventJson(R"js({
+  })js";
+  auto constexpr kBodyDataJson = R"js({
     "specversion": "1.0",
     "type": "google.cloud.pubsub.topic.v1.messagePublished",
     "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
@@ -272,8 +276,27 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
       "subscription": "projects/sample-project/subscriptions/sample-subscription"
       }
     }
-  })js")),
-               std::exception);
+  })js";
+
+  struct TestCase {
+    std::string name;
+    std::string body;
+  } cases[] = {
+      {"text", kBodyDataText},
+      {"json", kBodyDataJson},
+  };
+
+  for (auto const& [name, body] : cases) {
+    SCOPED_TRACE("Testing for " + name);
+    auto response =
+        TriggerFunctionHttp(hello_world_storage(),
+                            gcf::HttpRequest{}
+                                .set_payload(body)
+                                .add_header("ce-type", "com.example.someevent")
+                                .add_header("ce-source", "/mycontext")
+                                .add_header("ce-id", "A234-1234-1234"));
+    EXPECT_EQ(response.result_int(), 200);
+  }
 }
 
 TEST(ExamplesSiteTest, HelloWorldStorage) {
@@ -308,11 +331,7 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
     }
   })js");
 
-  EXPECT_NO_THROW(hello_world_storage(
-      google::cloud::functions_internal::ParseCloudEventJson(base.dump())));
-
-  EXPECT_NO_THROW(hello_world_storage(
-      google::cloud::functions_internal::ParseCloudEventJson(R"js({
+  auto constexpr kBodyDataText = R"js({
     "specversion": "1.0",
     "type": "test.invalid.invalid",
     "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
@@ -320,17 +339,37 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
     "time": "2020-09-29T11:32:00.000Z",
     "datacontenttype": "text/plain",
     "data": "some data"
-  })js")));
+  })js";
 
-  EXPECT_NO_THROW(hello_world_storage(
-      google::cloud::functions_internal::ParseCloudEventJson(R"js({
+  auto constexpr kBodyDataJson = R"js({
     "specversion": "1.0",
     "type": "test.invalid.invalid",
     "source": "//pubsub.googleapis.com/projects/sample-project/topics/gcf-test",
     "id": "aaaaaa-1111-bbbb-2222-cccccccccccc",
     "time": "2020-09-29T11:32:00.000Z",
     "datacontenttype": "application/json"
-  })js")));
+  })js";
+
+  struct TestCase {
+    std::string name;
+    std::string body;
+  } cases[] = {
+      {"base", base.dump()},
+      {"text", kBodyDataText},
+      {"json", kBodyDataJson},
+  };
+
+  for (auto const& [name, body] : cases) {
+    SCOPED_TRACE("Testing for " + name);
+    auto response =
+        TriggerFunctionHttp(hello_world_storage(),
+                            gcf::HttpRequest{}
+                                .set_payload(body)
+                                .add_header("ce-type", "com.example.someevent")
+                                .add_header("ce-source", "/mycontext")
+                                .add_header("ce-id", "A234-1234-1234"));
+    EXPECT_EQ(response.result_int(), 200);
+  }
 }
 
 TEST(ExamplesSiteTest, HttpContent) {
