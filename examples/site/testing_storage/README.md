@@ -13,26 +13,28 @@ We will use this [function][snippet source] throughout this guide:
 <!-- inject-snippet-start -->
 [snippet source]: /examples/site/hello_world_storage/hello_world_storage.cc
 ```cc
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <boost/log/trivial.hpp>
 #include <nlohmann/json.hpp>
 
 namespace gcf = ::google::cloud::functions;
 
-void hello_world_storage(gcf::CloudEvent event) {
-  if (event.data_content_type().value_or("") != "application/json") {
-    BOOST_LOG_TRIVIAL(error) << "expected application/json data";
-    return;
-  }
-  auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
-  BOOST_LOG_TRIVIAL(info) << "Event: " << event.id();
-  BOOST_LOG_TRIVIAL(info) << "Event Type: " << event.type();
-  BOOST_LOG_TRIVIAL(info) << "Bucket: " << payload.value("bucket", "");
-  BOOST_LOG_TRIVIAL(info) << "Object: " << payload.value("name", "");
-  BOOST_LOG_TRIVIAL(info) << "Metageneration: "
-                          << payload.value("metageneration", "");
-  BOOST_LOG_TRIVIAL(info) << "Created: " << payload.value("timeCreated", "");
-  BOOST_LOG_TRIVIAL(info) << "Updated: " << payload.value("updated", "");
+gcf::Function hello_world_storage() {
+  return gcf::MakeFunction([](gcf::CloudEvent const& event) {
+    if (event.data_content_type().value_or("") != "application/json") {
+      BOOST_LOG_TRIVIAL(error) << "expected application/json data";
+      return;
+    }
+    auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
+    BOOST_LOG_TRIVIAL(info) << "Event: " << event.id();
+    BOOST_LOG_TRIVIAL(info) << "Event Type: " << event.type();
+    BOOST_LOG_TRIVIAL(info) << "Bucket: " << payload.value("bucket", "");
+    BOOST_LOG_TRIVIAL(info) << "Object: " << payload.value("name", "");
+    BOOST_LOG_TRIVIAL(info)
+        << "Metageneration: " << payload.value("metageneration", "");
+    BOOST_LOG_TRIVIAL(info) << "Created: " << payload.value("timeCreated", "");
+    BOOST_LOG_TRIVIAL(info) << "Updated: " << payload.value("updated", "");
+  });
 }
 ```
 <!-- inject-snippet-end -->

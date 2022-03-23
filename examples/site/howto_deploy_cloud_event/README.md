@@ -33,22 +33,24 @@ In this guide we will be using this [function][snippet source]:
 <!-- inject-snippet-start -->
 [snippet source]: /examples/site/hello_world_pubsub/hello_world_pubsub.cc
 ```cc
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <boost/log/trivial.hpp>
 #include <cppcodec/base64_rfc4648.hpp>
 #include <nlohmann/json.hpp>
 
 namespace gcf = ::google::cloud::functions;
 
-void hello_world_pubsub(gcf::CloudEvent event) {
-  if (event.data_content_type().value_or("") != "application/json") {
-    BOOST_LOG_TRIVIAL(error) << "expected application/json data";
-    return;
-  }
-  auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
-  auto const name = cppcodec::base64_rfc4648::decode<std::string>(
-      payload["message"]["data"].get<std::string>());
-  BOOST_LOG_TRIVIAL(info) << "Hello " << (name.empty() ? "World" : name);
+gcf::Function hello_world_pubsub() {
+  return gcf::MakeFunction([](gcf::CloudEvent const& event) {
+    if (event.data_content_type().value_or("") != "application/json") {
+      BOOST_LOG_TRIVIAL(error) << "expected application/json data";
+      return;
+    }
+    auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
+    auto const name = cppcodec::base64_rfc4648::decode<std::string>(
+        payload["message"]["data"].get<std::string>());
+    BOOST_LOG_TRIVIAL(info) << "Hello " << (name.empty() ? "World" : name);
+  });
 }
 ```
 <!-- inject-snippet-end -->
