@@ -73,7 +73,7 @@ RUN curl -sSL https://github.com/ninja-build/ninja/releases/download/v1.10.2/nin
     chmod 755 /usr/local/bin/ninja
 
 WORKDIR /usr/local/vcpkg
-RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/dfcd4e4b30799c4ce02fe3939b62576fec444224.tar.gz | \
+RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/49931943abe2a22dd9d91be2c4928ead56349b14.tar.gz | \
     tar -xzf - --strip-components=1 && \
     ./bootstrap-vcpkg.sh -disableMetrics -useSystemBinaries && \
     rm -fr toolsrc/build.rel downloads/*
