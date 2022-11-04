@@ -58,6 +58,22 @@ RUN apt-get update \
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100
 
+# TODO : Darren : Idk it won't build. Let's try this.
+#CMake Error at scripts/cmake/vcpkg_find_acquire_program.cmake:619 (message):
+#  Could not find python3.  Please install it via your package manager:
+#
+#      sudo apt-get install python3
+#Call Stack (most recent call first):
+#  ports/upb/portfile.cmake:14 (vcpkg_find_acquire_program)
+#  scripts/ports.cmake:147 (include)
+#
+#
+#error: building upb:x64-linux failed with: BUILD_FAILED
+#error: Please ensure you're using the latest port files with `git pull` and `vcpkg update`.
+RUN apt-get update \
+    && apt install -y python3 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Install cmake, ninja and vcpkg. The first two are build systems for C++, the
 # latter is the package manager we use. In an open source builder these would
 # get downloaded dynamically, for builders created by the user they can be
