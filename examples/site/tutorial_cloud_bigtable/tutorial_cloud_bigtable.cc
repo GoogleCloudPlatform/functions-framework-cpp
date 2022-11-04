@@ -14,8 +14,7 @@
 
 // [START bigtable_functions_quickstart]
 #include <google/cloud/bigtable/table.h>
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <algorithm>
 #include <cctype>
 #include <mutex>
@@ -25,56 +24,48 @@
 namespace gcf = ::google::cloud::functions;
 namespace cbt = ::google::cloud::bigtable;
 
-cbt::Table get_table_client(std::string project_id, std::string instance_id,
-                            std::string const& table_id) {
+std::shared_ptr<cbt::DataConnection> get_connection() {
   static std::mutex mu;
-  static std::unique_ptr<cbt::Table> table;
+  static std::shared_ptr<cbt::DataConnection> connection;
   std::lock_guard lk(mu);
-  if (table == nullptr || table->table_id() != table_id ||
-      table->instance_id() != instance_id ||
-      table->project_id() != project_id) {
-    table = std::make_unique<cbt::Table>(
-        cbt::CreateDefaultDataClient(std::move(project_id),
-                                     std::move(instance_id),
-                                     cbt::ClientOptions{}),
-        table_id);
-  }
-  return *table;
+  if (!connection) connection = cbt::MakeDataConnection();
+  return connection;
 }
 
-gcf::HttpResponse tutorial_cloud_bigtable(gcf::HttpRequest request) {  // NOLINT
-  auto get_header = [h = request.headers()](std::string key) {
-    std::transform(key.begin(), key.end(), key.begin(),
-                   [](auto x) { return static_cast<char>(std::tolower(x)); });
-    auto l = h.find(key);
-    if (l == h.end()) throw std::invalid_argument("Missing header: " + key);
-    return l->second;
-  };
+gcf::Function tutorial_cloud_bigtable() {
+  return gcf::MakeFunction([](gcf::HttpRequest request) {
+    auto get_header = [h = request.headers()](std::string key) {
+      std::transform(key.begin(), key.end(), key.begin(),
+                     [](auto x) { return static_cast<char>(std::tolower(x)); });
+      auto l = h.find(key);
+      if (l == h.end()) throw std::invalid_argument("Missing header: " + key);
+      return l->second;
+    };
 
-  auto project_id = get_header("projectID");
-  auto instance_id = get_header("instanceID");
-  auto table_id = get_header("tableID");
-  auto table =
-      get_table_client(std::move(project_id), std::move(instance_id), table_id);
+    auto table = cbt::Table(
+        get_connection(),
+        cbt::TableResource(get_header("projectID"), get_header("instanceID"),
+                           get_header("tableID")));
 
-  std::ostringstream os;
-  auto filter =
-      cbt::Filter::Chain(cbt::Filter::Latest(1),
-                         cbt::Filter::ColumnName("stats_summary", "os_build"));
-  for (auto row : table.ReadRows(cbt::RowRange::Prefix("phone#"), filter)) {
-    if (!row) {
-      std::ostringstream err;
-      err << "Error reading from bigtable: " << row.status();
-      throw std::runtime_error(std::move(err).str());
+    std::ostringstream os;
+    auto filter = cbt::Filter::Chain(
+        cbt::Filter::Latest(1),
+        cbt::Filter::ColumnName("stats_summary", "os_build"));
+    for (auto row : table.ReadRows(cbt::RowRange::Prefix("phone#"), filter)) {
+      if (!row) {
+        std::ostringstream err;
+        err << "Error reading from bigtable: " << row.status();
+        throw std::runtime_error(std::move(err).str());
+      }
+      for (auto const& cell : row->cells()) {
+        os << "Rowkey: " << cell.row_key() << ", os_build: " << cell.value()
+           << "\n";
+      }
     }
-    for (auto const& cell : row->cells()) {
-      os << "Rowkey: " << cell.row_key() << ", os_build: " << cell.value()
-         << "\n";
-    }
-  }
 
-  return gcf::HttpResponse{}
-      .set_header("content-type", "text/plain")
-      .set_payload(std::move(os).str());
+    return gcf::HttpResponse{}
+        .set_header("content-type", "text/plain")
+        .set_payload(std::move(os).str());
+  });
 }
 // [END bigtable_functions_quickstart]
