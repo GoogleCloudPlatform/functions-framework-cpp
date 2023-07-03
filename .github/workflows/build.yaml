@@ -89,6 +89,7 @@ jobs:
           cmake --build "${{runner.temp}}/howto_local_development/build"
 
   build-msvc-2019:
+    if: ${{ false }}  # TODO(#366) - disable for now
     name: msvc-2019
     runs-on: windows-2019
     steps:
@@ -133,6 +134,7 @@ jobs:
         run: ctest --output-on-failure --timeout=60s
 
   build-macos:
+    if: ${{ false }}  # TODO(#367) - disable for now
     name: macos-10
     runs-on: macos-10.15
     steps:
