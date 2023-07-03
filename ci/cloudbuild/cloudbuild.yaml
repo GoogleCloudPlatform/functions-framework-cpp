@@ -63,9 +63,9 @@ steps:
     entrypoint: '/bin/true'
 
   # Restores the homedir cache into /h in parallel with the previous step.
-  # Won't break the build if this step fails.
   - name: 'gcr.io/cloud-builders/gsutil'
     waitFor: [ '-' ]
+    allowFailure: true
     entrypoint: 'bash'
     dir: '/h'
     args:
@@ -75,17 +75,16 @@ steps:
         --bucket_url=gs://${_CACHE_BUCKET}/build-cache/functions-framework-cpp
         --key=${_TRIGGER_SOURCE}/${_DISTRO}-${_BUILD_NAME}/h
         --fallback_key=main/${_DISTRO}-${_BUILD_NAME}/h
-        || true
 
   # Remove the images created by this build.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    allowFailure: true
     entrypoint: 'bash'
     args:
       - '-c'
       - |
         set +e
         gcloud container images delete -q gcr.io/${PROJECT_ID}/${_IMAGE}:${BUILD_ID}
-        exit 0
 
     # The previous step may not run if the build fails. Garbage collect any
     # images created by this script, and/or similar scripts in this repository.
@@ -95,6 +94,7 @@ steps:
     # can start running as soon as the build does.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     waitFor: [ '-' ]
+    alloFailure: true
     entrypoint: 'bash'
     args:
       - '-c'
@@ -104,4 +104,3 @@ steps:
           --format='get(digest)' --filter='timestamp.datetime < -P4W' | \
           xargs -r printf "gcr.io/${PROJECT_ID}/${_IMAGE}@%s\n" | \
           xargs -r -P 4 -L 32 gcloud container images delete -q --force-delete-tags
-        exit 0
