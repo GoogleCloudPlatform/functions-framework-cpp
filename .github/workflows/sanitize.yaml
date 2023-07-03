@@ -47,8 +47,8 @@ jobs:
         # -DGRPC_* flags.
         run: >
           cmake -S . -B "${{runner.temp}}/build" -GNinja
-          -DCMAKE_CXX_COMPILER=clang++-10
-          -DCMAKE_C_COMPILER=clang-10
+          -DCMAKE_CXX_COMPILER=clang++-14
+          -DCMAKE_C_COMPILER=clang-14
           -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_CXX_FLAGS="-fsanitize=${{matrix.sanitizer}} -DGRPC_TSAN_SUPPRESSED -DGRPC_ASAN_SUPPRESSED"
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
