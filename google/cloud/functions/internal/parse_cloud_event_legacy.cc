@@ -21,6 +21,7 @@
 namespace google::cloud::functions_internal {
 FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 namespace {
+// NOLINTNEXTLINE(misc-no-recursion)
 std::string GetNestedKey(nlohmann::json const& json,
                          std::deque<std::string> path) {
   if (path.empty()) return std::string{};

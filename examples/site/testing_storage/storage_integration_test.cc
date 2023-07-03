@@ -131,6 +131,7 @@ extern "C" size_t CurlOnWriteData(char* ptr, size_t size, size_t nmemb,
   return size * nmemb;
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 HttpResponse HttpEvent(std::string const& url, std::string const& payload) {
   using CurlHandle = std::unique_ptr<CURL, decltype(&curl_easy_cleanup)>;
   using CurlHeaders =
