@@ -45,7 +45,7 @@ jobs:
         run: >
           git ls-files -z |
           grep -zE '\.cc$' |
-          xargs --verbose -P 2 -n 1 -0 clang-tidy-10 -p="${{runner.temp}}/build"
+          xargs --verbose -P 2 -n 1 -0 clang-tidy-14 -p="${{runner.temp}}/build"
 
   werror-build:
     # Using a blank name produces better output on
