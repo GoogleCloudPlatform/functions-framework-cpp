@@ -32,7 +32,7 @@ steps:
     args: ['build', '-t', 'pack', '-f', 'build_scripts/pack.Dockerfile', 'build_scripts']
 
   # Create the docker images for the buildpacks builder.
-  - name: 'gcr.io/kaniko-project/executor:v1.6.0-debug'
+  - name: 'gcr.io/kaniko-project/executor:v1.12.0'
     args: [
         "--context=dir:///workspace/",
         "--dockerfile=build_scripts/Dockerfile",
@@ -46,7 +46,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['pull', 'gcr.io/${PROJECT_ID}/ci/run-image:${BUILD_ID}']
 
-  - name: 'gcr.io/kaniko-project/executor:v1.6.0-debug'
+  - name: 'gcr.io/kaniko-project/executor:v1.12.0'
     args: [
         "--context=dir:///workspace/",
         "--dockerfile=build_scripts/Dockerfile",
