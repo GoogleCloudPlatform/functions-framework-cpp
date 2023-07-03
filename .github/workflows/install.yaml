@@ -7,8 +7,8 @@ on:
 
 jobs:
   static:
-    name: ubuntu-20.04
-    runs-on: ubuntu-20.04
+    name: ubuntu-22.04
+    runs-on: ubuntu-22.04
     steps:
       - name: install-dependencies
         run: sudo apt install ninja-build libboost-dev libboost-program-options-dev nlohmann-json3-dev
@@ -40,8 +40,8 @@ jobs:
         run: "${{runner.temp}}/test_install/build/test_install"
 
   shared:
-    name: ubuntu-20.04-shared
-    runs-on: ubuntu-20.04
+    name: ubuntu-22.04-shared
+    runs-on: ubuntu-22.04
     steps:
       - name: install-dependencies
         run: sudo apt install ninja-build libboost-dev libboost-program-options-dev nlohmann-json3-dev

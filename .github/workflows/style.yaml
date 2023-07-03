@@ -11,7 +11,7 @@ env:
 jobs:
   clang-tidy:
     name: clang-tidy
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: install ninja
         run: sudo apt install ninja-build clang-tidy-10
@@ -51,7 +51,7 @@ jobs:
     # Using a blank name produces better output on
     # the web UI than any other alternative we tried.
     name: " "
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         compiler: [
@@ -99,7 +99,7 @@ jobs:
 
   clang-format:
     name: clang-format
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: clang-format
@@ -109,7 +109,7 @@ jobs:
 
   cmake-format:
     name: cmake-format
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: install cmake-format
@@ -123,7 +123,7 @@ jobs:
 
   generated-files:
     name: generated-files
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: install ninja

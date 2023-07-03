@@ -10,8 +10,8 @@ env:
 
 jobs:
   build-ubuntu-focal:
-    name: ubuntu-20.04
-    runs-on: ubuntu-20.04
+    name: ubuntu-22.04
+    runs-on: ubuntu-22.04
     steps:
     - name: install ninja
       run: sudo apt install ninja-build
@@ -51,8 +51,8 @@ jobs:
   # Verify the howto guides compile correctly, they need a special setup to use the
   # current version of `functions-framework-cpp` through vcpkg.
   build-ubuntu-focal-howto:
-    name: ubuntu-20.04
-    runs-on: ubuntu-20.04
+    name: ubuntu-22.04
+    runs-on: ubuntu-22.04
     steps:
       - name: install ninja
         run: sudo apt install ninja-build
