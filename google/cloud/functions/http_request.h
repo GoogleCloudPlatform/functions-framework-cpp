@@ -97,12 +97,13 @@ class HttpRequest {
     return std::move(remove_header(k));
   }
 
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
   HttpRequest& set_version(int major, int minor) & {
     version_major_ = major;
     version_minor_ = minor;
     return *this;
   }
-  HttpRequest&& set_version(int major, int minor) && {
+  HttpRequest&& set_version(int major, int minor) && {  // NOLINT
     return std::move(set_version(major, minor));
   }
 
