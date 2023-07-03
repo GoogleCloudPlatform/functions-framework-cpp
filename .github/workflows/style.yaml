@@ -103,7 +103,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: clang-format
-        run: git ls-files -z | grep -zE '\.(cc|h)$' | xargs -P 2 -n 50 -0 clang-format-10 -i
+        run: git ls-files -z | grep -zE '\.(cc|h)$' | xargs -P 2 -n 50 -0 clang-format-14 -i
       - name: check-diff
         run: git diff --ignore-submodules=all --color --exit-code .
 
