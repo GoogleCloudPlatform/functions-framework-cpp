@@ -11,10 +11,10 @@ env:
 jobs:
   clang-tidy:
     name: clang-tidy
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: install ninja
-        run: sudo apt install ninja-build clang-tidy-10
+        run: sudo apt install ninja-build clang-tidy-14
       - uses: actions/checkout@v2
       - name: clone-vcpkg
         working-directory: "${{runner.temp}}"
@@ -45,18 +45,18 @@ jobs:
         run: >
           git ls-files -z |
           grep -zE '\.cc$' |
-          xargs --verbose -P 2 -n 1 -0 clang-tidy-10 -p="${{runner.temp}}/build"
+          xargs --verbose -P 2 -n 1 -0 clang-tidy-14 -p="${{runner.temp}}/build"
 
   werror-build:
     # Using a blank name produces better output on
     # the web UI than any other alternative we tried.
     name: " "
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         compiler: [
-          {"cxx": "clang++-10", "cc": "clang-10"},
-          {"cxx": "g++-10", "cc": "gcc-10" },
+          {"cxx": "clang++-14", "cc": "clang-14"},
+          {"cxx": "g++-11", "cc": "gcc-11" },
         ]
     steps:
       - name: install ninja
@@ -99,17 +99,17 @@ jobs:
 
   clang-format:
     name: clang-format
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: clang-format
-        run: git ls-files -z | grep -zE '\.(cc|h)$' | xargs -P 2 -n 50 -0 clang-format-10 -i
+        run: git ls-files -z | grep -zE '\.(cc|h)$' | xargs -P 2 -n 50 -0 clang-format-14 -i
       - name: check-diff
         run: git diff --ignore-submodules=all --color --exit-code .
 
   cmake-format:
     name: cmake-format
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: install cmake-format
@@ -123,7 +123,7 @@ jobs:
 
   generated-files:
     name: generated-files
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: install ninja

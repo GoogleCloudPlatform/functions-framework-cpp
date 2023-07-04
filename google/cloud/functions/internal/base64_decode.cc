@@ -20,6 +20,7 @@
 namespace google::cloud::functions_internal {
 FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 
+// NOLINTNEXTLINE(misc-no-recursion)
 std::string Base64Decode(std::string const& base64) {
   if (base64.size() % 4 != 0) {
     // This should be uncommon, to avoid copying every time, pad only when

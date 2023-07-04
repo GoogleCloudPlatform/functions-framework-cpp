@@ -46,7 +46,7 @@ functions::CloudEvent ParseCloudEventJson(nlohmann::json const& json) {
     event.set_time(json.at("time").get<std::string>());
   }
   if (json.count("data") != 0) {
-    auto d = json.at("data");
+    auto const& d = json.at("data");
     if (d.is_object()) {
       event.set_data(d.dump());
     } else {
