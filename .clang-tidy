@@ -39,6 +39,8 @@
 #      meaningless). It would also warn if `F` accepts by `const&`, which is
 #      another detail that the caller need not care about.
 #
+#  -bugprone-easily-swappable-parameters: Too many false positives.
+#
 Checks: >
   -*,
   bugprone-*,
@@ -57,7 +59,8 @@ Checks: >
   -modernize-use-trailing-return-type,
   -modernize-return-braced-init-list,
   -modernize-avoid-c-arrays,
-  -performance-move-const-arg
+  -performance-move-const-arg,
+  -bugprone-easily-swappable-parameters
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"

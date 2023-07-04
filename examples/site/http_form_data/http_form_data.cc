@@ -81,9 +81,9 @@ gcf::HttpResponse http_form_data(gcf::HttpRequest request) {
     std::vector<absl::string_view> components =
         absl::StrSplit(p, absl::MaxSplits("\r\n\r\n", 2));
     auto const body_size =
-        components.size() == 2 ? components[0].size() : std::size_t(0);
+        components.size() == 2 ? components[0].size() : 0;
 
-    std::vector<std::string> part_headers =
+    std::vector<std::string> const part_headers =
         absl::StrSplit(components[0], "\r\n");
     nlohmann::json descriptor{{"bodySize", body_size},
                               {"headerCount", part_headers.size()}};

@@ -41,7 +41,6 @@ namespace beast = boost::beast;
 namespace http = beast::http;
 using http_response = http::response<http::string_body>;
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 http_response HttpPost(std::string const& host, std::string const& port,
                        std::string const& subject,
                        std::string const& target = "/") {
