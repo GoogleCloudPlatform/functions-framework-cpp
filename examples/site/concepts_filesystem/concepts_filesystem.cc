@@ -13,20 +13,21 @@
 // limitations under the License.
 
 // [START functions_concepts_filesystem]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <filesystem>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse concepts_filesystem(gcf::HttpRequest /*request*/) {  // NOLINT
-  std::string payload;
-  for (auto const& p : std::filesystem::directory_iterator(".")) {
-    payload += p.path().generic_string();
-    payload += "\n";
-  }
-  return gcf::HttpResponse{}
-      .set_header("content-type", "text/plain")
-      .set_payload(payload);
+gcf::Function concepts_filesystem() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
+    std::string payload;
+    for (auto const& p : std::filesystem::directory_iterator(".")) {
+      payload += p.path().generic_string();
+      payload += "\n";
+    }
+    return gcf::HttpResponse{}
+        .set_header("content-type", "text/plain")
+        .set_payload(payload);
+  });
 }
 // [END functions_concepts_filesystem]

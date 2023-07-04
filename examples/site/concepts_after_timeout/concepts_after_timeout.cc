@@ -13,19 +13,20 @@
 // limitations under the License.
 
 // [START functions_concepts_after_timeout]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <chrono>
 #include <iostream>
 #include <thread>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse concepts_after_timeout(gcf::HttpRequest request) {  // NOLINT
+gcf::Function concepts_after_timeout() {
   using std::chrono::minutes;
-  std::cout << "Function running..." << std::endl;
-  if (request.verb() == "GET") std::this_thread::sleep_for(minutes(2));
-  std::cout << "Function completed!" << std::endl;
-  return gcf::HttpResponse{}.set_payload("Function completed!");
+  return gcf::MakeFunction([](gcf::HttpRequest const& request) {
+    std::cout << "Function running..." << std::endl;
+    if (request.verb() == "GET") std::this_thread::sleep_for(minutes(2));
+    std::cout << "Function completed!" << std::endl;
+    return gcf::HttpResponse{}.set_payload("Function completed!");
+  });
 }
 // [END functions_concepts_after_timeout]
