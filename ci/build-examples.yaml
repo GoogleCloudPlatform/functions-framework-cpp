@@ -162,7 +162,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-concepts_after_response'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=concepts_after_response',
       '--path', 'examples/site/concepts_after_response',
       'site-concepts_after_response',
@@ -171,7 +170,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-concepts_after_timeout'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=concepts_after_timeout',
       '--path', 'examples/site/concepts_after_timeout',
       'site-concepts_after_timeout',
@@ -180,7 +178,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-concepts_filesystem'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=concepts_filesystem',
       '--path', 'examples/site/concepts_filesystem',
       'site-concepts_filesystem',
@@ -189,7 +186,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-concepts_request'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=concepts_request',
       '--path', 'examples/site/concepts_request',
       'site-concepts_request',
@@ -198,7 +194,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-concepts_stateless'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=concepts_stateless',
       '--path', 'examples/site/concepts_stateless',
       'site-concepts_stateless',

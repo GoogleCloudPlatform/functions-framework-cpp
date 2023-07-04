@@ -32,11 +32,11 @@ namespace gcf = ::google::cloud::functions;
 namespace gcf_internal = ::google::cloud::functions_internal;
 
 extern gcf::HttpResponse bearer_token(gcf::HttpRequest request);
-extern gcf::HttpResponse concepts_after_response(gcf::HttpRequest request);
-extern gcf::HttpResponse concepts_after_timeout(gcf::HttpRequest request);
-extern gcf::HttpResponse concepts_filesystem(gcf::HttpRequest request);
-extern gcf::HttpResponse concepts_request(gcf::HttpRequest request);
-extern gcf::HttpResponse concepts_stateless(gcf::HttpRequest request);
+extern gcf::Function concepts_after_response();
+extern gcf::Function concepts_after_timeout();
+extern gcf::Function concepts_filesystem();
+extern gcf::Function concepts_request();
+extern gcf::Function concepts_stateless();
 extern gcf::HttpResponse env_vars(gcf::HttpRequest request);
 extern gcf::HttpResponse hello_world_error(gcf::HttpRequest request);
 extern gcf::HttpResponse hello_world_get(gcf::HttpRequest request);
@@ -156,28 +156,34 @@ lUtj+/nH3HDQjM4ltYfTPUg=
 }
 
 TEST(ExamplesSiteTest, ConceptsAfterResponse) {
-  auto actual = concepts_after_response(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("Hello World!"));
+  auto function = concepts_after_response();
+  auto const actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_THAT(actual.body(), HasSubstr("Hello World!"));
 }
 
 TEST(ExamplesSiteTest, ConceptsAfterTimeout) {
-  auto actual = concepts_after_timeout(gcf::HttpRequest{}.set_verb("PUT"));
-  EXPECT_THAT(actual.payload(), HasSubstr("Function completed!"));
+  auto function = concepts_after_timeout();
+  auto const actual =
+      TriggerFunctionHttp(function, gcf::HttpRequest{}.set_verb("PUT"));
+  EXPECT_THAT(actual.body(), HasSubstr("Function completed!"));
 }
 
 TEST(ExamplesSiteTest, ConceptsFilesystem) {
-  auto actual = concepts_filesystem(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), Not(IsEmpty()));
+  auto function = concepts_filesystem();
+  auto const actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_THAT(actual.body(), Not(IsEmpty()));
 }
 
 TEST(ExamplesSiteTest, ConceptsRequest) {
-  auto actual = concepts_request(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("Received code"));
+  auto function = concepts_request();
+  auto const actual =  TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_THAT(actual.body(), HasSubstr("Received code"));
 }
 
 TEST(ExamplesSiteTest, ConceptsStateless) {
-  auto actual = concepts_stateless(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("Instance execution count: "));
+  auto function = concepts_stateless();
+  auto const actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_THAT(actual.body(), HasSubstr("Instance execution count: "));
 }
 
 TEST(ExamplesSiteTest, EnvVars) {

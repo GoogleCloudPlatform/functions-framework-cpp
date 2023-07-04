@@ -13,21 +13,21 @@
 // limitations under the License.
 
 // [START functions_concepts_after_response]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <future>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse concepts_after_response(
-    gcf::HttpRequest /*request*/) {  // NOLINT
-  (void)std::async(std::launch::async, [] {
-    // This code may fail to complete, or even fail to start at all.
-    auto constexpr kIterations = 10;
-    int sum = 0;
-    for (int i = 0; i != kIterations; ++i) sum += i;
-    return sum;
+gcf::Function concepts_after_response() {
+  return gcf::MakeFunction([](gcf::HttpRequest const&) {
+    (void)std::async(std::launch::async, [] {
+      // This code may fail to complete, or even fail to start at all.
+      auto constexpr kIterations = 10;
+      int sum = 0;
+      for (int i = 0; i != kIterations; ++i) sum += i;
+      return sum;
+    });
+    return gcf::HttpResponse{}.set_payload("Hello World!");
   });
-  return gcf::HttpResponse{}.set_payload("Hello World!");
 }
 // [END functions_concepts_after_response]

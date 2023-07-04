@@ -13,8 +13,7 @@
 // limitations under the License.
 
 // [START functions_concepts_stateless]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <atomic>
 #include <string>
 
@@ -24,8 +23,10 @@ namespace {
 std::atomic<int> count{0};
 }  // namespace
 
-gcf::HttpResponse concepts_stateless(gcf::HttpRequest /*request*/) {  // NOLINT
-  return gcf::HttpResponse{}.set_payload("Instance execution count: " +
-                                         std::to_string(++count));
+gcf::Function concepts_stateless() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
+    return gcf::HttpResponse{}.set_payload("Instance execution count: " +
+                                           std::to_string(++count));
+  });
 }
 // [END functions_concepts_stateless]
