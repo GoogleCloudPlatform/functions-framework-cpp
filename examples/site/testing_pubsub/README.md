@@ -19,17 +19,19 @@ We will use this [function][snippet source] throughput this guide:
 
 namespace gcf = ::google::cloud::functions;
 
+void hello_world_pubsub_impl(gcf::CloudEvent const& event) {
+  if (event.data_content_type().value_or("") != "application/json") {
+    BOOST_LOG_TRIVIAL(error) << "expected application/json data";
+    return;
+  }
+  auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
+  auto const name = cppcodec::base64_rfc4648::decode<std::string>(
+      payload["message"]["data"].get<std::string>());
+  BOOST_LOG_TRIVIAL(info) << "Hello " << (name.empty() ? "World" : name);
+}
+
 gcf::Function hello_world_pubsub() {
-  return gcf::MakeFunction([](gcf::CloudEvent const& event) {
-    if (event.data_content_type().value_or("") != "application/json") {
-      BOOST_LOG_TRIVIAL(error) << "expected application/json data";
-      return;
-    }
-    auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
-    auto const name = cppcodec::base64_rfc4648::decode<std::string>(
-        payload["message"]["data"].get<std::string>());
-    BOOST_LOG_TRIVIAL(info) << "Hello " << (name.empty() ? "World" : name);
-  });
+  return gcf::MakeFunction(hello_world_pubsub_impl);
 }
 ```
 <!-- inject-snippet-end -->
