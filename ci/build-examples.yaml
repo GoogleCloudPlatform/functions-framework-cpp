@@ -153,7 +153,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-bearer_token'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=bearer_token',
       '--path', 'examples/site/bearer_token',
       'site-bearer_token',
@@ -306,7 +305,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-log_stackdriver'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'GOOGLE_FUNCTION_TARGET=log_stackdriver',
       '--path', 'examples/site/log_stackdriver',
       'site-log_stackdriver',
@@ -315,7 +313,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-pubsub_subscribe'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'GOOGLE_FUNCTION_TARGET=pubsub_subscribe',
       '--path', 'examples/site/pubsub_subscribe',
       'site-pubsub_subscribe',
@@ -324,7 +321,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-tips_gcp_apis'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=tips_gcp_apis',
       '--path', 'examples/site/tips_gcp_apis',
       'site-tips_gcp_apis',
@@ -333,7 +329,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-tips_infinite_retries'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'GOOGLE_FUNCTION_TARGET=tips_infinite_retries',
       '--path', 'examples/site/tips_infinite_retries',
       'site-tips_infinite_retries',
@@ -342,7 +337,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-tips_lazy_globals'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=tips_lazy_globals',
       '--path', 'examples/site/tips_lazy_globals',
       'site-tips_lazy_globals',
@@ -351,7 +345,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-tips_retry'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent',
       '--env', 'GOOGLE_FUNCTION_TARGET=tips_retry',
       '--path', 'examples/site/tips_retry',
       'site-tips_retry',
@@ -360,7 +353,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-tips_scopes'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=tips_scopes',
       '--path', 'examples/site/tips_scopes',
       'site-tips_scopes',

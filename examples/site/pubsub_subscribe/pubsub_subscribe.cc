@@ -13,11 +13,15 @@
 // limitations under the License.
 
 // [START functions_pubsub_subscribe]
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <iostream>
 
-void pubsub_subscribe(google::cloud::functions::CloudEvent event) {  // NOLINT
-  // The framework converts the data from base64 if needed.
-  std::cout << event.data().value_or("") << "\n";
+namespace gcf = ::google::cloud::functions;
+
+gcf::Function pubsub_subscribe() {
+  return gcf::MakeFunction([](gcf::CloudEvent const& event) {
+    // The framework converts the data from base64 if needed.
+    std::cout << event.data().value_or("") << "\n";
+  });
 }
 // [END functions_pubsub_subscribe]

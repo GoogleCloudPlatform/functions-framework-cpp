@@ -13,8 +13,7 @@
 // limitations under the License.
 
 // [START functions_bearer_token]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <google/cloud/storage/oauth2/google_credentials.h>
 #include <curl/curl.h>
 #include <cstdlib>
@@ -31,7 +30,7 @@ gcf::HttpResponse HttpGet(std::string const& url,
                           std::string const& authorization_header);
 }  // namespace
 
-gcf::HttpResponse bearer_token(gcf::HttpRequest request) {  // NOLINT
+gcf::HttpResponse bearer_token_impl(gcf::HttpRequest const& request) {
   static auto const kTargetUrl = [] {
     auto const* target_url = std::getenv("TARGET_URL");
     if (target_url != nullptr) return std::string(target_url);
@@ -61,6 +60,8 @@ gcf::HttpResponse bearer_token(gcf::HttpRequest request) {  // NOLINT
   os << "Error creating authorization header: " << std::move(header).status();
   throw std::runtime_error(std::move(os).str());
 }
+
+gcf::Function bearer_token() { return gcf::MakeFunction(bearer_token_impl); }
 // [END functions_bearer_token]
 
 namespace {
