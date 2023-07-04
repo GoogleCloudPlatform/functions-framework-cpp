@@ -176,7 +176,7 @@ TEST(ExamplesSiteTest, ConceptsFilesystem) {
 
 TEST(ExamplesSiteTest, ConceptsRequest) {
   auto function = concepts_request();
-  auto const actual =  TriggerFunctionHttp(function, gcf::HttpRequest{});
+  auto const actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
   EXPECT_THAT(actual.body(), HasSubstr("Received code"));
 }
 
