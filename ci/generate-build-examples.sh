@@ -113,6 +113,9 @@ site_example() {
   if grep -E -q 'gcf::CloudEvent|google::cloud::functions::CloudEvent' ${example}/*; then
     signature="cloudevent"
   fi
+  if grep -E -q 'gcf::Function|google::cloud::functions::Function' ${example}/*; then
+    signature="declarative"
+  fi
   local container="site-${function}"
 
   cat <<_EOF_

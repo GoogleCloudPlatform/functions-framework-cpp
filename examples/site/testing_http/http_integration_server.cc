@@ -15,8 +15,8 @@
 #include <google/cloud/functions/framework.h>
 
 namespace gcf = ::google::cloud::functions;
-extern gcf::HttpResponse hello_world_http(gcf::HttpRequest request);
+extern gcf::Function hello_world_http();
 
 int main(int argc, char* argv[]) {
-  return gcf::Run(argc, argv, hello_world_http);
+  return gcf::Run(argc, argv, hello_world_http());
 }

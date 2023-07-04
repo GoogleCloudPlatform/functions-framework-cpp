@@ -24,7 +24,7 @@
 #include <sstream>
 
 namespace gcf = ::google::cloud::functions;
-extern void hello_world_storage(gcf::CloudEvent event);
+extern void hello_world_storage_impl(gcf::CloudEvent const& event);
 
 namespace {
 
@@ -74,7 +74,7 @@ TEST(StorageUnitTest, Basic) {
     data["name"] = test.name;
     event.set_data(data.dump());
     stream->str({});
-    EXPECT_NO_THROW(hello_world_storage(event));
+    EXPECT_NO_THROW(hello_world_storage_impl(event));
     auto log_lines = stream->str();
     EXPECT_THAT(log_lines, HasSubstr(test.expected));
   }

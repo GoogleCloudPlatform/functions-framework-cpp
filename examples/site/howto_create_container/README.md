@@ -30,13 +30,12 @@ In this guide we will be using this [function][snippet source]:
 <!-- inject-snippet-start -->
 [snippet source]: /examples/site/hello_world_http/hello_world_http.cc
 ```cc
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <nlohmann/json.hpp>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse hello_world_http(gcf::HttpRequest request) {
+gcf::HttpResponse hello_world_http_impl(gcf::HttpRequest request) {
   auto greeting = [r = std::move(request)] {
     auto request_json = nlohmann::json::parse(r.payload(), /*cb=*/nullptr,
                                               /*allow_exceptions=*/false);
@@ -49,6 +48,10 @@ gcf::HttpResponse hello_world_http(gcf::HttpRequest request) {
   return gcf::HttpResponse{}
       .set_header("content-type", "text/plain")
       .set_payload(greeting());
+}
+
+gcf::Function hello_world_http() {
+  return gcf::MakeFunction(hello_world_http_impl);
 }
 ```
 <!-- inject-snippet-end -->
@@ -85,7 +88,6 @@ containing your function:
 ```shell
 pack build \
     --builder gcr.io/buildpacks/builder:latest \
-    --env GOOGLE_FUNCTION_SIGNATURE_TYPE=http \
     --env GOOGLE_FUNCTION_TARGET=hello_world_http \
     --path examples/site/hello_world_http \
     gcf-cpp-hello-world-http

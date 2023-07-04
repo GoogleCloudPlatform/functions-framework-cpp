@@ -15,8 +15,8 @@
 #include <google/cloud/functions/framework.h>
 
 namespace gcf = ::google::cloud::functions;
-extern void hello_world_storage(gcf::CloudEvent event);
+extern gcf::Function hello_world_storage();
 
 int main(int argc, char* argv[]) {
-  return gcf::Run(argc, argv, hello_world_storage);
+  return gcf::Run(argc, argv, hello_world_storage());
 }

@@ -13,13 +13,13 @@ We will use this [function][snippet source] throughout this guide:
 <!-- inject-snippet-start -->
 [snippet source]: /examples/site/hello_world_storage/hello_world_storage.cc
 ```cc
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <boost/log/trivial.hpp>
 #include <nlohmann/json.hpp>
 
 namespace gcf = ::google::cloud::functions;
 
-void hello_world_storage(gcf::CloudEvent event) {
+void hello_world_storage_impl(gcf::CloudEvent const& event) {
   if (event.data_content_type().value_or("") != "application/json") {
     BOOST_LOG_TRIVIAL(error) << "expected application/json data";
     return;
@@ -33,6 +33,10 @@ void hello_world_storage(gcf::CloudEvent event) {
                           << payload.value("metageneration", "");
   BOOST_LOG_TRIVIAL(info) << "Created: " << payload.value("timeCreated", "");
   BOOST_LOG_TRIVIAL(info) << "Updated: " << payload.value("updated", "");
+}
+
+gcf::Function hello_world_storage() {
+  return gcf::MakeFunction(hello_world_storage_impl);
 }
 ```
 <!-- inject-snippet-end -->
