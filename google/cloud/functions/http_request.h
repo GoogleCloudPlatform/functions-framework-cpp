@@ -102,7 +102,7 @@ class HttpRequest {
     version_minor_ = minor;
     return *this;
   }
-  HttpRequest&& set_version(int major, int minor) && {  // NOLINT
+  HttpRequest&& set_version(int major, int minor) && {
     return std::move(set_version(major, minor));
   }
 
