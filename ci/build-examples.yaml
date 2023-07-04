@@ -202,7 +202,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-env_vars'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=env_vars',
       '--path', 'examples/site/env_vars',
       'site-env_vars',
@@ -211,7 +210,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-hello_world_error'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_error',
       '--path', 'examples/site/hello_world_error',
       'site-hello_world_error',
@@ -220,7 +218,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-hello_world_get'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_get',
       '--path', 'examples/site/hello_world_get',
       'site-hello_world_get',
@@ -253,7 +250,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-http_content'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=http_content',
       '--path', 'examples/site/http_content',
       'site-http_content',
@@ -262,7 +258,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-http_cors'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=http_cors',
       '--path', 'examples/site/http_cors',
       'site-http_cors',
@@ -271,7 +266,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-http_cors_auth'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=http_cors_auth',
       '--path', 'examples/site/http_cors_auth',
       'site-http_cors_auth',
@@ -280,7 +274,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-http_form_data'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=http_form_data',
       '--path', 'examples/site/http_form_data',
       'site-http_form_data',
@@ -289,7 +282,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-http_method'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=http_method',
       '--path', 'examples/site/http_method',
       'site-http_method',
@@ -298,7 +290,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-http_xml'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=http_xml',
       '--path', 'examples/site/http_xml',
       'site-http_xml',
@@ -307,7 +298,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-log_helloworld'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=log_helloworld',
       '--path', 'examples/site/log_helloworld',
       'site-log_helloworld',

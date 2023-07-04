@@ -13,23 +13,24 @@
 // limitations under the License.
 
 // [START functions_log_helloworld]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <nlohmann/json.hpp>
 #include <iostream>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse log_helloworld(gcf::HttpRequest /*request*/) {  // NOLINT
-  std::cout << "This is stdout\n";
-  std::cerr << "This is stderr\n";
+gcf::Function log_helloworld() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
+    std::cout << "This is stdout\n";
+    std::cerr << "This is stderr\n";
 
-  std::cerr << nlohmann::json{{"message", "This has ERROR severity"},
-                              {"severity", "error"}}
-                   .dump()
-            << "\n";
-  return gcf::HttpResponse{}
-      .set_header("content-type", "text/plain")
-      .set_payload("Hello Logging!");
+    std::cerr << nlohmann::json{{"message", "This has ERROR severity"},
+                                {"severity", "error"}}
+                     .dump()
+              << "\n";
+    return gcf::HttpResponse{}
+        .set_header("content-type", "text/plain")
+        .set_payload("Hello Logging!");
+  });
 }
 // [END functions_log_helloworld]

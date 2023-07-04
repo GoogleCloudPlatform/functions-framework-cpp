@@ -13,25 +13,26 @@
 // limitations under the License.
 
 // [START functions_http_xml]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <sstream>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse http_xml(gcf::HttpRequest request) {  // NOLINT
-  std::istringstream is(request.payload());
-  // Use the Boost.PropertyTree XML parser, this is adequate for a small
-  // example, but application developers may want to consider a more robust
-  // parser for production code.
-  boost::property_tree::ptree data;
-  boost::property_tree::read_xml(is, data);
+gcf::Function http_xml() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& request) {
+    std::istringstream is(request.payload());
+    // Use the Boost.PropertyTree XML parser, as this is adequate for a small
+    // example. Application developers may want to consider a more robust
+    // parser for production code.
+    boost::property_tree::ptree data;
+    boost::property_tree::read_xml(is, data);
 
-  auto name = data.get<std::string>("name", "World");
-  return gcf::HttpResponse{}
-      .set_header("content-type", "text/plain")
-      .set_payload("Hello " + name);
+    auto name = data.get<std::string>("name", "World");
+    return gcf::HttpResponse{}
+        .set_header("content-type", "text/plain")
+        .set_payload("Hello " + name);
+  });
 }
 // [END functions_http_xml]

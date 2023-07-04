@@ -13,27 +13,28 @@
 // limitations under the License.
 
 // [START functions_http_cors]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse http_cors(gcf::HttpRequest request) {  // NOLINT
-  // Set CORS headers for preflight request
-  if (request.verb() == "OPTIONS") {
-    // Allows GET requests from any origin with the Content-Type header and
-    // caches preflight response for an 3600s
-    return gcf::HttpResponse{}
-        .set_result(gcf::HttpResponse::kNoContent)
-        .set_header("Access-Control-Allow-Origin", "*")
-        .set_header("Access-Control-Allow-Methods", "GET")
-        .set_header("Access-Control-Allow-Headers", "Content-Type")
-        .set_header("Access-Control-Max-Age", "3600");
-  }
+gcf::Function http_cors() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& request) {
+    // Set CORS headers for preflight request
+    if (request.verb() == "OPTIONS") {
+      // Allows GET requests from any origin with the Content-Type header and
+      // caches preflight response for an 3600s
+      return gcf::HttpResponse{}
+          .set_result(gcf::HttpResponse::kNoContent)
+          .set_header("Access-Control-Allow-Origin", "*")
+          .set_header("Access-Control-Allow-Methods", "GET")
+          .set_header("Access-Control-Allow-Headers", "Content-Type")
+          .set_header("Access-Control-Max-Age", "3600");
+    }
 
-  return gcf::HttpResponse{}
-      .set_header("Access-Control-Allow-Origin", "*")
-      .set_header("content-type", "text/plain")
-      .set_payload("Hello World!");
+    return gcf::HttpResponse{}
+        .set_header("Access-Control-Allow-Origin", "*")
+        .set_header("content-type", "text/plain")
+        .set_payload("Hello World!");
+  });
 }
 // [END functions_http_cors]

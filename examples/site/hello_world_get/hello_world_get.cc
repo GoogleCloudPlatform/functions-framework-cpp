@@ -13,16 +13,15 @@
 // limitations under the License.
 
 // [START functions_helloworld_get]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 
 namespace gcf = ::google::cloud::functions;
 
-// Though not used in this example, the request is passed by value to support
-// applications that move-out its data.
-gcf::HttpResponse hello_world_get(gcf::HttpRequest) {  // NOLINT
-  return gcf::HttpResponse{}
-      .set_header("content-type", "text/plain")
-      .set_payload("Hello World!");
+gcf::Function hello_world_get() {
+  return gcf::MakeFunction([](gcf::HttpRequest const&) {
+    return gcf::HttpResponse{}
+        .set_header("content-type", "text/plain")
+        .set_payload("Hello World!");
+  });
 }
 // [END functions_helloworld_get]

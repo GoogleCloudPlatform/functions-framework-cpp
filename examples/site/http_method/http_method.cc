@@ -13,20 +13,21 @@
 // limitations under the License.
 
 // [START functions_http_method]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse http_method(gcf::HttpRequest request) {  // NOLINT
-  if (request.verb() == "GET") {
-    return gcf::HttpResponse{}
-        .set_header("content-type", "text/plain")
-        .set_payload("Hello World!");
-  }
+gcf::Function http_method() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& request) {
+    if (request.verb() == "GET") {
+      return gcf::HttpResponse{}
+          .set_header("content-type", "text/plain")
+          .set_payload("Hello World!");
+    }
 
-  return gcf::HttpResponse{}.set_result(
-      request.verb() == "POST" ? gcf::HttpResponse::kForbidden
-                               : gcf::HttpResponse::kMethodNotAllowed);
+    return gcf::HttpResponse{}.set_result(
+        request.verb() == "POST" ? gcf::HttpResponse::kForbidden
+                                 : gcf::HttpResponse::kMethodNotAllowed);
+  });
 }
 // [END functions_http_method]

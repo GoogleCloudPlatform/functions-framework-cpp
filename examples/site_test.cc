@@ -37,19 +37,19 @@ extern gcf::Function concepts_after_timeout();
 extern gcf::Function concepts_filesystem();
 extern gcf::Function concepts_request();
 extern gcf::Function concepts_stateless();
-extern gcf::HttpResponse env_vars(gcf::HttpRequest request);
-extern gcf::HttpResponse hello_world_error(gcf::HttpRequest request);
-extern gcf::HttpResponse hello_world_get(gcf::HttpRequest request);
+extern gcf::Function env_vars();
+extern gcf::Function hello_world_error();
+extern gcf::Function hello_world_get();
 extern gcf::Function hello_world_http();
 extern gcf::Function hello_world_pubsub();
 extern gcf::Function hello_world_storage();
-extern gcf::HttpResponse http_content(gcf::HttpRequest request);
-extern gcf::HttpResponse http_cors(gcf::HttpRequest request);
-extern gcf::HttpResponse http_cors_auth(gcf::HttpRequest request);
-extern gcf::HttpResponse http_form_data(gcf::HttpRequest request);
-extern gcf::HttpResponse http_method(gcf::HttpRequest request);
-extern gcf::HttpResponse http_xml(gcf::HttpRequest request);
-extern gcf::HttpResponse log_helloworld(gcf::HttpRequest request);
+extern gcf::Function http_content();
+extern gcf::Function http_cors();
+extern gcf::Function http_cors_auth();
+extern gcf::Function http_form_data();
+extern gcf::Function http_method();
+extern gcf::Function http_xml();
+extern gcf::Function log_helloworld();
 extern void log_stackdriver(gcf::CloudEvent event);
 extern void pubsub_subscribe(gcf::CloudEvent event);
 extern gcf::HttpResponse tips_gcp_apis(gcf::HttpRequest request);
@@ -67,6 +67,7 @@ using ::testing::IsEmpty;
 auto TriggerFunctionHttp(gcf::Function const& function,
                          gcf::HttpRequest const& r) {
   gcf_internal::BeastRequest request;
+  request.method_string(r.verb());
   request.target(r.target());
   request.body() = r.payload();
   for (auto const& [k, v] : r.headers()) request.insert(k, v);
@@ -188,28 +189,32 @@ TEST(ExamplesSiteTest, ConceptsStateless) {
 
 TEST(ExamplesSiteTest, EnvVars) {
   google::cloud::functions_internal::SetEnv("FOO", std::nullopt);
-  auto actual = env_vars(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), AllOf(HasSubstr("FOO"), HasSubstr("not set")));
+  auto function = env_vars();
+  auto actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_THAT(actual.body(), AllOf(HasSubstr("FOO"), HasSubstr("not set")));
 
   google::cloud::functions_internal::SetEnv("FOO", "test-value");
-  actual = env_vars(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("test-value"));
+  actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_THAT(actual.body(), HasSubstr("test-value"));
 }
 
 TEST(ExamplesSiteTest, HelloWorldError) {
-  auto actual = hello_world_error(gcf::HttpRequest{});
-  EXPECT_EQ(actual.payload(), "Hello World!");
+  auto function = hello_world_error();
+  auto actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_EQ(actual.body(), "Hello World!");
 
-  EXPECT_THROW(
-      hello_world_error(gcf::HttpRequest{}.set_target("/throw/exception")),
-      std::exception);
-  auto error = hello_world_error(gcf::HttpRequest{}.set_target("/return500"));
-  EXPECT_EQ(error.result(), gcf::HttpResponse::kInternalServerError);
+  actual = TriggerFunctionHttp(
+      function, gcf::HttpRequest{}.set_target("/throw/exception"));
+  EXPECT_EQ(actual.result_int(), gcf::HttpResponse::kInternalServerError);
+  auto error = TriggerFunctionHttp(function,
+                                   gcf::HttpRequest{}.set_target("/return500"));
+  EXPECT_EQ(error.result_int(), gcf::HttpResponse::kInternalServerError);
 }
 
 TEST(ExamplesSiteTest, HelloWorldGet) {
-  auto actual = hello_world_get(gcf::HttpRequest{});
-  EXPECT_EQ(actual.payload(), "Hello World!");
+  auto function = hello_world_get();
+  auto actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_EQ(actual.body(), "Hello World!");
 }
 
 TEST(ExamplesSiteTest, HelloWorlHttp) {
@@ -287,7 +292,7 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
   struct TestCase {
     std::string name;
     std::string body;
-  } cases[] = {
+  } const cases[] = {
       {"text", kBodyDataText},
       {"json", kBodyDataJson},
   };
@@ -359,7 +364,7 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
   struct TestCase {
     std::string name;
     std::string body;
-  } cases[] = {
+  } const cases[] = {
       {"base", base.dump()},
       {"text", kBodyDataText},
       {"json", kBodyDataJson},
@@ -385,41 +390,47 @@ TEST(ExamplesSiteTest, HttpContent) {
         .set_payload(std::move(payload));
   };
 
-  auto actual = http_content(
-      make_request("application/json", R"js({ "name": "Foo" })js"));
-  EXPECT_THAT(actual.payload(), "Hello Foo");
+  auto function = http_content();
+  auto actual = TriggerFunctionHttp(
+      function, make_request("application/json", R"js({ "name": "Foo" })js"));
+  EXPECT_THAT(actual.body(), "Hello Foo");
 
-  actual = http_content(make_request("text/plain", "Bar"));
-  EXPECT_THAT(actual.payload(), "Hello Bar");
+  actual = TriggerFunctionHttp(function, make_request("text/plain", "Bar"));
+  EXPECT_THAT(actual.body(), "Hello Bar");
 
-  actual = http_content(make_request("application/x-www-form-urlencoded",
-                                     "id=1&name=Baz%20Qux&value=x"));
-  EXPECT_THAT(actual.payload(), "Hello Baz Qux");
+  actual = TriggerFunctionHttp(function,
+                               make_request("application/x-www-form-urlencoded",
+                                            "id=1&name=Baz%20Qux&value=x"));
+  EXPECT_THAT(actual.body(), "Hello Baz Qux");
 
-  actual = http_content(make_request("application/x-www-form-urlencoded",
-                                     "id=1&name=Baz%Qux&value=x"));
-  EXPECT_THAT(actual.payload(), "Hello Baz%Qux");
+  actual = TriggerFunctionHttp(function,
+                               make_request("application/x-www-form-urlencoded",
+                                            "id=1&name=Baz%Qux&value=x"));
+  EXPECT_THAT(actual.body(), "Hello Baz%Qux");
 }
 
 TEST(ExamplesSiteTest, HttpCors) {
-  auto actual = http_cors(gcf::HttpRequest{}.set_verb("OPTIONS"));
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Methods"), "GET");
+  auto function = http_cors();
+  auto actual =
+      TriggerFunctionHttp(function, gcf::HttpRequest{}.set_verb("OPTIONS"));
+  std::cout << "DEBUG DEBUG " << actual << std::endl;
+  EXPECT_EQ(actual.at("Access-Control-Allow-Methods"), "GET");
 
-  actual = http_cors(gcf::HttpRequest{}.set_verb("GET"));
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Origin"), "*");
-  EXPECT_EQ(actual.payload(), "Hello World!");
+  actual = TriggerFunctionHttp(function, gcf::HttpRequest{}.set_verb("GET"));
+  EXPECT_EQ(actual.at("Access-Control-Allow-Origin"), "*");
+  EXPECT_EQ(actual.body(), "Hello World!");
 }
 
 TEST(ExamplesSiteTest, HttpCorsAuth) {
-  auto actual = http_cors_auth(gcf::HttpRequest{}.set_verb("OPTIONS"));
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Headers"),
-            "Authorization");
+  auto function = http_cors_auth();
+  auto actual =
+      TriggerFunctionHttp(function, gcf::HttpRequest{}.set_verb("OPTIONS"));
+  EXPECT_EQ(actual.at("Access-Control-Allow-Headers"), "Authorization");
 
-  actual = http_cors_auth(gcf::HttpRequest{}.set_verb("GET"));
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Origin"),
-            "https://mydomain.com");
-  EXPECT_EQ(actual.headers().at("Access-Control-Allow-Credentials"), "true");
-  EXPECT_EQ(actual.payload(), "Hello World!");
+  actual = TriggerFunctionHttp(function, gcf::HttpRequest{}.set_verb("GET"));
+  EXPECT_EQ(actual.at("Access-Control-Allow-Origin"), "https://mydomain.com");
+  EXPECT_EQ(actual.at("Access-Control-Allow-Credentials"), "true");
+  EXPECT_EQ(actual.body(), "Hello World!");
 }
 
 TEST(ExamplesSiteTest, HttpFormData) {
@@ -438,16 +449,18 @@ TEST(ExamplesSiteTest, HttpFormData) {
       ;
 
   // Test with both quoted and unquoted boundaries.
+  auto function = http_form_data();
   for (auto const* content_type :
        {R"""(multipart/form-data;boundary="boundary")""",
         R"""(multipart/form-data;boundary=boundary)"""}) {
     SCOPED_TRACE("Testing with content_type = " + std::string(content_type));
-    auto actual = http_form_data(gcf::HttpRequest{}
-                                     .add_header("content-type", content_type)
-                                     .set_payload(kPayload)
-                                     .set_verb("POST"));
-    ASSERT_EQ(actual.result(), gcf::HttpResponse::kOkay);
-    auto const actual_payload = nlohmann::json::parse(actual.payload());
+    auto actual = TriggerFunctionHttp(
+        function, gcf::HttpRequest{}
+                      .add_header("content-type", content_type)
+                      .set_payload(kPayload)
+                      .set_verb("POST"));
+    ASSERT_EQ(actual.result_int(), gcf::HttpResponse::kOkay);
+    auto const actual_payload = nlohmann::json::parse(actual.body());
     auto const expected_payload = nlohmann::json{
         {"parts",
          {
@@ -460,34 +473,39 @@ TEST(ExamplesSiteTest, HttpFormData) {
     EXPECT_EQ(actual_payload, expected_payload);
   }
 
-  EXPECT_EQ(http_form_data(gcf::HttpRequest{}).result(),
+  EXPECT_EQ(TriggerFunctionHttp(function, gcf::HttpRequest{}).result_int(),
             gcf::HttpResponse::kMethodNotAllowed);
-  EXPECT_EQ(http_form_data(gcf::HttpRequest{}.set_verb("POST")).result(),
+  EXPECT_EQ(TriggerFunctionHttp(function, gcf::HttpRequest{}.set_verb("POST"))
+                .result_int(),
             gcf::HttpResponse::kBadRequest);
-  EXPECT_EQ(http_form_data(gcf::HttpRequest{}.set_verb("POST").add_header(
-                               "content-type", "application/json"))
-                .result(),
+  EXPECT_EQ(TriggerFunctionHttp(function,
+                                gcf::HttpRequest{}.set_verb("POST").add_header(
+                                    "content-type", "application/json"))
+                .result_int(),
             gcf::HttpResponse::kBadRequest);
-  EXPECT_THROW(
-      http_form_data(gcf::HttpRequest{}
-                         .add_header("content-type", "multipart/form-data")
-                         .set_verb("POST")),
-      std::exception);
+  EXPECT_EQ(TriggerFunctionHttp(
+                function, gcf::HttpRequest{}
+                              .add_header("content-type", "multipart/form-data")
+                              .set_verb("POST"))
+                .result_int(),
+            gcf::HttpResponse::kInternalServerError);
 }
 
 TEST(ExamplesSiteTest, HttpMethod) {
   struct Test {
     std::string verb;
     int result;
-  } tests[] = {
+  } const tests[] = {
       {"GET", gcf::HttpResponse::kOkay},
       {"POST", gcf::HttpResponse::kForbidden},
       {"PUT", gcf::HttpResponse::kMethodNotAllowed},
   };
 
+  auto function = http_method();
   for (auto const& test : tests) {
-    auto actual = http_method(gcf::HttpRequest{}.set_verb(test.verb));
-    EXPECT_EQ(actual.result(), test.result);
+    auto actual =
+        TriggerFunctionHttp(function, gcf::HttpRequest{}.set_verb(test.verb));
+    EXPECT_EQ(actual.result_int(), test.result);
   }
 }
 
@@ -496,24 +514,26 @@ TEST(ExamplesSiteTest, HttpXml) {
     return gcf::HttpRequest{}.set_payload(std::move(payload));
   };
 
-  auto actual = http_xml(make_request(R"xml(
+  auto function = http_xml();
+  auto actual = TriggerFunctionHttp(function, make_request(R"xml(
 <name>Foo</name>
 <unused1>Bar</unused1>
 <unused2>Baz</unused2>
 )xml"));
-  EXPECT_EQ(actual.payload(), "Hello Foo");
+  EXPECT_EQ(actual.body(), "Hello Foo");
 
-  actual = http_xml(make_request(R"xml(
+  actual = TriggerFunctionHttp(function, make_request(R"xml(
 <unused>Foo</unused>
 <unused1>Bar</unused1>
 <unused2>Baz</unused2>
 )xml"));
-  EXPECT_EQ(actual.payload(), "Hello World");
+  EXPECT_EQ(actual.body(), "Hello World");
 }
 
 TEST(ExamplesSiteTest, LogHelloWorld) {
-  auto actual = log_helloworld(gcf::HttpRequest{});
-  EXPECT_EQ(actual.payload(), "Hello Logging!");
+  auto function = log_helloworld();
+  auto actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_EQ(actual.body(), "Hello Logging!");
 }
 
 TEST(ExamplesSiteTest, LogStackdriver) {
