@@ -13,8 +13,7 @@
 // limitations under the License.
 
 // [START functions_http_form_data]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <absl/strings/str_split.h>
 #include <absl/strings/string_view.h>
 #include <nlohmann/json.hpp>
@@ -59,7 +58,7 @@ class FormDataDelimiter {
 
 }  // namespace
 
-gcf::HttpResponse http_form_data(gcf::HttpRequest request) {
+gcf::HttpResponse http_form_data_impl(gcf::HttpRequest request) {
   if (request.verb() != "POST") {
     return gcf::HttpResponse{}.set_result(gcf::HttpResponse::kMethodNotAllowed);
   }
@@ -117,6 +116,10 @@ gcf::HttpResponse http_form_data(gcf::HttpRequest request) {
   return gcf::HttpResponse{}
       .set_header("content-type", "application/json")
       .set_payload(result.dump());
+}
+
+gcf::Function http_form_data() {
+  return gcf::MakeFunction(http_form_data_impl);
 }
 // [END functions_http_form_data]
 

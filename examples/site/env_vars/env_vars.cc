@@ -13,15 +13,16 @@
 // limitations under the License.
 
 // [START functions_env_vars]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <cstdlib>
 
 namespace gcf = ::google::cloud::functions;
 
-gcf::HttpResponse env_vars(gcf::HttpRequest /*request*/) {  // NOLINT
-  char const* value = std::getenv("FOO");
-  if (value == nullptr) value = "FOO environment variable is not set";
-  return gcf::HttpResponse{}.set_payload(value);
+gcf::Function env_vars() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
+    char const* value = std::getenv("FOO");
+    if (value == nullptr) value = "FOO environment variable is not set";
+    return gcf::HttpResponse{}.set_payload(value);
+  });
 }
 // [END functions_env_vars]
