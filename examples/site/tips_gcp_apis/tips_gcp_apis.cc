@@ -37,7 +37,7 @@ pubsub::Publisher GetPublisher(pubsub::Topic topic) {
   auto [pos, inserted] = connections.emplace(
       topic.FullName(), std::shared_ptr<pubsub::PublisherConnection>());
   if (inserted) {
-    pos->second = pubsub::MakePublisherConnection(std::move(topic), {});
+    pos->second = pubsub::MakePublisherConnection(std::move(topic));
   }
   return pubsub::Publisher(pos->second);
 }
