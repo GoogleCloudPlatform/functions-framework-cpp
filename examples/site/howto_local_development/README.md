@@ -74,7 +74,7 @@ Run the CMake configure step. If needed, this will download and build any
 dependencies for your function:
 
 ```shell
-cmake -H. -B.build -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake -S . -B .build -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
 ```
 
 You should see output like this:
@@ -118,7 +118,7 @@ create a binary called `local_server` in the .build subdirectory.
 
 This will produce a standalone HTTP server, which you can run locally using:
 
-```shell 
+```shell
 .build/local_server --port 8080
 ```
 
