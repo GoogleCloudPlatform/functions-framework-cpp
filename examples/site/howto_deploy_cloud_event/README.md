@@ -90,7 +90,7 @@ containing your function:
 ```shell
 GOOGLE_CLOUD_PROJECT=... # put the right value here
 pack build \
-    --builder gcr.io/buildpacks/builder:latest \
+    --builder gcr.io/buildpacks/builder:v1 \
     --env GOOGLE_FUNCTION_TARGET=hello_world_pubsub \
     --path examples/site/hello_world_pubsub \
    "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-pubsub"
