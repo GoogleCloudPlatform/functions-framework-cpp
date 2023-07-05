@@ -42,6 +42,13 @@ jobs:
         cmake -S . -B "${{runner.temp}}/build" -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    - uses: actions/cache/save@v3
+      if: always()
+      with:
+        path: |
+          ~/.cache/vcpkg
+          ~/.cache/bin
+        key: vcpkg-${{ env.vcpkg_SHA }}-build-ubuntu-focal-${{ hashFiles('vcpkg.json') }}
     - name: build
       run: cmake --build "${{runner.temp}}/build"
     - name: test
@@ -82,6 +89,12 @@ jobs:
         run: >
           cmake -S examples/site/howto_local_development -B "${{runner.temp}}/howto_local_development/build" -GNinja
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+      - uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: |
+            ~/.cache/vcpkg
+          key: vcpkg-${{ env.vcpkg_SHA }}-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
       - name: build-local-development
         env:
           VCPKG_OVERLAY_PORTS: "${{runner.temp}}/quickstart/vcpkg-overlays"
@@ -127,6 +140,12 @@ jobs:
             '-DBUILD_TESTING=ON' `
             '-DFUNCTIONS_FRAMEWORK_CPP_TEST_EXAMPLES=OFF' `
             '-DCMAKE_TOOLCHAIN_FILE=${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake'
+      - uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: |
+            ~\AppData\Local\vcpkg\archives
+          key: vcpkg-${{ env.vcpkg_SHA }}-build-msvc-2019-2-${{ hashFiles('vcpkg.json') }}
       - name: build
         run: cmake --build "${{runner.temp}}/build"
       - name: test
@@ -167,6 +186,13 @@ jobs:
           cmake -S . -B "${{runner.temp}}/build" -GNinja
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      - uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: |
+            ~/.cache/vcpkg
+            ~/.cache/bin
+          key: vcpkg-${{ env.vcpkg_SHA }}-build-macos-10-${{ hashFiles('vcpkg.json') }}
       - name: build
         run: cmake --build "${{runner.temp}}/build"
       - name: test

@@ -53,6 +53,13 @@ jobs:
           -DCMAKE_CXX_FLAGS="-fsanitize=${{matrix.sanitizer}} -DGRPC_TSAN_SUPPRESSED -DGRPC_ASAN_SUPPRESSED"
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      - uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: |
+            ~/.cache/vcpkg
+            ~/.cache/bin
+          key: vcpkg-${{ env.vcpkg_SHA }}-sanitize-${{ matrix.sanitizer }}-${{ hashFiles('vcpkg.json') }}
       - name: -fsanitize=${{matrix.sanitizer}} / build
         run: cmake --build "${{runner.temp}}/build"
       - name: -fsanitize=${{matrix.sanitizer}} / test
