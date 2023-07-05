@@ -14,8 +14,7 @@
 
 // [START bigtable_functions_quickstart]
 #include <google/cloud/bigtable/table.h>
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <algorithm>
 #include <cctype>
 #include <mutex>
@@ -24,6 +23,8 @@
 
 namespace gcf = ::google::cloud::functions;
 namespace cbt = ::google::cloud::bigtable;
+
+namespace {
 
 cbt::Table get_table_client(std::string project_id, std::string instance_id,
                             std::string const& table_id) {
@@ -42,7 +43,7 @@ cbt::Table get_table_client(std::string project_id, std::string instance_id,
   return *table;
 }
 
-gcf::HttpResponse tutorial_cloud_bigtable(gcf::HttpRequest request) {  // NOLINT
+gcf::HttpResponse handle_request(gcf::HttpRequest const& request) {
   auto get_header = [h = request.headers()](std::string key) {
     std::transform(key.begin(), key.end(), key.begin(),
                    [](auto x) { return static_cast<char>(std::tolower(x)); });
@@ -77,4 +78,11 @@ gcf::HttpResponse tutorial_cloud_bigtable(gcf::HttpRequest request) {  // NOLINT
       .set_header("content-type", "text/plain")
       .set_payload(std::move(os).str());
 }
+
+}  // namespace
+
+gcf::Function tutorial_cloud_bigtable() {
+  return gcf::MakeFunction(handle_request);
+}
+
 // [END bigtable_functions_quickstart]
