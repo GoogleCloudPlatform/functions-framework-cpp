@@ -81,8 +81,6 @@ target_include_directories(functions_framework_cpp SYSTEM
 target_link_libraries(
     functions_framework_cpp PUBLIC absl::time Boost::headers
                                    Boost::program_options Threads::Threads)
-target_compile_definitions(functions_framework_cpp
-                           PUBLIC BOOST_BEAST_USE_STD_STRING_VIEW)
 set_target_properties(
     functions_framework_cpp
     PROPERTIES EXPORT_NAME functions-framework-cpp::framework
