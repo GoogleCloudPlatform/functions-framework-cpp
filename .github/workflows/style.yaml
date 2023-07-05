@@ -41,6 +41,13 @@ jobs:
           cmake -S . -B "${{runner.temp}}/build"
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      - uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: |
+            ~/.cache/vcpkg
+            ~/.cache/bin
+          key: vcpkg-${{ env.vcpkg_SHA }}-style-clang-tidy-${{ hashFiles('vcpkg.json') }}
       - name: tidy
         run: >
           git ls-files -z -- '*.cc' |
@@ -90,6 +97,13 @@ jobs:
           -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      - uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: |
+            ~/.cache/vcpkg
+            ~/.cache/bin
+          key: vcpkg-${{ env.vcpkg_SHA }}-werror-${{ matrix.compiler.cxx }}-${{ hashFiles('vcpkg.json') }}
       - name: compiler=${{matrix.compiler.cxx}} / build
         run: cmake --build "${{runner.temp}}/build"
       - name: compiler=${{matrix.compiler.cxx}} / test
