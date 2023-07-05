@@ -63,6 +63,8 @@ gcf::HttpResponse handle_request(gcf::HttpRequest const& /*request*/) {
 
 }  // namespace
 
-gcf::Function tutorial_cloud_spanner() { return gcf::MakeFunction(handle_request); }
+gcf::Function tutorial_cloud_spanner() {
+  return gcf::MakeFunction(handle_request);
+}
 
 // [END spanner_functions_quickstart]
