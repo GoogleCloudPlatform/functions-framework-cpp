@@ -43,8 +43,7 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       - name: tidy
         run: >
-          git ls-files -z |
-          grep -zE '\.cc$' |
+          git ls-files -z -- '*.cc' |
           xargs --verbose -P 2 -n 1 -0 clang-tidy-14 -p="${{runner.temp}}/build"
 
   werror-build:
@@ -103,7 +102,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: clang-format
-        run: git ls-files -z | grep -zE '\.(cc|h)$' | xargs -P 2 -n 50 -0 clang-format-14 -i
+        run: >
+          git ls-files -z -- '*.h' '*.cc' |
+          xargs -P 2 -n 50 -0 clang-format-14 -i
       - name: check-diff
         run: git diff --ignore-submodules=all --color --exit-code .
 
@@ -116,7 +117,7 @@ jobs:
         run: pip install cmakelang==0.6.13
       - name: cmake-format
         run: >
-          git ls-files -z | grep -zE '((^|/)CMakeLists\.txt|\.cmake)$' |
+          git ls-files -- '*.cmake' '**/CMakeLists.txt' ./CMakeLists.txt |
           xargs -P 2 -n 1 -0 /home/runner/.local/bin/cmake-format -i
       - name: check-diff
         run: git diff --ignore-submodules=all --color --exit-code .
