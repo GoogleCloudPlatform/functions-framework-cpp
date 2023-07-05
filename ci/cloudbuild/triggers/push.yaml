@@ -1,0 +1,11 @@
+createTime: '2021-01-12T17:19:25.822590886Z'
+description: Push to branch
+filename: ci/build-examples.yaml
+github:
+  name: functions-framework-cpp
+  owner: GoogleCloudPlatform
+  push:
+    branch: ^main$
+id: c609a1b8-8acc-45ed-8aeb-c1ae7b070911
+includeBuildLogs: INCLUDE_BUILD_LOGS_WITH_STATUS
+name: push

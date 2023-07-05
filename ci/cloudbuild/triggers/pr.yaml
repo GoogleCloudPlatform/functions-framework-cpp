@@ -1,0 +1,12 @@
+createTime: '2021-01-12T17:18:16.451278761Z'
+description: Pull Request to functions-framework-cpp
+filename: ci/build-examples.yaml
+github:
+  name: functions-framework-cpp
+  owner: GoogleCloudPlatform
+  pullRequest:
+    branch: ^main$
+    commentControl: COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY
+id: 18ddf837-91e7-47c7-850e-d52d1e701d17
+includeBuildLogs: INCLUDE_BUILD_LOGS_WITH_STATUS
+name: pr
