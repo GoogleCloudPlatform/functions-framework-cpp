@@ -35,10 +35,9 @@ cbt::Table get_table_client(std::string project_id, std::string instance_id,
       table->instance_id() != instance_id ||
       table->project_id() != project_id) {
     table = std::make_unique<cbt::Table>(
-        cbt::CreateDefaultDataClient(std::move(project_id),
-                                     std::move(instance_id),
-                                     cbt::ClientOptions{}),
-        table_id);
+        cbt::MakeDataConnection(),
+        cbt::TableResource(std::move(project_id), std::move(instance_id),
+                           table_id));
   }
   return *table;
 }
