@@ -212,6 +212,7 @@ cat <<_EOF_
 
   # Remove the images created by this build.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    allowFailure: true
     entrypoint: 'bash'
     args:
       - '-c'
@@ -220,13 +221,13 @@ cat <<_EOF_
         gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/run-image:\${BUILD_ID}
         gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/build-image:\${BUILD_ID}
         gcloud container images delete -q gcr.io/\${PROJECT_ID}/ci/hello-world:\${BUILD_ID}
-        exit 0
 
   # The previous step may not run if the build fails. Garbage collect any
   # images created by this script more than 4 weeks ago. This step should
   # not break the build on error, and it can start running as soon as the
   # build does.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    allowFailure: true
     waitFor: ['-']
     entrypoint: 'bash'
     args:
@@ -239,5 +240,4 @@ cat <<_EOF_
           xargs printf "gcr.io/\${PROJECT_ID}/\$\${image}@\$\$1\n"
         done | \\
         xargs -P 4 -L 32 gcloud container images delete -q --force-delete-tags
-        exit 0
 _EOF_
