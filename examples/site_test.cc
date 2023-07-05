@@ -85,7 +85,7 @@ auto TriggerFunctionCloudEvent(gcf::Function const& function,
       {"source", e.source()},
       {"type", e.type()},
   };
-  auto if_set = [&payload](std::string_view name,
+  auto if_set = [&payload](std::string const& name,
                            std::optional<std::string> const& v) {
     if (v.has_value()) payload[name] = *v;
   };
