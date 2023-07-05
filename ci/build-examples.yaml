@@ -361,7 +361,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-tutorial_cloud_bigtable'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=tutorial_cloud_bigtable',
       '--path', 'examples/site/tutorial_cloud_bigtable',
       'site-tutorial_cloud_bigtable',
@@ -370,7 +369,6 @@ steps:
     waitFor: ['gcf-builder-ready']
     id: 'site-tutorial_cloud_spanner'
     args: ['build',
-      '--env', 'GOOGLE_FUNCTION_SIGNATURE_TYPE=http',
       '--env', 'GOOGLE_FUNCTION_TARGET=tutorial_cloud_spanner',
       '--path', 'examples/site/tutorial_cloud_spanner',
       'site-tutorial_cloud_spanner',
