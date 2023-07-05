@@ -13,8 +13,7 @@
 // limitations under the License.
 
 // [START spanner_functions_quickstart]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <google/cloud/spanner/client.h>
 #include <iostream>
 #include <sstream>
@@ -25,6 +24,7 @@ namespace gcf = ::google::cloud::functions;
 namespace spanner = ::google::cloud::spanner;
 
 namespace {
+
 auto get_spanner_database() {
   auto getenv = [](char const* var) {
     auto const* value = std::getenv(var);
@@ -38,10 +38,8 @@ auto get_spanner_database() {
                            getenv("SPANNER_INSTANCE"),
                            getenv("SPANNER_DATABASE"));
 }
-}  // namespace
 
-gcf::HttpResponse tutorial_cloud_spanner(
-    gcf::HttpRequest /*request*/) {  // NOLINT
+gcf::HttpResponse handle_request(gcf::HttpRequest const& /*request*/) {
   static auto const kClient =
       spanner::Client(spanner::MakeConnection(get_spanner_database()));
 
@@ -62,4 +60,9 @@ gcf::HttpResponse tutorial_cloud_spanner(
       .set_header("content-type", "text/plain")
       .set_payload(std::move(os).str());
 }
+
+}  // namespace
+
+gcf::Function tutorial_cloud_spanner() { return gcf::MakeFunction(handle_request); }
+
 // [END spanner_functions_quickstart]
