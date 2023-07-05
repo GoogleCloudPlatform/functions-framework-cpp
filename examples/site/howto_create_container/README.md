@@ -87,7 +87,7 @@ containing your function:
 
 ```shell
 pack build \
-    --builder gcr.io/buildpacks/builder:latest \
+    --builder gcr.io/buildpacks/builder:v1 \
     --env GOOGLE_FUNCTION_TARGET=hello_world_http \
     --path examples/site/hello_world_http \
     gcf-cpp-hello-world-http

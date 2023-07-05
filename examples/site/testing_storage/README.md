@@ -67,8 +67,7 @@ We will create a container for the storage "hello world" function as usual:
 
 ```shell
 pack build \
-    --builder gcr.io/buildpacks/builder:latest \
-    --env "GOOGLE_FUNCTION_SIGNATURE_TYPE=cloudevent" \
+    --builder gcr.io/buildpacks/builder:v1 \
     --env "GOOGLE_FUNCTION_TARGET=hello_world_storage" \
     --path "examples/site/hello_world_storage" \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-storage"
