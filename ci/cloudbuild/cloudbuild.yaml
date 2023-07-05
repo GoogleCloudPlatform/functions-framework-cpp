@@ -94,7 +94,7 @@ steps:
     # can start running as soon as the build does.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     waitFor: [ '-' ]
-    alloFailure: true
+    allowFailure: true
     entrypoint: 'bash'
     args:
       - '-c'
