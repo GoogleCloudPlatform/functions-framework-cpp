@@ -13,20 +13,22 @@
 // limitations under the License.
 
 // [START functions_tips_retry]
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <nlohmann/json.hpp>
 #include <iostream>
 
 namespace gcf = ::google::cloud::functions;
 
-void tips_retry(gcf::CloudEvent event) {  // NOLINT
-  if (event.data_content_type().value_or("") != "application/json") {
-    std::cerr << "Error: expected application/json data\n";
-    return;
-  }
-  auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
-  auto const retry = payload.value("retry", false);
-  if (retry) throw std::runtime_error("Throwing exception to force retry");
-  // Normal processing goes here.
+gcf::Function tips_retry() {
+  return gcf::MakeFunction([](gcf::CloudEvent const& event) {
+    if (event.data_content_type().value_or("") != "application/json") {
+      std::cerr << "Error: expected application/json data\n";
+      return;
+    }
+    auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
+    auto const retry = payload.value("retry", false);
+    if (retry) throw std::runtime_error("Throwing exception to force retry");
+    // Normal processing goes here.
+  });
 }
 // [END functions_tips_retry]

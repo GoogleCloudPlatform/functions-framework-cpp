@@ -13,8 +13,7 @@
 // limitations under the License.
 
 // [START functions_tips_scopes]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <string>
 
 namespace gcf = ::google::cloud::functions;
@@ -27,9 +26,11 @@ std::string light_computation();
 std::string h = heavy_computation();
 }  // namespace
 
-gcf::HttpResponse tips_scopes(gcf::HttpRequest /*request*/) {  // NOLINT
-  auto l = light_computation();
-  return gcf::HttpResponse{}.set_payload("Global: " + h + ", Local: " + l);
+gcf::Function tips_scopes() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
+    auto l = light_computation();
+    return gcf::HttpResponse{}.set_payload("Global: " + h + ", Local: " + l);
+  });
 }
 // [END functions_tips_scopes]
 

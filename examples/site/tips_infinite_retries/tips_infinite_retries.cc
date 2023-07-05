@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // [START functions_tips_infinite_retries]
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <chrono>
 #include <iostream>
 
@@ -23,17 +23,19 @@ namespace {
 auto constexpr kMaxAge = std::chrono::seconds(10);
 }  // namespace
 
-void tips_infinite_retries(gcf::CloudEvent event) {  // NOLINT
-  using std::chrono::system_clock;
-  auto const age =
-      system_clock::now() - event.time().value_or(system_clock::time_point());
-  auto const seconds =
-      std::chrono::duration_cast<std::chrono::seconds>(age).count();
+gcf::Function tips_infinite_retries() {
+  return gcf::MakeFunction([](gcf::CloudEvent const& event) {
+    using std::chrono::system_clock;
+    auto const age =
+        system_clock::now() - event.time().value_or(system_clock::time_point());
+    auto const seconds =
+        std::chrono::duration_cast<std::chrono::seconds>(age).count();
 
-  if (age >= kMaxAge) {
-    std::cout << "Dropped " << event.id() << " (age " << seconds << "s)\n";
-    return;
-  }
-  std::cout << "Processed " << event.id() << " (age " << seconds << "s)\n";
+    if (age >= kMaxAge) {
+      std::cout << "Dropped " << event.id() << " (age " << seconds << "s)\n";
+      return;
+    }
+    std::cout << "Processed " << event.id() << " (age " << seconds << "s)\n";
+  });
 }
 // [END functions_tips_infinite_retries]

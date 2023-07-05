@@ -13,8 +13,7 @@
 // limitations under the License.
 
 // [START functions_tips_lazy_globals]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <mutex>
 #include <string>
 
@@ -27,8 +26,10 @@ std::string h;
 void h_init() { h = "heavy computation"; }
 }  // namespace
 
-gcf::HttpResponse tips_lazy_globals(gcf::HttpRequest /*request*/) {  // NOLINT
-  std::call_once(h_init_flag, h_init);
-  return gcf::HttpResponse{}.set_payload("Global: " + h);
+gcf::Function tips_lazy_globals() {
+  return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
+    std::call_once(h_init_flag, h_init);
+    return gcf::HttpResponse{}.set_payload("Global: " + h);
+  });
 }
 // [END functions_tips_lazy_globals]

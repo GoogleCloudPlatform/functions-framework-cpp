@@ -14,8 +14,7 @@
 
 // [START functions_pubsub_publish]
 // [START functions_tips_gcp_apis]
-#include <google/cloud/functions/http_request.h>
-#include <google/cloud/functions/http_response.h>
+#include <google/cloud/functions/function.h>
 #include <google/cloud/pubsub/publisher.h>
 #include <nlohmann/json.hpp>
 #include <memory>
@@ -44,7 +43,7 @@ pubsub::Publisher GetPublisher(pubsub::Topic topic) {
 }
 }  // namespace
 
-gcf::HttpResponse tips_gcp_apis(gcf::HttpRequest request) {  // NOLINT
+gcf::HttpResponse tips_gcp_apis_impl(gcf::HttpRequest const& request) {
   auto const* project = std::getenv("GCP_PROJECT");
   if (project == nullptr) throw std::runtime_error("GCP_PROJECT is not set");
 
@@ -65,5 +64,7 @@ gcf::HttpResponse tips_gcp_apis(gcf::HttpRequest request) {  // NOLINT
   }
   return response;
 }
+
+gcf::Function tips_gcp_apis() { return gcf::MakeFunction(tips_gcp_apis_impl); }
 // [END functions_tips_gcp_apis]
 // [END functions_pubsub_publish]

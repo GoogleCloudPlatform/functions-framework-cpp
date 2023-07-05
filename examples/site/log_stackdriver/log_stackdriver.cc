@@ -13,22 +13,24 @@
 // limitations under the License.
 
 // [START functions_log_stackdriver]
-#include <google/cloud/functions/cloud_event.h>
+#include <google/cloud/functions/function.h>
 #include <cppcodec/base64_rfc4648.hpp>
 #include <nlohmann/json.hpp>
 #include <iostream>
 
 namespace gcf = ::google::cloud::functions;
 
-void log_stackdriver(gcf::CloudEvent event) {  // NOLINT
-  if (event.data_content_type().value_or("") != "application/json") {
-    std::cerr << "expected application/json data";
-    return;
-  }
-  auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
-  auto const data = cppcodec::base64_rfc4648::decode<std::string>(
-      payload["message"]["data"].get<std::string>());
-  auto const log_entry = nlohmann::json::parse(data);
-  std::cout << "Log entry data: " << log_entry.dump(/*indent=*/2) << "\n";
+gcf::Function log_stackdriver() {
+  return gcf::MakeFunction([](gcf::CloudEvent const& event) {
+    if (event.data_content_type().value_or("") != "application/json") {
+      std::cerr << "expected application/json data\n";
+      return;
+    }
+    auto const payload = nlohmann::json::parse(event.data().value_or("{}"));
+    auto const data = cppcodec::base64_rfc4648::decode<std::string>(
+        payload["message"]["data"].get<std::string>());
+    auto const log_entry = nlohmann::json::parse(data);
+    std::cout << "Log entry data: " << log_entry.dump(/*indent=*/2) << "\n";
+  });
 }
 // [END functions_log_stackdriver]

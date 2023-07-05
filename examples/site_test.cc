@@ -31,7 +31,7 @@
 namespace gcf = ::google::cloud::functions;
 namespace gcf_internal = ::google::cloud::functions_internal;
 
-extern gcf::HttpResponse bearer_token(gcf::HttpRequest request);
+extern gcf::Function bearer_token();
 extern gcf::Function concepts_after_response();
 extern gcf::Function concepts_after_timeout();
 extern gcf::Function concepts_filesystem();
@@ -50,13 +50,13 @@ extern gcf::Function http_form_data();
 extern gcf::Function http_method();
 extern gcf::Function http_xml();
 extern gcf::Function log_helloworld();
-extern void log_stackdriver(gcf::CloudEvent event);
-extern void pubsub_subscribe(gcf::CloudEvent event);
-extern gcf::HttpResponse tips_gcp_apis(gcf::HttpRequest request);
-extern void tips_infinite_retries(gcf::CloudEvent event);
-extern gcf::HttpResponse tips_lazy_globals(gcf::HttpRequest request);
-extern gcf::HttpResponse tips_scopes(gcf::HttpRequest request);
-extern void tips_retry(gcf::CloudEvent event);
+extern gcf::Function log_stackdriver();
+extern gcf::Function pubsub_subscribe();
+extern gcf::Function tips_gcp_apis();
+extern gcf::Function tips_infinite_retries();
+extern gcf::Function tips_lazy_globals();
+extern gcf::Function tips_scopes();
+extern gcf::Function tips_retry();
 
 namespace {
 
@@ -77,18 +77,51 @@ auto TriggerFunctionHttp(gcf::Function const& function,
   return handler(std::move(request));
 }
 
+auto TriggerFunctionCloudEvent(gcf::Function const& function,
+                               gcf::CloudEvent const& e) {
+  auto payload = nlohmann::json{
+      {"specversion", e.spec_version()},
+      {"id", e.id()},
+      {"source", e.source()},
+      {"type", e.type()},
+  };
+  auto if_set = [&payload](std::string const& name,
+                           std::optional<std::string> const& v) {
+    if (v.has_value()) payload[name] = *v;
+  };
+  if_set("datacontenttype", e.data_content_type());
+  if_set("dataschema", e.data_schema());
+  if_set("subject", e.subject());
+  if (e.data_content_type().value_or("") == "application/json") {
+    payload["data"] = nlohmann::json::parse(e.data().value_or("{}"));
+  } else if (auto const& d = e.data(); d.has_value()) {
+    payload["data"] = *d;
+  }
+
+  gcf_internal::BeastRequest request;
+  request.insert("content-type", "application/cloudevents+json");
+  request.body() = payload.dump();
+
+  auto handler =
+      gcf_internal::FunctionImpl::GetImpl(function)->GetHandler("unused");
+  return handler(std::move(request));
+}
+
 TEST(ExamplesSiteTest, BearerToken) {
   google::cloud::functions_internal::SetEnv("TARGET_URL", std::nullopt);
   google::cloud::functions_internal::SetEnv("GOOGLE_APPLICATION_CREDENTIALS",
                                             "/dev/null");
 
-  EXPECT_THROW(bearer_token(gcf::HttpRequest{}), std::exception);
+  auto function = bearer_token();
+  EXPECT_EQ(TriggerFunctionHttp(function, gcf::HttpRequest{}).result_int(),
+            gcf::HttpResponse::kInternalServerError);
 
   google::cloud::functions_internal::SetEnv(
       "TARGET_URL",
       "https://storage.googleapis.com/storage/v1/"
       "b?project=invalid-project-name---");
-  EXPECT_THROW(bearer_token(gcf::HttpRequest{}), std::exception);
+  EXPECT_EQ(TriggerFunctionHttp(function, gcf::HttpRequest{}).result_int(),
+            gcf::HttpResponse::kInternalServerError);
 
   // This is a syntactically valid JSON key file, but the key has been
   // invalidated and therefore presents no security risks.
@@ -148,10 +181,14 @@ lUtj+/nH3HDQjM4ltYfTPUg=
 
   google::cloud::functions_internal::SetEnv("GOOGLE_APPLICATION_CREDENTIALS",
                                             filename.string());
-  EXPECT_THROW(bearer_token(gcf::HttpRequest{}), std::exception);
+  // We get different errors in the CI builds vs. development workstations.
+  EXPECT_NE(TriggerFunctionHttp(function, gcf::HttpRequest{}).result_int(),
+            gcf::HttpResponse::kOkay);
 
-  EXPECT_NO_THROW(
-      bearer_token(gcf::HttpRequest{}.set_target("/no-auth-header")));
+  EXPECT_EQ(TriggerFunctionHttp(
+                function, gcf::HttpRequest{}.set_target("/no-auth-header"))
+                .result_int(),
+            gcf::HttpResponse::kBadRequest);
 
   std::filesystem::remove(filename);
 }
@@ -257,13 +294,14 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
   for (auto const* data : {"dGVzdCBtZXNzYWdlIDM=", "YWJjZA==", ""}) {
     auto json = base;
     json["data"]["message"]["data"] = data;
-    auto response =
-        TriggerFunctionHttp(hello_world_pubsub(),
-                            gcf::HttpRequest{}
-                                .set_payload(json.dump())
-                                .add_header("ce-type", "com.example.someevent")
-                                .add_header("ce-source", "/mycontext")
-                                .add_header("ce-id", "A234-1234-1234"));
+    auto response = TriggerFunctionHttp(
+        hello_world_pubsub(),
+        gcf::HttpRequest{}
+            .set_payload(json.dump())
+            .add_header("content-type", "application/cloudevents+json")
+            .add_header("ce-type", "com.example.someevent")
+            .add_header("ce-source", "/mycontext")
+            .add_header("ce-id", "A234-1234-1234"));
     EXPECT_EQ(response.result_int(), 200);
   }
 
@@ -300,7 +338,7 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
   for (auto const& [name, body] : cases) {
     SCOPED_TRACE("Testing for " + name);
     auto response =
-        TriggerFunctionHttp(hello_world_storage(),
+        TriggerFunctionHttp(hello_world_pubsub(),
                             gcf::HttpRequest{}
                                 .set_payload(body)
                                 .add_header("ce-type", "com.example.someevent")
@@ -364,18 +402,20 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
   struct TestCase {
     std::string name;
     std::string body;
+    std::string content_type;
   } const cases[] = {
-      {"base", base.dump()},
-      {"text", kBodyDataText},
-      {"json", kBodyDataJson},
+      {"base", base.dump(), "application/cloudevents+json"},
+      {"text", kBodyDataText, "text/plain"},
+      {"json", kBodyDataJson, "application/cloudevents+json"},
   };
 
-  for (auto const& [name, body] : cases) {
+  for (auto const& [name, body, content_type] : cases) {
     SCOPED_TRACE("Testing for " + name);
     auto response =
         TriggerFunctionHttp(hello_world_storage(),
                             gcf::HttpRequest{}
                                 .set_payload(body)
+                                .add_header("content-type", content_type)
                                 .add_header("ce-type", "com.example.someevent")
                                 .add_header("ce-source", "/mycontext")
                                 .add_header("ce-id", "A234-1234-1234"));
@@ -413,7 +453,6 @@ TEST(ExamplesSiteTest, HttpCors) {
   auto function = http_cors();
   auto actual =
       TriggerFunctionHttp(function, gcf::HttpRequest{}.set_verb("OPTIONS"));
-  std::cout << "DEBUG DEBUG " << actual << std::endl;
   EXPECT_EQ(actual.at("Access-Control-Allow-Methods"), "GET");
 
   actual = TriggerFunctionHttp(function, gcf::HttpRequest{}.set_verb("GET"));
@@ -572,13 +611,18 @@ TEST(ExamplesSiteTest, LogStackdriver) {
        }},
   };
 
-  EXPECT_NO_THROW(log_stackdriver(
-      google::cloud::functions_internal::ParseCloudEventJson(envelope.dump())));
+  auto const event =
+      google::cloud::functions_internal::ParseCloudEventJson(envelope.dump());
+  auto function = log_stackdriver();
+  EXPECT_EQ(TriggerFunctionCloudEvent(function, event).result_int(),
+            gcf::HttpResponse::kOkay);
 
   // This is just to fix the code coverage nit.
   envelope.erase("datacontenttype");
-  EXPECT_NO_THROW(log_stackdriver(
-      google::cloud::functions_internal::ParseCloudEventJson(envelope.dump())));
+  auto const bad =
+      google::cloud::functions_internal::ParseCloudEventJson(envelope.dump());
+  EXPECT_EQ(TriggerFunctionCloudEvent(function, bad).result_int(),
+            gcf::HttpResponse::kOkay);
 }
 
 TEST(ExamplesSiteTest, PubsubSubscribe) {
@@ -604,19 +648,23 @@ TEST(ExamplesSiteTest, PubsubSubscribe) {
   })js");
 
   // Test with different values for data.message.data
+  auto function = pubsub_subscribe();
   for (auto const* data : {"dGVzdCBtZXNzYWdlIDM=", "YWJjZA==", ""}) {
     auto json = base;
     json["data"]["message"]["data"] = data;
-    EXPECT_NO_THROW(pubsub_subscribe(
-        google::cloud::functions_internal::ParseCloudEventJson(json.dump())));
+    auto const event =
+        google::cloud::functions_internal::ParseCloudEventJson(json.dump());
+    EXPECT_EQ(TriggerFunctionCloudEvent(function, event).result_int(),
+              gcf::HttpResponse::kOkay);
   }
 }
 
 TEST(ExamplesSiteTest, TipsLazyGlobals) {
-  auto actual = tips_lazy_globals(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("heavy computation"));
-  actual = tips_lazy_globals(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("heavy computation"));
+  auto function = tips_lazy_globals();
+  auto actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_THAT(actual.body(), HasSubstr("heavy computation"));
+  actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_THAT(actual.body(), HasSubstr("heavy computation"));
 }
 
 TEST(ExamplesSiteTest, TipsGcpApis) {
@@ -627,37 +675,50 @@ TEST(ExamplesSiteTest, TipsGcpApis) {
 #endif  // __has_feature(thread_sanitizer)
 #endif  // defined(__has_feature)
   google::cloud::functions_internal::SetEnv("GCP_PROJECT", std::nullopt);
-  EXPECT_THROW(tips_gcp_apis(gcf::HttpRequest{}), std::runtime_error);
+  auto function = tips_gcp_apis();
+  EXPECT_EQ(TriggerFunctionHttp(function, gcf::HttpRequest{}).result_int(),
+            gcf::HttpResponse::kInternalServerError);
 
   google::cloud::functions_internal::SetEnv("GCP_PROJECT", "test-unused");
-  EXPECT_THROW(tips_gcp_apis(gcf::HttpRequest{}), std::exception);
-  EXPECT_THROW(
-      tips_gcp_apis(gcf::HttpRequest{}.set_payload(nlohmann::json({}).dump())),
-      std::runtime_error);
+  EXPECT_EQ(TriggerFunctionHttp(function, gcf::HttpRequest{}).result_int(),
+            gcf::HttpResponse::kInternalServerError);
+  EXPECT_EQ(TriggerFunctionHttp(function, gcf::HttpRequest{}.set_payload(
+                                              nlohmann::json({}).dump()))
+                .result_int(),
+            gcf::HttpResponse::kInternalServerError);
 }
 
 TEST(ExamplesSiteTest, TipsInfiniteRetries) {
+  auto function = tips_infinite_retries();
   gcf::CloudEvent event("test-id", "test-source", "test-type");
-  EXPECT_NO_THROW(tips_infinite_retries(event));
+  EXPECT_EQ(TriggerFunctionCloudEvent(function, event).result_int(),
+            gcf::HttpResponse::kOkay);
   event.set_time(std::chrono::system_clock::now());
-  EXPECT_NO_THROW(tips_infinite_retries(event));
+  EXPECT_EQ(TriggerFunctionCloudEvent(function, event).result_int(),
+            gcf::HttpResponse::kOkay);
 }
 
 TEST(ExamplesSiteTest, TipsScopes) {
-  auto actual = tips_scopes(gcf::HttpRequest{});
-  EXPECT_THAT(actual.payload(), HasSubstr("Global: "));
-  EXPECT_THAT(actual.payload(), HasSubstr("Local: "));
+  auto function = tips_scopes();
+  auto actual = TriggerFunctionHttp(function, gcf::HttpRequest{});
+  EXPECT_THAT(actual.body(), HasSubstr("Global: "));
+  EXPECT_THAT(actual.body(), HasSubstr("Local: "));
 }
 
 TEST(ExamplesSiteTest, TipsRetry) {
+  auto function = tips_retry();
   gcf::CloudEvent event("test-id", "test-source", "test-type");
-  EXPECT_NO_THROW(tips_retry(event));
+  EXPECT_EQ(TriggerFunctionCloudEvent(function, event).result_int(),
+            gcf::HttpResponse::kOkay);
   event.set_data_content_type("application/json");
-  EXPECT_NO_THROW(tips_retry(event));
+  EXPECT_EQ(TriggerFunctionCloudEvent(function, event).result_int(),
+            gcf::HttpResponse::kOkay);
   event.set_data(nlohmann::json({{"retry", false}}).dump());
-  EXPECT_NO_THROW(tips_retry(event));
+  EXPECT_EQ(TriggerFunctionCloudEvent(function, event).result_int(),
+            gcf::HttpResponse::kOkay);
   event.set_data(nlohmann::json({{"retry", true}}).dump());
-  EXPECT_THROW(tips_retry(event), std::exception);
+  EXPECT_EQ(TriggerFunctionCloudEvent(function, event).result_int(),
+            gcf::HttpResponse::kInternalServerError);
 }
 
 }  // namespace
