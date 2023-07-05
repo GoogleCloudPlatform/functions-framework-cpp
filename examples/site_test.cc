@@ -337,13 +337,13 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
 
   for (auto const& [name, body] : cases) {
     SCOPED_TRACE("Testing for " + name);
-    auto response = TriggerFunctionHttp(
-        hello_world_pubsub(),
-        gcf::HttpRequest{}
-            .set_payload(body)
-            .add_header("ce-type", "com.example.someevent")
-            .add_header("ce-source", "/mycontext")
-            .add_header("ce-id", "A234-1234-1234"));
+    auto response =
+        TriggerFunctionHttp(hello_world_pubsub(),
+                            gcf::HttpRequest{}
+                                .set_payload(body)
+                                .add_header("ce-type", "com.example.someevent")
+                                .add_header("ce-source", "/mycontext")
+                                .add_header("ce-id", "A234-1234-1234"));
     EXPECT_EQ(response.result_int(), 200);
   }
 }
