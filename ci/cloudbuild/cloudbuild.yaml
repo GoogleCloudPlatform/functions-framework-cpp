@@ -62,19 +62,16 @@ steps:
   - name: 'gcr.io/${PROJECT_ID}/${_IMAGE}:${BUILD_ID}'
     entrypoint: '/bin/true'
 
-  # Restores the homedir cache into /h in parallel with the previous step.
-  - name: 'gcr.io/cloud-builders/gsutil'
-    waitFor: [ '-' ]
-    allowFailure: true
-    entrypoint: 'bash'
-    dir: '/h'
-    args:
-      - '-c'
-      - >
-        /workspace/ci/cloudbuild/cache.sh restore
-        --bucket_url=gs://${_CACHE_BUCKET}/build-cache/functions-framework-cpp
-        --key=${_TRIGGER_SOURCE}/${_DISTRO}-${_BUILD_NAME}/h
-        --fallback_key=main/${_DISTRO}-${_BUILD_NAME}/h
+  # Runs the specified build in the image that was created in the first step.
+  - name: 'gcr.io/${PROJECT_ID}/${_IMAGE}:${BUILD_ID}'
+    entrypoint: 'ci/cloudbuild/build.sh'
+    args: [ '--local', '--build', '${_BUILD_NAME}' ]
+    env: [
+      'SCCACHE_GCS_BUCKET=${_CACHE_BUCKET}',
+      'SCCACHE_GCS_KEY_PREFIX=sccache/${_DISTRO}-${_BUILD_NAME}',
+      'SCCACHE_GCS_RW_MODE=READ_WRITE',
+      'VCPKG_BINARY_SOURCES=x-gcs,gs://${_CACHE_BUCKET}/vcpkg-cache/${_DISTRO}-${_BUILD_NAME},readwrite'
+    ]
 
   # Remove the images created by this build.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'

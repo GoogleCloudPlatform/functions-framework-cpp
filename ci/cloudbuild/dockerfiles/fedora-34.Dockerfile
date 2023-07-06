@@ -41,15 +41,16 @@ RUN curl -sSL https://github.com/universal-ctags/ctags/archive/refs/tags/p5.9.20
 # https://github.com/lvc/abi-dumper/pull/29. We can switch back to `dnf install
 # abi-dumper` once it has the fix.
 WORKDIR /var/tmp/build
-RUN curl -sSL https://github.com/lvc/abi-dumper/archive/814effec0f20a9613441dfa033aa0a0bc2a96a87.tar.gz | \
+RUN curl -sSL https://github.com/lvc/abi-dumper/archive/16bb467cd7d343dd3a16782b151b56cf15509594.tar.gz | \
     tar -xzf - --strip-components=1 && \
     mv abi-dumper.pl /usr/local/bin/abi-dumper && \
     chmod +x /usr/local/bin/abi-dumper
 
 WORKDIR /var/tmp/gcloud
-ARG GOOGLE_CLOUD_CPP_CLOUD_SDK_VERSION="348.0.0"
-ARG GOOGLE_CLOUD_CPP_SDK_SHA256="8341a9b21088fd382522be247c7e51c61d8ea4ff86e6ededfa601afd5223e153"
-ENV TARBALL="google-cloud-sdk-${GOOGLE_CLOUD_CPP_CLOUD_SDK_VERSION}-linux-x86_64.tar.gz"
-RUN curl -sSL "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${TARBALL}" -o "${TARBALL}"
+ARG GOOGLE_CLOUD_CPP_CLOUD_SDK_VERSION="428.0.0"
+ARG GOOGLE_CLOUD_CPP_SDK_SHA256="a665909d2ff9cd3a927d84670c5a8d11f0c5fbcda2540bbea44e0d6f77b82e27"
+ENV TARBALL="google-cloud-cli-${GOOGLE_CLOUD_CPP_CLOUD_SDK_VERSION}-linux-x86_64.tar.gz"
+RUN curl -fsSL "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${TARBALL}" -o "${TARBALL}"
 RUN echo "${GOOGLE_CLOUD_CPP_SDK_SHA256} ${TARBALL}" | sha256sum --check -
 RUN tar x -C /usr/local -f "${TARBALL}"
+ENV PATH=${PATH}:/usr/local/google-cloud-sdk/bin
