@@ -14,6 +14,7 @@
 
 #include "google/cloud/functions/internal/parse_options.h"
 #include <boost/program_options.hpp>
+#include <cstdint>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
