@@ -1,6 +1,11 @@
 # Changelog
 
-## v1.2.0 - TBD
+## v1.2.0 - 2023-07
+
+* docs: use working buildpacks (#381)
+* doc: examples use declarative configuration (#380) (#371) (#370) (#369) (#368)
+  (#356)
+* doc: use modern CMake flags (#374)
 
 ## v1.1.0 - 2022-03
 
