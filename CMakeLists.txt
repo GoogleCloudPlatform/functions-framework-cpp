@@ -14,11 +14,7 @@
 # limitations under the License.
 # ~~~
 
-cmake_minimum_required(VERSION 3.10)
-
-if (NOT (CMAKE_VERSION VERSION_LESS "3.14"))
-    cmake_policy(SET CMP0091 NEW)
-endif ()
+cmake_minimum_required(VERSION 3.10...3.26)
 
 option(BUILD_TESTING "Enable tests" ON)
 if (BUILD_TESTING)

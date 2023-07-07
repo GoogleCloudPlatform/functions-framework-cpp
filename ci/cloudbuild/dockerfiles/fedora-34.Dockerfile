@@ -26,6 +26,9 @@ RUN dnf makecache && \
         openssl-devel patch python python3.8 \
         python-pip tar unzip w3m wget which zip zlib-devel
 
+# This is needed to compile OpenSSL with vcpkg
+RUN dnf makecache && dnf install -y perl-IPC-Cmd
+
 # Installs Universal Ctags (which is different than the default "Exuberant
 # Ctags"), which is needed by the ABI checker. See https://ctags.io/
 WORKDIR /var/tmp/build

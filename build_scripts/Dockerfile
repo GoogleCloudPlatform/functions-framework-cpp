@@ -53,7 +53,7 @@ USER cnb
 FROM parent AS gcf-cpp-incremental-0
 RUN apt-get update \
     && apt install -y  --no-install-recommends \
-       build-essential g++-8 gcc-8 git libstdc++-8-dev pkg-config tar unzip zip \
+       build-essential g++-8 gcc-8 git libstdc++-8-dev pkg-config python3 tar unzip zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100
@@ -73,7 +73,7 @@ RUN curl -sSL https://github.com/ninja-build/ninja/releases/download/v1.10.2/nin
     chmod 755 /usr/local/bin/ninja
 
 WORKDIR /usr/local/vcpkg
-RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/dfcd4e4b30799c4ce02fe3939b62576fec444224.tar.gz | \
+RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/2023.06.20.tar.gz | \
     tar -xzf - --strip-components=1 && \
     ./bootstrap-vcpkg.sh -disableMetrics -useSystemBinaries && \
     rm -fr toolsrc/build.rel downloads/*
@@ -96,29 +96,29 @@ FROM gcf-cpp-incremental-1 AS gcf-cpp-incremental-2
 
 # These are needed by the Functions Framework, do them one at a time, easier to
 # rebuild the Docker image if one of them fails to download or something.
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug abseil
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-core
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug openssl
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-program-options
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-asio
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-beast
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug boost-serialization
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug nlohmann-json
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug abseil
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-core
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug openssl
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-program-options
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-asio
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-beast
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-serialization
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug nlohmann-json
 
 # The following are not needed by the Functions Framework, but are used often
 # enough that it is a good idea to make them part of the base development
 # environment. Note that this automatically pulls abseil, grpc, protobuf, curl,
 # and a few other libraries.
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug curl
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug protobuf
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug grpc
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug google-cloud-cpp
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug curl
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug protobuf
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug grpc
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug google-cloud-cpp
 
 # Warmup the vcpkg cache for `functions-framework-cpp` using the release version
 # of the framework, this is the recommended path for users of the framework.
 FROM gcf-cpp-incremental-2 AS gcf-cpp-incremental-3
 
-RUN /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug functions-framework-cpp
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug functions-framework-cpp
 
 # This is the development image we recommend users create in their workstation.
 # It includes all the development tools, including cmake, ninja and vcpkg, as
@@ -142,7 +142,7 @@ COPY . /usr/local/share/gcf
 RUN find /usr/local/share/gcf -type f | xargs chmod 644
 RUN find /usr/local/share/gcf -type d | xargs chmod 755
 RUN VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/build_scripts/vcpkg-overlays \
-    /usr/local/vcpkg/vcpkg install --triplet x64-linux-nodebug functions-framework-cpp
+    /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug functions-framework-cpp
 
 # This is the image used for the CI builds, includes a binary cache of the
 # *current* version of `functions-framework-cpp`, as well as binary caches of

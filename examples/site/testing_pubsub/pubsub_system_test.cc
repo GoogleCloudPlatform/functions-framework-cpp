@@ -71,8 +71,7 @@ TEST_F(PubsubSystemTest, Basic) {
       {"World", "Hello World"},
   };
 
-  auto publisher =
-      pubsub::Publisher(pubsub::MakePublisherConnection(topic(), {}));
+  auto publisher = pubsub::Publisher(pubsub::MakePublisherConnection(topic()));
 
   for (auto const& test : cases) {
     SCOPED_TRACE("Testing for " + test.expected);
