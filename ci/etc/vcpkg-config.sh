@@ -23,4 +23,4 @@ fi # include guard
 #
 # Common configuration parameters.
 #
-export VCPKG_RELEASE_VERSION="7e7bcf89171b7ed84ece845b1fa596a018e462f2"
+export VCPKG_RELEASE_VERSION="2023.06.20"
