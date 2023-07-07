@@ -1,14 +1,13 @@
 # How-to Guide: Deploy your function to Cloud Run
 
-[repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
-[howto-create-container]: /examples/site/howto_create_container/README.md
-[cloud-run-quickstarts]: https://cloud.google.com/run/docs/quickstarts
-[gcp-quickstarts]: https://cloud.google.com/resource-manager/docs/creating-managing-projects
-[buildpacks]: https://buildpacks.io
-[docker]: https://docker.com/
-[docker-install]: https://store.docker.com/search?type=edition&offering=community
-[sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
-[pack-install]: https://buildpacks.io/docs/install-pack/
+This guide shows how to deploy a C++ function handling HTTP requests to
+[Cloud Run].
+
+> **WARNING:** the development version of this document may not work with the
+> released version of the functions framework. Please use this document as it
+> appears in the [corresponding release][github-releases] if you are using a
+> released version of the library. In particular, buildpacks use the latest
+> release.
 
 ## Pre-requisites
 
@@ -162,3 +161,14 @@ And the container image:
 gcloud container images delete \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-http:latest"
 ```
+
+[repository-gh]: https://github.com/GoogleCloudPlatform/functions-framework-cpp
+[howto-create-container]: /examples/site/howto_create_container/README.md
+[cloud-run-quickstarts]: https://cloud.google.com/run/docs/quickstarts
+[gcp-quickstarts]: https://cloud.google.com/resource-manager/docs/creating-managing-projects
+[buildpacks]: https://buildpacks.io
+[docker]: https://docker.com/
+[docker-install]: https://store.docker.com/search?type=edition&offering=community
+[sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
+[pack-install]: https://buildpacks.io/docs/install-pack/
+[github-releases]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/releases

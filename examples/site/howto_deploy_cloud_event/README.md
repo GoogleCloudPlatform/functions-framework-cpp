@@ -1,5 +1,14 @@
 # How-to Guide: Deploy a C++ Pub/Sub function to Cloud Run
 
+This guide shows how to deploy a C++ function consuming cloud events to
+[Cloud Run].
+
+> **WARNING:** the development version of this document may not work with the
+> released version of the functions framework. Please use this document as it
+> appears in the [corresponding release][github-releases] if you are using a
+> released version of the library. In particular, buildpacks use the latest
+> release.
+
 ## Pre-requisites
 
 This guide assumes you are familiar with Google Cloud, and that you have a GCP
@@ -215,3 +224,5 @@ gcloud container images delete \
 [pack-install]: https://buildpacks.io/docs/install-pack/
 [gcloud-eventarc-create]: https://cloud.google.com/sdk/gcloud/reference/beta/eventarc/triggers/create
 [Google Cloud buildpack]: https://github.com/GoogleCloudPlatform/buildpacks
+[Cloud Run]: https://cloud.google.com/run
+[github-releases]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/releases

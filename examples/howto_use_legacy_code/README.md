@@ -14,7 +14,11 @@ any external tool to compile some code. Often this function also downloads
 the code from some external repository, but it can use code in your source
 tree.
 
-[ExternalProject_Add]: https://cmake.org/cmake/help/latest/module/ExternalProject.html
+> **WARNING:** the development version of this document may not work with the
+> released version of the functions framework. Please use this document as it
+> appears in the [corresponding release][github-releases] if you are using a
+> released version of the library. In particular, buildpacks use the latest
+> release.
 
 ## Installing Dependencies
 
@@ -146,3 +150,5 @@ You can just interrupt (`Ctrl-C`) the program to terminate it.
 [vcpkg-install]: https://github.com/microsoft/vcpkg#getting-started
 [cmake]: https://cmake.org
 [cmake-install]: https://cmake.org/install/
+[ExternalProject_Add]: https://cmake.org/cmake/help/latest/module/ExternalProject.html
+[github-releases]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/releases
