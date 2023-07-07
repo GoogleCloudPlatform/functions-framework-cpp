@@ -14,7 +14,7 @@ any external tool to compile some code. Often this function also downloads
 the code from some external repository, but it can use code in your source
 tree.
 
-> **WARNING:** the development version of this document may not work with the
+> **WARNING:** The development version of this document may not work with the
 > released version of the functions framework. Please use this document as it
 > appears in the [corresponding release][github-releases] if you are using a
 > released version of the library. In particular, buildpacks use the latest

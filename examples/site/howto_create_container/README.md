@@ -3,7 +3,7 @@
 This guide shows you how to create a container image for an example function,
 and how to run said image in a local container on your workstation.
 
-> **WARNING:** the development version of this document may not work with the
+> **WARNING:** The development version of this document may not work with the
 > released version of the functions framework. Please use this document as it
 > appears in the [corresponding release][github-releases] if you are using a
 > released version of the library. In particular, buildpacks use the latest

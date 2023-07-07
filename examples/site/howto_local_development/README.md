@@ -4,7 +4,7 @@ This guide describes how to compile and run a function locally. This can be
 useful when writing unit test, or to accelerate the edit -> compile -> test
 cycle.
 
-> **WARNING:** the development version of this document may not work with the
+> **WARNING:** The development version of this document may not work with the
 > released version of the functions framework. Please use this document as it
 > appears in the [corresponding release][github-releases] if you are using a
 > released version of the library. In particular, buildpacks use the latest

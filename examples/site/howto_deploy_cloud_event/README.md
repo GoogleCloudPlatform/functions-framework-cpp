@@ -3,7 +3,7 @@
 This guide shows how to deploy a C++ function consuming cloud events to
 [Cloud Run].
 
-> **WARNING:** the development version of this document may not work with the
+> **WARNING:** The development version of this document may not work with the
 > released version of the functions framework. Please use this document as it
 > appears in the [corresponding release][github-releases] if you are using a
 > released version of the library. In particular, buildpacks use the latest
