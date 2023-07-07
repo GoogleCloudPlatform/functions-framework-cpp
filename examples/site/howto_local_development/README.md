@@ -4,6 +4,12 @@ This guide describes how to compile and run a function locally. This can be
 useful when writing unit test, or to accelerate the edit -> compile -> test
 cycle.
 
+> **WARNING:** The development version of this document may not work with the
+> released version of the functions framework. Please use this document as it
+> appears in the [corresponding release][github-releases] if you are using a
+> released version of the library. In particular, buildpacks use the latest
+> release.
+
 ## Installing Dependencies
 
 Because the Functions Framework for C++ uses C++17, you will need a working C++
@@ -134,3 +140,4 @@ You can just interrupt (`Ctrl-C`) the program to terminate it.
 [vcpkg-install]: https://github.com/microsoft/vcpkg#getting-started
 [cmake]: https://cmake.org
 [cmake-install]: https://cmake.org/install/
+[github-releases]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/releases

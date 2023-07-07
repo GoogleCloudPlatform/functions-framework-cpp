@@ -3,6 +3,12 @@
 This guide shows you how to create a container image for an example function,
 and how to run said image in a local container on your workstation.
 
+> **WARNING:** The development version of this document may not work with the
+> released version of the functions framework. Please use this document as it
+> appears in the [corresponding release][github-releases] if you are using a
+> released version of the library. In particular, buildpacks use the latest
+> release.
+
 ## Pre-requisites
 
 Verify the [docker tool][docker] is functional on your workstation:
@@ -132,3 +138,4 @@ docker image rm gcf-cpp-hello-world-http
 [sudoless docker]: https://docs.docker.com/engine/install/linux-postinstall/
 [pack-install]: https://buildpacks.io/docs/install-pack/
 [Google Cloud buildpack]: https://github.com/GoogleCloudPlatform/buildpacks
+[github-releases]: https://github.com/GoogleCloudPlatform/functions-framework-cpp/releases
