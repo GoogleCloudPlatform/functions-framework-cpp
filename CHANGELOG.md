@@ -1,5 +1,7 @@
 # Changelog
 
+## v1.3.0 - TBD
+
 ## v1.2.0 - 2023-07
 
 * docs: use working buildpacks (#381)
