@@ -34,10 +34,6 @@ project(
     DESCRIPTION "Functions Framework for C++"
     LANGUAGES CXX)
 
-# Configure the compiler options, we will be using C++17 features.
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 if (VCPKG_TARGET_TRIPLET MATCHES "-static$")

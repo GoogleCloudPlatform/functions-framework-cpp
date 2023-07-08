@@ -78,6 +78,7 @@ target_include_directories(functions_framework_cpp
                            PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 target_include_directories(functions_framework_cpp SYSTEM
                            PUBLIC $<INSTALL_INTERFACE:include>)
+target_compile_features(functions_framework_cpp PUBLIC cxx_std_17)
 target_link_libraries(
     functions_framework_cpp PUBLIC absl::time Boost::headers
                                    Boost::program_options Threads::Threads)
