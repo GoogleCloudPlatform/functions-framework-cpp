@@ -33,7 +33,7 @@ pubsub::Publisher GetPublisher(pubsub::Topic topic) {
   static std::mutex mu;
   static Map connections;
 
-  std::lock_guard<std::mutex> lk(mu);
+  std::lock_guard const lk(mu);
   auto [pos, inserted] = connections.emplace(
       topic.FullName(), std::shared_ptr<pubsub::PublisherConnection>());
   if (inserted) {

@@ -73,10 +73,10 @@ gcf::HttpResponse http_form_data_impl(gcf::HttpRequest request) {
   auto delimiter = FormDataDelimiter::FromHeader(header->second);
 
   auto payload = std::move(request).payload();
-  std::vector<absl::string_view> parts =
+  std::vector<absl::string_view> const parts =
       absl::StrSplit(payload, delimiter, absl::SkipEmpty{});
   nlohmann::json result{{"parts", std::vector<nlohmann::json>{}}};
-  for (auto& p : parts) {
+  for (auto const& p : parts) {
     std::vector<absl::string_view> components =
         absl::StrSplit(p, absl::MaxSplits("\r\n\r\n", 2));
     auto const body_size = components.size() == 2 ? components[0].size() : 0;

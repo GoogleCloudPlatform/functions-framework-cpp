@@ -47,10 +47,10 @@ TEST(PubsubUnitTest, Basic) {
     return be;
   }();
 
-  struct TestCases {
+  struct {
     std::string data;
     std::string expected;
-  } cases[]{
+  } const cases[]{
       // The magic string was obtained using:
       //  /bin/echo -n 'C++' | openssl base64 -e
       {R"js({"message": {"data": "Qysr"}})js", "Hello C++"},

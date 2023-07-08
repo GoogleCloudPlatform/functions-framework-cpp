@@ -63,10 +63,10 @@ class PubsubSystemTest : public ::testing::Test {
 };
 
 TEST_F(PubsubSystemTest, Basic) {
-  struct TestCases {
+  struct {
     std::string data;
     std::string expected;
-  } cases[]{
+  } const cases[]{
       {"C++", "Hello C++"},
       {"World", "Hello World"},
   };

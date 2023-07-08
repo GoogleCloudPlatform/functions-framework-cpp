@@ -99,10 +99,10 @@ TEST_F(StorageIntegrationTest, Basic) {
     }
   })js");
 
-  struct TestCases {
+  struct {
     std::string name;
     std::string expected;
-  } cases[]{
+  } const cases[]{
       {"object1.txt", "Object: object1.txt"},
       {"object/with/longer/name.txt", "Object: object/with/longer/name.txt"},
   };
