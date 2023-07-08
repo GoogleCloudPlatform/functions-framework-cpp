@@ -43,3 +43,18 @@ time {
 function vcpkg::root_dir() {
   echo "${VCPKG_ROOT_DIR}"
 }
+
+# Output common CMake configuration arguments
+function vcpkg::cmake_args() {
+  local binary="cmake-out"
+  if [[ $# -ge 1 ]]; then
+    binary="$1"
+  fi
+  local args
+  args=(
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake"
+    -DVCPKG_FEATURE_FLAGS="versions,manifest"
+  )
+  printf "%s\n" "${args[@]}"
+}

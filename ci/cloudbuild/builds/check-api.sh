@@ -21,26 +21,25 @@ export CXX=g++
 
 source "$(dirname "$0")/../../lib/init.sh"
 source module ci/lib/io.sh
+source module ci/cloudbuild/builds/lib/cmake.sh
 source module ci/cloudbuild/builds/lib/vcpkg.sh
 
 INSTALL_PREFIX=/var/tmp/functions-framework-cpp
-vcpkg_root="$(vcpkg::root_dir)"
 # abi-dumper wants us to use -Og, but that causes bogus warnings about
 # uninitialized values with GCC, so we disable that warning with
 # -Wno-maybe-uninitialized. See also:
 #     https://github.com/googleapis/google-cloud-cpp/issues/6313
 io::log_h2 "Configuring, building, and installing the C++ Functions Framework"
-cmake -GNinja \
+mapfile -t cmake_args < <(cmake::common_args)
+mapfile -t vcpkg_args < <(vcpkg::cmake_args)
+io::run cmake "${cmake_args[@]}" "${vcpkg_args[@]}" \
   -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" \
   -DCMAKE_INSTALL_MESSAGE=NEVER \
   -DBUILD_SHARED_LIBS=ON \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_CXX_FLAGS="-Og -Wno-maybe-uninitialized" \
-  -DCMAKE_TOOLCHAIN_FILE="${vcpkg_root}/scripts/buildsystems/vcpkg.cmake" \
-  -DVCPKG_FEATURE_FLAGS="versions,manifest" \
-  -S . -B cmake-out
-cmake --build cmake-out
-cmake --install cmake-out
+  -DCMAKE_CXX_FLAGS="-Og -Wno-maybe-uninitialized"
+io::run cmake --build cmake-out
+io::run cmake --install cmake-out
 
 # Uses `abi-dumper` to dump the ABI for the given library, which should be
 # installed at the given prefix. This function will be called from a subshell,

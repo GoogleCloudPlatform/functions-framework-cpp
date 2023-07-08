@@ -22,8 +22,8 @@ RUN dnf makecache && \
         ccache clang clang-analyzer clang-tools-extra \
         cmake diffutils doxygen findutils gcc-c++ git \
         lcov libcxx-devel libcxxabi-devel \
-        libasan libubsan libtsan libcurl-devel make ninja-build \
-        openssl-devel patch python python3.8 \
+        libasan libubsan libtsan llvm libcurl-devel make ninja-build \
+        openssl-devel patch python python3 \
         python-pip tar unzip w3m wget which zip zlib-devel
 
 # This is needed to compile OpenSSL with vcpkg
