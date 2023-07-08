@@ -1,0 +1,14 @@
+filename: ci/cloudbuild/cloudbuild.yaml
+github:
+  name: functions-framework-cpp
+  owner: GoogleCloudPlatform
+  push:
+    branch: ^(main|v\d+\..*)$
+name: sanitize-undefined-ci
+substitutions:
+  _BUILD_NAME: sanitize-undefined
+  _DISTRO: fedora-38
+  _TRIGGER_TYPE: ci
+includeBuildLogs: INCLUDE_BUILD_LOGS_WITH_STATUS
+tags:
+- ci
