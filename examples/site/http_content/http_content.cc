@@ -66,7 +66,7 @@ std::string urldecode(std::string const& encoded) {
       auto const* end = encoded.data() + i + 3;
       auto r =
           std::from_chars(encoded.data() + i + 1, end, value, kUrlEncodingBase);
-      if (r.ptr == end) {
+      if (r.ec == std::errc{} && r.ptr == end) {
         result.push_back(value);
         i += 2;
       } else {

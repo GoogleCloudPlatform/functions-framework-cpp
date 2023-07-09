@@ -123,6 +123,16 @@ if (BUILD_TESTING)
         functions_framework_cpp_add_common_options(${target})
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        # GCC turns on -Wmaybe-unitialized with -Wall. This results in false
+        # positives in this test, but the warning was useful in other tests.
+        # For examples of the false positives see:
+        #     https://godbolt.org/z/xhj57Y6qG
+        # more information at:
+        #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80635
+        target_compile_options(
+            cloud_event_test PRIVATE "-Wno-maybe-uninitialized")
+    endif ()
 
     add_subdirectory(integration_tests)
 endif ()
