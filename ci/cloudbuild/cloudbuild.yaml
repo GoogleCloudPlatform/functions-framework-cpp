@@ -36,8 +36,8 @@ options:
 # Variables that can be overridden from the `gcloud builds ...` command using
 # the `--substitutions=_FOO=bar` flag.
 substitutions:
-  _DISTRO: 'fedora-34'
-  _BUILD_NAME: 'check-api'
+  _DISTRO: 'unknown'
+  _BUILD_NAME: 'unknown'
   _CACHE_BUCKET: '${PROJECT_ID}_cloudbuild'
   _IMAGE: 'functions-framework-cpp/${_DISTRO}'
   _TRIGGER_SOURCE: '${_PR_NUMBER:-main}'
