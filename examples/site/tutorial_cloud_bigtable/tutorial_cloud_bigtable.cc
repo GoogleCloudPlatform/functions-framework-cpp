@@ -29,17 +29,13 @@ namespace {
 cbt::Table get_table_client(std::string project_id, std::string instance_id,
                             std::string const& table_id) {
   static std::mutex mu;
-  static std::unique_ptr<cbt::Table> table;
+  static std::shared_ptr<cbt::DataConnection> connection;
   std::lock_guard const lk(mu);
-  if (table == nullptr || table->table_id() != table_id ||
-      table->instance_id() != instance_id ||
-      table->project_id() != project_id) {
-    table = std::make_unique<cbt::Table>(
-        cbt::MakeDataConnection(),
-        cbt::TableResource(std::move(project_id), std::move(instance_id),
-                           table_id));
-  }
-  return *table;
+  if (!connection) connection = cbt::MakeDataConnection();
+
+  return cbt::Table(connection,
+                    cbt::TableResource(std::move(project_id),
+                                       std::move(instance_id), table_id));
 }
 
 gcf::HttpResponse handle_request(gcf::HttpRequest const& request) {

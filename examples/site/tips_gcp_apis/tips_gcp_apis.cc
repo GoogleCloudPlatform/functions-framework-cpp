@@ -15,7 +15,7 @@
 // [START functions_pubsub_publish]
 // [START functions_tips_gcp_apis]
 #include <google/cloud/functions/function.h>
-#include <google/cloud/pubsub/publisher.h>
+#include <google/cloud/pubsub/blocking_publisher.h>
 #include <nlohmann/json.hpp>
 #include <memory>
 #include <mutex>
@@ -26,20 +26,13 @@ namespace gcf = ::google::cloud::functions;
 namespace pubsub = ::google::cloud::pubsub;
 
 namespace {
-pubsub::Publisher GetPublisher(pubsub::Topic topic) {
-  using Map = std::unordered_map<std::string,
-                                 std::shared_ptr<pubsub::PublisherConnection>>;
-
+pubsub::BlockingPublisher GetPublisher() {
   static std::mutex mu;
-  static Map connections;
+  static std::shared_ptr<pubsub::BlockingPublisherConnection> connection;
 
   std::lock_guard const lk(mu);
-  auto [pos, inserted] = connections.emplace(
-      topic.FullName(), std::shared_ptr<pubsub::PublisherConnection>());
-  if (inserted) {
-    pos->second = pubsub::MakePublisherConnection(std::move(topic));
-  }
-  return pubsub::Publisher(pos->second);
+  if (!connection) connection = pubsub::MakeBlockingPublisherConnection();
+  return pubsub::BlockingPublisher(connection);
 }
 }  // namespace
 
@@ -51,18 +44,18 @@ gcf::HttpResponse tips_gcp_apis_impl(gcf::HttpRequest const& request) {
   auto const topic_id = body.value("topic", "");
   if (topic_id.empty()) throw std::runtime_error("Missing topic in request");
 
-  auto publisher = GetPublisher(pubsub::Topic(project, topic_id));
+  auto publisher = GetPublisher();
   auto id = publisher.Publish(
+      pubsub::Topic(project, topic_id),
       pubsub::MessageBuilder().SetData("Test message").Build());
 
-  gcf::HttpResponse response;
-  if (!id.get()) {
-    response.set_result(gcf::HttpResponse::kInternalServerError);
-  } else {
-    response.set_payload("1 message published");
-    response.set_header("content-type", "text/plain");
+  if (!id) {
+    return gcf::HttpResponse{}.set_result(
+        gcf::HttpResponse::kInternalServerError);
   }
-  return response;
+  return gcf::HttpResponse{}
+      .set_payload("1 message published")
+      .set_header("content-type", "text/plain");
 }
 
 gcf::Function tips_gcp_apis() { return gcf::MakeFunction(tips_gcp_apis_impl); }
