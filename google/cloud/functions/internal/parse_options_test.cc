@@ -43,7 +43,7 @@ TEST(WrapRequestTest, ExceptionOnUnknown) {
       "unused",
       "--invalid-option-never-named-an-option-this",
   };
-  int argc = sizeof(argv) / sizeof(argv[0]);
+  int const argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
 
@@ -78,21 +78,21 @@ TEST(WrapRequestTest, CommandLineOverridesEnv) {
 TEST(WrapRequestTest, PortEnvInvalid) {
   SetEnv("PORT", "not-a-number");
   char const* argv[] = {"unused"};
-  int argc = sizeof(argv) / sizeof(argv[0]);
+  int const argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
 
 TEST(WrapRequestTest, PortEnvTooLow) {
   SetEnv("PORT", "-1");
   char const* argv[] = {"unused"};
-  int argc = sizeof(argv) / sizeof(argv[0]);
+  int const argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
 
 TEST(WrapRequestTest, PortEnvTooHigh) {
   SetEnv("PORT", "65536");
   char const* argv[] = {"unused"};
-  int argc = sizeof(argv) / sizeof(argv[0]);
+  int const argc = sizeof(argv) / sizeof(argv[0]);
   EXPECT_THROW(ParseOptions(argc, argv), std::exception);
 }
 

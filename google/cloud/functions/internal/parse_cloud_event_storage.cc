@@ -58,7 +58,7 @@ functions::CloudEvent ParseCloudEventStorage(functions::CloudEvent e) {
   event.set_data_content_type("application/json");
   event.set_data_schema("google.events.cloud.storage.v1.StorageObjectData");
   event.set_subject("objects/" + attributes.value("objectId", ""));
-  if (e.time().has_value()) event.set_time(e.time().value());
+  if (auto t = e.time(); t.has_value()) event.set_time(*t);
   event.set_data(Base64Decode(message.value("data", "")));
 
   return event;

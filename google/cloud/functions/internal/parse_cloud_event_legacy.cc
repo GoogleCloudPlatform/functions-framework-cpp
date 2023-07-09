@@ -234,7 +234,7 @@ functions::CloudEvent ParseLegacyFirebaseAuth(nlohmann::json const& json,
   gcf.subject = "users/" + uid;
 
   auto modified = json["data"];
-  std::pair<std::string, std::string> renames[] = {
+  std::pair<std::string, std::string> const renames[] = {
       {"createdAt", "createTime"}, {"lastSignedInAt", "lastSignInTime"}};
   auto& metadata = modified["metadata"];
   for (auto const& [old_name, new_name] : renames) {

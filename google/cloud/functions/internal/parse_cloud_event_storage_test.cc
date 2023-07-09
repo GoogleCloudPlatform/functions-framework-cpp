@@ -24,10 +24,10 @@ FUNCTIONS_FRAMEWORK_CPP_INLINE_NAMESPACE_BEGIN
 namespace {
 
 TEST(ParseCloudEventJson, EmulateStorageBase) {
-  struct TestCase {
+  struct {
     std::string event_type;
     std::string expected_type;
-  } test_cases[] = {
+  } const test_cases[] = {
       {"OBJECT_FINALIZE", "google.cloud.storage.object.v1.finalized"},
       {"OBJECT_METADATA_UPDATE",
        "google.cloud.storage.object.v1.metadataUpdated"},
@@ -210,9 +210,9 @@ TEST(ParseCloudEventJson, EmulateStorageMissingData) {
 }
 
 TEST(ParseCloudEventJson, EmulateStorageMissingAttributeField) {
-  struct TestCase {
+  struct {
     std::string field_name;
-  } test_cases[] = {
+  } const test_cases[] = {
       {"notificationConfig"}, {"eventType"}, {"payloadFormat"},
       {"bucketId"},           {"objectId"},  {"objectGeneration"},
   };
@@ -271,9 +271,9 @@ TEST(ParseCloudEventJson, EmulateStorageMissingAttributeField) {
 }
 
 TEST(ParseCloudEventJson, EmulateStorageMissingInvalidAttributeField) {
-  struct TestCase {
+  struct {
     std::string field_name;
-  } test_cases[] = {
+  } const test_cases[] = {
       {"eventType"},
       {"payloadFormat"},
   };

@@ -162,7 +162,7 @@ TEST(ParseCloudEventLegacy, MapEventTypePrefixToEventType) {
   struct {
     std::string gcf_event_type;
     std::string expected_service;
-  } cases[] = {
+  } const cases[] = {
       {"providers/cloud.firestore/eventTypes/document.write",
        "firestore.googleapis.com"},
       {"providers/google.firebase.analytics/eventTypes/event.log",
@@ -208,7 +208,7 @@ TEST(ParseCloudEventLegacy, MapEventType) {
   struct {
     std::string gcf_event_type;
     std::string expected;
-  } cases[] = {
+  } const cases[] = {
       {"google.pubsub.topic.publish",
        "google.cloud.pubsub.topic.v1.messagePublished"},
       {"providers/cloud.pubsub/eventTypes/topic.publish",

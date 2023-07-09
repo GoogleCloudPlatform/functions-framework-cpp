@@ -43,8 +43,7 @@ TEST(CloudEventTest, WithVersion) {
 TEST(CloudEventTest, DataContentType) {
   auto actual = CloudEvent("test-id", "test-source", "test-type");
   actual.set_data_content_type("test-value");
-  ASSERT_TRUE(actual.data_content_type().has_value());
-  EXPECT_EQ(*actual.data_content_type(), "test-value");
+  EXPECT_EQ(actual.data_content_type().value_or(""), "test-value");
   actual.reset_data_content_type();
   EXPECT_FALSE(actual.data_content_type().has_value());
 }
@@ -52,8 +51,7 @@ TEST(CloudEventTest, DataContentType) {
 TEST(CloudEventTest, DataSchema) {
   auto actual = CloudEvent("test-id", "test-source", "test-type");
   actual.set_data_schema("test-value");
-  ASSERT_TRUE(actual.data_schema().has_value());
-  EXPECT_EQ(*actual.data_schema(), "test-value");
+  EXPECT_EQ(actual.data_schema().value_or(""), "test-value");
   actual.reset_data_schema();
   EXPECT_FALSE(actual.data_schema().has_value());
 }
@@ -61,8 +59,7 @@ TEST(CloudEventTest, DataSchema) {
 TEST(CloudEventTest, Subject) {
   auto actual = CloudEvent("test-id", "test-source", "test-type");
   actual.set_subject("test-value");
-  ASSERT_TRUE(actual.subject().has_value());
-  EXPECT_EQ(*actual.subject(), "test-value");
+  EXPECT_EQ(actual.subject().value_or(""), "test-value");
   actual.reset_subject();
   EXPECT_FALSE(actual.subject().has_value());
 }
@@ -71,17 +68,16 @@ TEST(CloudEventTest, Time) {
   auto actual = CloudEvent("test-id", "test-source", "test-type");
   auto const tp = CloudEvent::ClockType::now();
   actual.set_time(tp);
-  ASSERT_TRUE(actual.time().has_value());
-  EXPECT_EQ(*actual.time(), tp);
+  EXPECT_EQ(actual.time().value_or(tp + std::chrono::seconds(5)), tp);
   actual.reset_time();
   EXPECT_FALSE(actual.time().has_value());
 }
 
 TEST(CloudEventTest, TimeString) {
   auto actual = CloudEvent("test-id", "test-source", "test-type");
-  std::string valid[] = {"2020-11-30T12:34:45Z", "2020-11-30T12:34:45.678Z",
-                         "2020-11-30T12:34:45.678-05:00",
-                         "2020-11-30T12:34:45.678+05:00"};
+  std::string const valid[] = {
+      "2020-11-30T12:34:45Z", "2020-11-30T12:34:45.678Z",
+      "2020-11-30T12:34:45.678-05:00", "2020-11-30T12:34:45.678+05:00"};
   auto to_system_clock_tp = [](std::string const& s) {
     std::string err;
     absl::Time t;
@@ -101,8 +97,7 @@ TEST(CloudEventTest, TimeString) {
 TEST(CloudEventTest, Data) {
   auto actual = CloudEvent("test-id", "test-source", "test-type");
   actual.set_data("test-value");
-  ASSERT_TRUE(actual.data().has_value());
-  EXPECT_EQ(*actual.data(), "test-value");
+  EXPECT_EQ(actual.data().value_or(""), "test-value");
   actual.reset_data();
   EXPECT_FALSE(actual.data().has_value());
 }
@@ -111,8 +106,7 @@ TEST(CloudEventTest, DataMove) {
   auto actual = CloudEvent("test-id", "test-source", "test-type");
   actual.set_data("test-value");
   auto d = std::move(actual).data();
-  ASSERT_TRUE(d.has_value());
-  EXPECT_EQ(*d, "test-value");
+  EXPECT_EQ(d.value_or(""), "test-value");
 }
 
 }  // namespace

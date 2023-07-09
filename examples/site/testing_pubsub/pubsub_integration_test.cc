@@ -92,10 +92,10 @@ TEST_F(PubsubIntegrationTest, Basic) {
     }
   })js");
 
-  struct TestCases {
+  struct {
     std::string data;
     std::string expected;
-  } cases[]{
+  } const cases[]{
       // The magic string was obtained using:
       //  /bin/echo -n 'C++' | openssl base64 -e
       {"Qysr", "Hello C++"},

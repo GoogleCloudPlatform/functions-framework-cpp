@@ -30,7 +30,7 @@ cbt::Table get_table_client(std::string project_id, std::string instance_id,
                             std::string const& table_id) {
   static std::mutex mu;
   static std::unique_ptr<cbt::Table> table;
-  std::lock_guard lk(mu);
+  std::lock_guard const lk(mu);
   if (table == nullptr || table->table_id() != table_id ||
       table->instance_id() != instance_id ||
       table->project_id() != project_id) {

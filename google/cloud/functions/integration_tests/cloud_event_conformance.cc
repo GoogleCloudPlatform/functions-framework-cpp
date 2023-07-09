@@ -35,7 +35,7 @@ void CloudEventConformance(functions::CloudEvent const& ev) {
   struct {
     std::string name;
     std::optional<std::string> value;
-  } optional_fields[]{
+  } const optional_fields[]{
       {"datacontenttype", ev.data_content_type()},
       {"dataschema", ev.data_schema()},
       {"subject", ev.subject()},

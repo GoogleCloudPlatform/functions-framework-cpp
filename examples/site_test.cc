@@ -327,7 +327,7 @@ TEST(ExamplesSiteTest, HelloWorldPubSub) {
     }
   })js";
 
-  struct TestCase {
+  struct {
     std::string name;
     std::string body;
   } const cases[] = {
@@ -399,7 +399,7 @@ TEST(ExamplesSiteTest, HelloWorldStorage) {
     "datacontenttype": "application/json"
   })js";
 
-  struct TestCase {
+  struct {
     std::string name;
     std::string body;
     std::string content_type;
