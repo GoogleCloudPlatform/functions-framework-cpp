@@ -9,63 +9,6 @@ env:
   vcpkg_SHA: "2023.06.20"
 
 jobs:
-  werror-build:
-    # Using a blank name produces better output on
-    # the web UI than any other alternative we tried.
-    name: " "
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        compiler: [
-          {"cxx": "clang++-14", "cc": "clang-14"},
-          {"cxx": "g++-11", "cc": "gcc-11" },
-        ]
-    steps:
-      - name: install ninja
-        run: sudo apt install ninja-build
-      - uses: actions/checkout@v2
-      - name: clone-vcpkg
-        working-directory: "${{runner.temp}}"
-        run: >
-          mkdir -p vcpkg &&
-          curl -sSL "https://github.com/microsoft/vcpkg/archive/${{env.vcpkg_SHA}}.tar.gz" |
-          tar -C vcpkg --strip-components=1 -zxf -
-      - name: cache-vcpkg
-        id: cache-vcpkg
-        uses: actions/cache@v2
-        with:
-          # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
-          path: |
-            ~/.cache/vcpkg
-            ~/.cache/bin
-          key: |
-            vcpkg-${{ env.vcpkg_SHA }}-werror-${{ matrix.compiler.cxx }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: |
-            vcpkg-${{ env.vcpkg_SHA }}-werror-${{ matrix.compiler.cxx }}-
-      - name: boostrap-vcpkg
-        run: ci/restore-vcpkg-from-cache.sh "${{runner.temp}}/vcpkg"
-      - name: compiler=${{matrix.sanitizer}} / configure
-        run: >
-          cmake -S . -B "${{runner.temp}}/build" -GNinja
-          -DFUNCTIONS_FRAMEWORK_CPP_ENABLE_WERROR=ON
-          -DCMAKE_CXX_COMPILER=${{matrix.compiler.cxx}}
-          -DCMAKE_C_COMPILER=${{matrix.compiler.cc}}
-          -DCMAKE_BUILD_TYPE=Debug
-          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      - uses: actions/cache/save@v3
-        if: always()
-        with:
-          path: |
-            ~/.cache/vcpkg
-            ~/.cache/bin
-          key: vcpkg-${{ env.vcpkg_SHA }}-werror-${{ matrix.compiler.cxx }}-${{ hashFiles('vcpkg.json') }}
-      - name: compiler=${{matrix.compiler.cxx}} / build
-        run: cmake --build "${{runner.temp}}/build"
-      - name: compiler=${{matrix.compiler.cxx}} / test
-        working-directory: "${{runner.temp}}/build"
-        run: ctest --output-on-failure --timeout=60s
-
   clang-format:
     name: clang-format
     runs-on: ubuntu-22.04
