@@ -123,6 +123,18 @@ if (BUILD_TESTING)
         functions_framework_cpp_add_common_options(${target})
         add_test(NAME ${target} COMMAND ${target})
     endforeach ()
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        # GCC turns on -Wmaybe-unitialized with -Wall. This results in false
+        # positives in this test, but the warning was useful in other tests.
+        #
+        # https://godbolt.org/z/xhj57Y6qG shows an example of these false
+        # positives.
+        #
+        # It seems the GTEST_*() macros trigger a new version of:
+        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80635
+        target_compile_options(cloud_event_test
+                               PRIVATE "-Wno-maybe-uninitialized")
+    endif ()
 
     add_subdirectory(integration_tests)
 endif ()
