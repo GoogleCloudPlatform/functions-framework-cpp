@@ -57,6 +57,5 @@ jobs:
 
     - name: coverage-upload
       uses: codecov/codecov-action@v3
-      working-directory: ${{runner.workspace}}
       with:
         gcov: true
