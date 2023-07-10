@@ -18,7 +18,8 @@ jobs:
     - name: build-gtest
       run: |
         mkdir -p /var/tmp/build/gtest
-        sudo cmake -G Ninja -S /usr/src/googletest -B /var/tmp/build/gtest
+        sudo cmake -G Ninja -S /usr/src/googletest -B /var/tmp/build/gtest \
+          -DBUILD_TESTING=OFF
         sudo cmake --build /var/tmp/build/gtest
         sudo cmake --install /var/tmp/build/gtest
     - name: build-cppcodev
