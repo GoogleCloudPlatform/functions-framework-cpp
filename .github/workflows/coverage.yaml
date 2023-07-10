@@ -17,12 +17,14 @@ jobs:
           nlohmann-json3-dev libabsl-dev libgtest-dev libgmock-dev
     - name: build-gtest
       run: |
+        mkdir -p /var/tmp/build/gtest
         sudo cmake -G Ninja -S /usr/src/googletest -B /var/tmp/build/gtest
         sudo cmake --build /var/tmp/build/gtest
         sudo cmake --install /var/tmp/build/gtest
     - name: build-cppcodev
       run: |
         mkdir -p /var/tmp/build/cppcodec
+        cd /var/tmp/build/cppcodec
         curl -fsSL https://github.com/tplgy/cppcodec/archive/refs/tags/v0.2.tar.gz | \
           tar --strip-components=1 -zxvf -
         cmake -G Ninja -S . -B cmake-out
