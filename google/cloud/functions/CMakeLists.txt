@@ -80,10 +80,10 @@ target_include_directories(functions_framework_cpp
 target_include_directories(functions_framework_cpp SYSTEM
                            PUBLIC $<INSTALL_INTERFACE:include>)
 target_link_libraries(
-    functions_framework_cpp PUBLIC absl::time Boost::headers
     functions_framework_cpp
     PUBLIC absl::time Boost::headers Boost::program_options Threads::Threads
-           nlohmann_json::nlohmann_json)
+    PRIVATE nlohmann_json::nlohmann_json)
+
 if ("${Boost_VERSION_STRING}" VERSION_LESS "1.81")
     target_compile_definitions(functions_framework_cpp
                                PUBLIC BOOST_BEAST_USE_STD_STRING_VIEW)
