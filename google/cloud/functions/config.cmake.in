@@ -16,6 +16,7 @@ include(CMakeFindDependencyMacro)
 find_dependency(absl)
 find_dependency(Boost COMPONENTS program_options)
 find_dependency(Threads)
+find_dependency(nlohmann_json)
 
 set(FUNCTIONS_FRAMEWORK_CPP_VERSION @PROJECT_VERSION@)
 
