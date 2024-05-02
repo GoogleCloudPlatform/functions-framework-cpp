@@ -80,6 +80,6 @@ jobs:
     - name: coverage-upload
       working-directory: ${{runner.workspace}}
       env:
-        CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
+        CODECOV_TOKEN: ${{vars.CODECOV_TOKEN}}
       run: >
         /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
