@@ -24,7 +24,7 @@ jobs:
         tar -C vcpkg --strip-components=1 -zxf -
     - name: cache-vcpkg
       id: cache-vcpkg
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
         path: |
@@ -42,7 +42,7 @@ jobs:
         cmake -S . -B "${{runner.temp}}/build" -GNinja
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-    - uses: actions/cache/save@v3
+    - uses: actions/cache/save@v4
       if: always()
       with:
         path: |
@@ -66,7 +66,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: cache-vcpkg
         id: cache-vcpkg
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/vcpkg
@@ -89,7 +89,7 @@ jobs:
         run: >
           cmake -S examples/site/howto_local_development -B "${{runner.temp}}/howto_local_development/build" -GNinja
           -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         if: always()
         with:
           path: |
@@ -122,7 +122,7 @@ jobs:
 
       - name: cache-vcpkg
         id: cache-vcpkg
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           # Preserve the vcpkg binary cache
           path: |
@@ -140,7 +140,7 @@ jobs:
             '-DBUILD_TESTING=ON' `
             '-DFUNCTIONS_FRAMEWORK_CPP_TEST_EXAMPLES=OFF' `
             '-DCMAKE_TOOLCHAIN_FILE=${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake'
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         if: always()
         with:
           path: |
@@ -168,7 +168,7 @@ jobs:
           tar -C vcpkg --strip-components=1 -zxf -
       - name: cache-vcpkg
         id: cache-vcpkg
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
           path: |
@@ -186,7 +186,7 @@ jobs:
           cmake -S . -B "${{runner.temp}}/build" -GNinja
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         if: always()
         with:
           path: |

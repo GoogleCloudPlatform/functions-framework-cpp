@@ -24,7 +24,7 @@ jobs:
         tar -C vcpkg --strip-components=1 -zxf -
     - name: cache-vcpkg
       id: cache-vcpkg
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         # Preserve the vcpkg binary *and* the vcpkg binary cache in the build cache
         path: |
@@ -43,7 +43,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=Debug
         -DCMAKE_CXX_FLAGS=--coverage
         -DCMAKE_TOOLCHAIN_FILE="${{runner.temp}}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-    - uses: actions/cache/save@v3
+    - uses: actions/cache/save@v4
       if: always()
       with:
         path: |
