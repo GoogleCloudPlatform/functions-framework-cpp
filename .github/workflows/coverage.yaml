@@ -78,8 +78,7 @@ jobs:
         cmd: '${{runner.workspace}}/build/google/cloud/functions/integration_tests/http_conformance'
 
     - name: coverage-upload
-      working-directory: ${{runner.workspace}}
-      env:
-        CODECOV_TOKEN: ${{vars.CODECOV_TOKEN}}
-      run: >
-        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
+      uses: codecov/codecov-action@v4
+      with:
+        directory: ${{ runner.workspace }}
+        token: ${{ vars.CODECOV_TOKEN }}
