@@ -104,7 +104,7 @@ jobs:
   build-msvc-2019:
     if: ${{ false }}  # TODO(#366) - disable for now
     name: msvc-2019
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: install-ninja
         run: choco install -y --no-progress ninja
