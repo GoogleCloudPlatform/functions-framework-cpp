@@ -62,7 +62,7 @@ jobs:
         go-version: '^1.16'
 
     - name: Run Cloud Event conformance tests
-      uses: GoogleCloudPlatform/functions-framework-conformance/action@v1.8.3
+      uses: GoogleCloudPlatform/functions-framework-conformance/action@v1.8.6
       with:
         functionType: 'cloudevent'
         useBuildpacks: false
@@ -70,7 +70,7 @@ jobs:
         cmd: '${{runner.workspace}}/build/google/cloud/functions/integration_tests/cloud_event_conformance'
 
     - name: Run HTTP conformance tests
-      uses: GoogleCloudPlatform/functions-framework-conformance/action@v1.8.3
+      uses: GoogleCloudPlatform/functions-framework-conformance/action@v1.8.6
       with:
         functionType: 'http'
         useBuildpacks: false
@@ -78,8 +78,7 @@ jobs:
         cmd: '${{runner.workspace}}/build/google/cloud/functions/integration_tests/http_conformance'
 
     - name: coverage-upload
-      working-directory: ${{runner.workspace}}
-      env:
-        CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
-      run: >
-        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
+      uses: codecov/codecov-action@v4
+      with:
+        directory: ${{ runner.workspace }}
+        token: ${{ vars.CODECOV_TOKEN }}
