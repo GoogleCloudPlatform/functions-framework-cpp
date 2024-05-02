@@ -12,10 +12,6 @@ jobs:
   coverage:
     name: coverage
     runs-on: ubuntu-22.04
-    # Add "id-token" with the intended permissions.
-    permissions:
-      contents: read
-      id-token: write
     steps:
     - name: install tools
       run: sudo apt install ninja-build lcov
@@ -82,7 +78,8 @@ jobs:
         cmd: '${{runner.workspace}}/build/google/cloud/functions/integration_tests/http_conformance'
 
     - name: coverage-upload
-      uses: codecov/codecov-action@v4
-      with:
-        use_oidc: true
-        directory: ${{runner.workspace}}
+      working-directory: ${{runner.workspace}}
+      env:
+        CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
+      run: >
+        /bin/bash <(curl -s https://codecov.io/bash) -X coveragepy -x /usr/bin/gcov
