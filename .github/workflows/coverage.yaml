@@ -12,6 +12,10 @@ jobs:
   coverage:
     name: coverage
     runs-on: ubuntu-22.04
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - name: install tools
       run: sudo apt install ninja-build lcov
