@@ -15,7 +15,7 @@ jobs:
     steps:
     - name: install ninja
       run: sudo apt install ninja-build
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: clone-vcpkg
       working-directory: "${{runner.temp}}"
       run: >
@@ -63,7 +63,7 @@ jobs:
     steps:
       - name: install ninja
         run: sudo apt install ninja-build
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: cache-vcpkg
         id: cache-vcpkg
         uses: actions/cache@v4
@@ -132,7 +132,7 @@ jobs:
           restore-keys: |
             vcpkg-${{ env.vcpkg_SHA }}-build-msvc-2019-2-
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ilammy/msvc-dev-cmd@v1
       - name: configure
         run: |
@@ -159,7 +159,7 @@ jobs:
     steps:
       - name: install ninja
         run: brew install ninja
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: clone-vcpkg
         working-directory: "${{runner.temp}}"
         run: >
