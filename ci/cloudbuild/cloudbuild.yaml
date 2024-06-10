@@ -45,7 +45,7 @@ substitutions:
   _LOGS_BUCKET: 'cloud-cpp-community-publiclogs'
 
 steps:
-  - name: 'gcr.io/kaniko-project/executor:v1.23.0'
+  - name: 'gcr.io/kaniko-project/executor:v1.23.1'
     args: [
         '--log-format=text',
         '--context=dir:///workspace/ci',
