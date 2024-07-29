@@ -42,6 +42,7 @@ set(VCPKG_TARGET_ARCHITECTURE x64)
 _EOF_
   cp -r /usr/local/bin/vcpkg "${VCPKG_ROOT}"
 cat >"${layers}/vcpkg.toml" <<_EOF_
+[types]
 build = true
 cache = true
 launch = false
@@ -52,6 +53,7 @@ if [[ ! -d "${layers}/vcpkg-cache" ]]; then
   echo "-----> Restore cache from build image"
   cp -r /var/cache/vcpkg-cache "${layers}/vcpkg-cache"
 cat >"${layers}/vcpkg-cache.toml" <<_EOF_
+[types]
 build = true
 cache = true
 launch = false
@@ -60,6 +62,7 @@ fi
 
 echo "-----> Setup build directory"
 cat >"${layers}/source.toml" <<_EOF_
+[types]
 build = true
 cache = false
 launch = false
@@ -261,6 +264,7 @@ generate_main \
 
 echo "-----> Configure Function"
 cat >"${layers}/binary.toml" <<_EOF_
+[types]
 build = true
 cache = true
 launch = false
@@ -275,6 +279,7 @@ _EOF_
 /usr/local/bin/cmake --build "${layers}/binary" --target install
 
 cat >"${layers}/local.toml" <<_EOF_
+[types]
 launch = true
 cache = false
 build = false
@@ -283,5 +288,5 @@ _EOF_
 cat >"${layers}/launch.toml" <<_EOF_
 [[processes]]
 type = "web"
-command = "${layers}/local/bin/function"
+command = ["${layers}/local/bin/function"]
 _EOF_
