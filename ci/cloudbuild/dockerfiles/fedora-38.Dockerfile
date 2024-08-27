@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM fedora:38
+FROM fedora:42
 ARG NCPU=4
 
 # Installs the development tools needed by functions-framework-cpp and its
