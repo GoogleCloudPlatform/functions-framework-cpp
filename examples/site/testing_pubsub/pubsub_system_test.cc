@@ -25,6 +25,7 @@
 namespace {
 
 namespace bp = ::boost::process;
+namespace pubsub = ::google::cloud::pubsub;
 namespace pubsub_admin = ::google::cloud::pubsub_admin;
 using ::testing::AnyOf;
 using ::testing::HasSubstr;
