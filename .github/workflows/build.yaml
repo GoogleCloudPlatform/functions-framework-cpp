@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env:
-  vcpkg_SHA: "2023.06.20"
+  vcpkg_SHA: "2024.07.12"
 
 jobs:
   build-ubuntu-focal:
