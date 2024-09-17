@@ -13,7 +13,7 @@
 # limitations under the License.
 
 FROM busybox
-ARG PACK_VERSION=v0.35.0
+ARG PACK_VERSION=v0.33.2
 RUN wget -q -O- https://github.com/buildpacks/pack/releases/download/${PACK_VERSION}/pack-${PACK_VERSION}-linux.tgz | tar zx
 
 FROM gcr.io/distroless/base
