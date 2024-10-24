@@ -117,9 +117,14 @@ To deploy this image in Cloud Run use this command. You need to select
 a Cloud Run region for your deployment. We will use `us-central1` in this
 guide:
 
+Set the active project:
+
+```sh
+gcloud config set project ${GOOGLE_CLOUD_PROJECT}
+```
+
 ```shell
 gcloud run deploy gcf-cpp-hello-world-pubsub \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-pubsub:latest" \
     --region="us-central1" \
     --platform="managed" \
@@ -130,7 +135,6 @@ Verify unauthenticated requests are allowed:
 
 ```shell
 gcloud run services get-iam-policy gcf-cpp-hello-world-pubsub \
-     --project="${GOOGLE_CLOUD_PROJECT}" \
      --region="us-central1" \
      --platform="managed"
 ```
@@ -152,7 +156,6 @@ proceed run this command (maybe with an addition `--topic-transport` option):
 
 ```shell
 gcloud beta eventarc triggers create gcf-cpp-hello-world-pubsub-trigger \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --location="us-central1" \
     --destination-run-service="gcf-cpp-hello-world-pubsub" \
     --destination-run-region="us-central1" \
@@ -163,7 +166,6 @@ Find out what topic is used to this new trigger:
 
 ```shell
 TOPIC=$(gcloud beta eventarc triggers describe gcf-cpp-hello-world-pubsub-trigger \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --location="us-central1" \
     --format="value(transport.pubsub.topic)")
 ```
@@ -181,7 +183,6 @@ to verify the Pub/Sub message was received:
 
 ```shell
 gcloud logging read \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --format="value(textPayload)" \
     "resource.type=cloud_run_revision AND resource.labels.service_name=gcf-cpp-hello-world-pubsub AND logName:stdout"
 # Output: Hello Event
@@ -193,7 +194,6 @@ Delete the trigger:
 
 ```shell
 gcloud beta eventarc triggers delete gcf-cpp-hello-world-pubsub-trigger \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --location="us-central1"
 ```
 
@@ -201,7 +201,6 @@ Delete the Cloud Run deployment:
 
 ```sh
 gcloud run services delete gcf-cpp-hello-world-pubsub \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --region="us-central1" \
     --platform="managed"
 ```

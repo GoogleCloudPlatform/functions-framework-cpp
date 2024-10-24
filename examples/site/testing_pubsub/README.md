@@ -80,12 +80,17 @@ pack build \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-pubsub"
 ```
 
+Set the active project:
+
+```sh
+gcloud config set project ${GOOGLE_CLOUD_PROJECT}
+```
+
 Deploy this function to Cloud Run:
 
 ```shell
 docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-pubsub"
 gcloud run deploy gcf-hello-world-storage \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-pubsub:latest" \
     --region="us-central1" \
     --platform="managed" \
@@ -96,7 +101,6 @@ Setup a Pub/Sub trigger:
 
 ```shell
 gcloud beta eventarc triggers create gcf-hello-world-pubsub-trigger \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --location="us-central1" \
     --destination-run-service="gcf-hello-world-pubsub" \
     --destination-run-region="us-central1" \
