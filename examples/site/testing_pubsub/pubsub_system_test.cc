@@ -14,7 +14,8 @@
 
 // [START functions_pubsub_system_test]
 #include <google/cloud/pubsub/publisher.h>
-#include <google/cloud/pubsub/topic_admin_client.h>
+#include <google/cloud/pubsub/topic_builder.h>
+#include <google/cloud/pubsub/admin/topic_admin_client.h>
 #include <boost/process.hpp>
 #include <fmt/format.h>
 #include <gmock/gmock.h>
@@ -26,6 +27,7 @@ namespace {
 
 namespace bp = ::boost::process;
 namespace pubsub = ::google::cloud::pubsub;
+namespace pubsub_admin = ::google::cloud::pubsub_admin;
 using ::testing::AnyOf;
 using ::testing::HasSubstr;
 
@@ -43,9 +45,9 @@ class PubsubSystemTest : public ::testing::Test {
 
     // Automatically setup the test environment, create the topic if it does
     // not exist.
-    auto admin = pubsub::TopicAdminClient(pubsub::MakeTopicAdminConnection());
+    auto admin = pubsub_admin::TopicAdminClient(pubsub_admin::MakeTopicAdminConnection());
     topic_ = pubsub::Topic(project_id, topic_id);
-    auto topic_metadata = admin.CreateTopic(pubsub::TopicBuilder(topic()));
+    auto topic_metadata = admin.CreateTopic(pubsub::TopicBuilder(topic()).BuildCreateRequest());
     // If we get an error other than kAlreadyExists, abort the test.
     ASSERT_THAT(topic_metadata.status().code(),
                 AnyOf(google::cloud::StatusCode::kOk,
