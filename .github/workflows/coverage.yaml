@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env:
-  vcpkg_SHA: "2023.06.20"
+  vcpkg_SHA: "2024.09.30"
 
 jobs:
   coverage:
@@ -54,7 +54,7 @@ jobs:
       run: cmake --build ${{runner.workspace}}/build
     - name: test
       working-directory: ${{runner.workspace}}/build
-      run: ctest --output-on-failure --timeout=60s
+      run: ctest --output-on-failure --timeout=60
 
     - name: Setup Go
       uses: actions/setup-go@v5

@@ -45,9 +45,10 @@ class PubsubSystemTest : public ::testing::Test {
 
     // Automatically setup the test environment, create the topic if it does
     // not exist.
-    auto admin = pubsub_admin::TopicAdminClient(pubsub_admin::MakeTopicAdminConnection());
+    auto admin = pubsub_admin::TopicAdminClient(
+        pubsub_admin::MakeTopicAdminConnection());
     topic_ = pubsub::Topic(project_id, topic_id);
-    auto topic_metadata = admin.CreateTopic(pubsub::TopicBuilder(topic()).BuildCreateRequest());
+    auto topic_metadata = admin.CreateTopic(topic_.FullName());
     // If we get an error other than kAlreadyExists, abort the test.
     ASSERT_THAT(topic_metadata.status().code(),
                 AnyOf(google::cloud::StatusCode::kOk,
