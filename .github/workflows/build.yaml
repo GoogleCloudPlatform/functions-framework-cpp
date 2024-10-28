@@ -53,7 +53,7 @@ jobs:
       run: cmake --build "${{runner.temp}}/build"
     - name: test
       working-directory: "${{runner.temp}}/build"
-      run: ctest --output-on-failure
+      run: ctest --output-on-failure --timeout 60
 
   # Verify the howto guides compile correctly, they need a special setup to use the
   # current version of `functions-framework-cpp` through vcpkg.
