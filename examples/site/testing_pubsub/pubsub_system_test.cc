@@ -13,9 +13,9 @@
 // limitations under the License.
 
 // [START functions_pubsub_system_test]
+#include <google/cloud/pubsub/admin/topic_admin_client.h>
 #include <google/cloud/pubsub/publisher.h>
 #include <google/cloud/pubsub/topic_builder.h>
-#include <google/cloud/pubsub/admin/topic_admin_client.h>
 #include <boost/process.hpp>
 #include <fmt/format.h>
 #include <gmock/gmock.h>
