@@ -9,11 +9,5 @@
     "boost-program-options",
     "boost-serialization",
     "nlohmann-json"
-  ],
-  "overrides": [
-    {
-      "name": "boost",
-      "version": "1.82.0"
-    }
   ]
 }
