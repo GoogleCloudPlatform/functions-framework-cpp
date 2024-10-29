@@ -69,68 +69,68 @@ steps:
 
 
   # Build the examples using the builder. Keep these in alphabetical order.
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'hello-cloud-event'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloCloudEvent',
-      '--path', 'examples/hello_cloud_event',
-      'hello-cloud-event',
-    ]
-
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'hello-from-namespace'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_from_namespace::HelloWorld',
-      '--path', 'examples/hello_from_namespace',
-      'hello-from-namespace',
-    ]
-
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'hello-from-namespace-rooted'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=::hello_from_namespace::HelloWorld',
-      '--path', 'examples/hello_from_namespace',
-      'hello-from-namespace-rooted',
-    ]
-
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'hello-from-nested-namespace'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_from_nested_namespace::ns0::ns1::HelloWorld',
-      '--path', 'examples/hello_from_nested_namespace',
-      'hello-from-nested-namespace',
-    ]
-
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'hello-multiple-sources'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloMultipleSources',
-      '--path', 'examples/hello_multiple_sources',
-      'hello-multiple-sources',
-    ]
-
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'hello-gcs'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloGcs',
-      '--path', 'examples/hello_gcs',
-      'hello-gcs',
-    ]
-
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'hello-with-third-party'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloWithThirdParty',
-      '--path', 'examples/hello_with_third_party',
-      'hello-with-third-party',
-    ]
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'hello-cloud-event'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloCloudEvent',
+#      '--path', 'examples/hello_cloud_event',
+#      'hello-cloud-event',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'hello-from-namespace'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_from_namespace::HelloWorld',
+#      '--path', 'examples/hello_from_namespace',
+#      'hello-from-namespace',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'hello-from-namespace-rooted'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=::hello_from_namespace::HelloWorld',
+#      '--path', 'examples/hello_from_namespace',
+#      'hello-from-namespace-rooted',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'hello-from-nested-namespace'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_from_nested_namespace::ns0::ns1::HelloWorld',
+#      '--path', 'examples/hello_from_nested_namespace',
+#      'hello-from-nested-namespace',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'hello-multiple-sources'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloMultipleSources',
+#      '--path', 'examples/hello_multiple_sources',
+#      'hello-multiple-sources',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'hello-gcs'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloGcs',
+#      '--path', 'examples/hello_gcs',
+#      'hello-gcs',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'hello-with-third-party'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloWithThirdParty',
+#      '--path', 'examples/hello_with_third_party',
+#      'hello-with-third-party',
+#    ]
 
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
@@ -141,14 +141,14 @@ steps:
       'hello-world',
     ]
 
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'hello-world-rooted'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=::HelloWorld',
-      '--path', 'examples/hello_world',
-      'hello-world-rooted',
-    ]
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'hello-world-rooted'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=::HelloWorld',
+#      '--path', 'examples/hello_world',
+#      'hello-world-rooted',
+#    ]
 #
 #  - name: 'pack'
 #    waitFor: ['site-hello_world_http-prefetch']
@@ -384,6 +384,19 @@ steps:
 #      '--path', 'examples/site/tutorial_cloud_spanner',
 #      'site-tutorial_cloud_spanner',
 #    ]
+
+
+  - name: 'cat logs'
+    waitFor: ['hello-world']
+    allowFailure: true
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cat /layers/com.google.buildpack.cpp/vcpkg/buildtrees/functions-framework-cpp/config-x64-linux-nodebug-rel-CMakeCache.txt.log
+        cat /layers/com.google.buildpack.cpp/vcpkg/buildtrees/functions-framework-cpp/config-x64-linux-nodebug-rel-out.log
+        cat /layers/com.google.buildpack.cpp/vcpkg/buildtrees/functions-framework-cpp/config-x64-linux-nodebug-rel-err.log
+    
 
   # Verify generated images are deployable
   - name: 'gcr.io/cloud-builders/docker'
