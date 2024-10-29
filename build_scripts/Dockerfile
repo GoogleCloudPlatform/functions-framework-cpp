@@ -136,7 +136,6 @@ RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linu
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-iterator
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-lexical-cast
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-logic
-RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-modular-build-helper
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-move
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-mp11
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-mpl
