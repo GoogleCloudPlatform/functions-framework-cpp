@@ -57,17 +57,6 @@ steps:
     args: ['config', 'default-builder', 'gcf-cpp-builder:bionic', ]
     id: 'gcf-builder-ready'
 
-
-#  - name: 'pack'
-#    waitFor: ['gcf-builder-ready']
-#    id: 'site-hello_world_http-prefetch'
-#    args: ['build',
-#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_http',
-#      '--path', 'examples/site/hello_world_http',
-#      'site-hello_world_http',
-#    ]
-
-
   # Build the examples using the builder. Keep these in alphabetical order.
 #  - name: 'pack'
 #    waitFor: ['gcf-builder-ready']
@@ -394,6 +383,7 @@ steps:
     args:
       - '-c'
       - |
+        ls -LR /layers
         cat /layers/com.google.buildpack.cpp/vcpkg/buildtrees/functions-framework-cpp/config-x64-linux-nodebug-rel-CMakeCache.txt.log
         cat /layers/com.google.buildpack.cpp/vcpkg/buildtrees/functions-framework-cpp/config-x64-linux-nodebug-rel-out.log
         cat /layers/com.google.buildpack.cpp/vcpkg/buildtrees/functions-framework-cpp/config-x64-linux-nodebug-rel-err.log
