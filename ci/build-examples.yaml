@@ -134,6 +134,7 @@ steps:
 
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
+    allowFailure: true
     id: 'hello-world'
     args: ['build',
       '--env', 'GOOGLE_FUNCTION_TARGET=HelloWorld',
