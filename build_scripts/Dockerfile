@@ -97,13 +97,81 @@ FROM gcf-cpp-incremental-1 AS gcf-cpp-incremental-2
 # These are needed by the Functions Framework, do them one at a time, easier to
 # rebuild the Docker image if one of them fails to download or something.
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug abseil
-RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-core
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug openssl
-RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-program-options
-RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-asio
-RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-beast
-RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-serialization
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug nlohmann-json
+
+# The build spends a lot of time downloading boost deps multiple times unless we
+# fetch them before hand.
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-vcpkg-helpers
+
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-algorithm
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-align
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-any
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-array
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-asio
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-assert
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-atomic
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-beast
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-bind
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-build
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-chrono
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-concept-check
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-config
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-container
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-container-hash
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-context
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-conversion
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-core
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-coroutine
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-date-time
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-describe
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-detail
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-endian
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-exception
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-function
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-function-types
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-functional
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-fusion
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-integer
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-intrusive
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-io
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-iterator
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-lexical-cast
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-logic
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-modular-build-helper
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-move
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-mp11
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-mpl
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-numeric-conversion
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-optional
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-phoenix
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-pool
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-predef
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-preprocessor
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-program-options
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-proto
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-range
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-ratio
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-rational
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-regex
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-serialization
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-smart-ptr
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-spirit
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-static-assert
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-static-string
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-system
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-thread
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-throw-exception
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-tokenizer
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-tuple
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-type-index
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-type-traits
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-typeof
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-uninstall
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-unordered
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-utility
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-variant
+RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-variant2
 
 # The following are not needed by the Functions Framework, but are used often
 # enough that it is a good idea to make them part of the base development
