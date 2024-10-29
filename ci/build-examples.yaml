@@ -386,7 +386,7 @@ steps:
 #    ]
 
 
-  - name: 'cat logs'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     waitFor: ['hello-world']
     allowFailure: true
     entrypoint: 'bash'
