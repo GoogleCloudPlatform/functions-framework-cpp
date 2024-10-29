@@ -69,15 +69,15 @@ steps:
 
 
   # Build the examples using the builder. Keep these in alphabetical order.
-  - name: 'pack'
+#  - name: 'pack'
 #    waitFor: ['site-hello_world_http-prefetch']
-    id: 'hello-cloud-event'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloCloudEvent',
-      '--path', 'examples/hello_cloud_event',
-      'hello-cloud-event',
-    ]
-
+#    id: 'hello-cloud-event'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloCloudEvent',
+#      '--path', 'examples/hello_cloud_event',
+#      'hello-cloud-event',
+#    ]
+#
 #  - name: 'pack'
 #    waitFor: ['site-hello_world_http-prefetch']
 #    id: 'hello-from-namespace'
@@ -132,14 +132,14 @@ steps:
 #      'hello-with-third-party',
 #    ]
 #
-#  - name: 'pack'
-#    waitFor: ['site-hello_world_http-prefetch']
-#    id: 'hello-world'
-#    args: ['build',
-#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloWorld',
-#      '--path', 'examples/hello_world',
-#      'hello-world',
-#    ]
+  - name: 'pack'
+    waitFor: ['gcf-builder-ready']
+    id: 'hello-world'
+    args: ['build',
+      '--env', 'GOOGLE_FUNCTION_TARGET=HelloWorld',
+      '--path', 'examples/hello_world',
+      'hello-world',
+    ]
 #
 #  - name: 'pack'
 #    waitFor: ['site-hello_world_http-prefetch']
