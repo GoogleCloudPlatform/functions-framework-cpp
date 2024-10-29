@@ -58,19 +58,19 @@ steps:
     id: 'gcf-builder-ready'
 
 
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'site-hello_world_http-prefetch'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_http',
-      '--path', 'examples/site/hello_world_http',
-      'site-hello_world_http',
-    ]
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'site-hello_world_http-prefetch'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_http',
+#      '--path', 'examples/site/hello_world_http',
+#      'site-hello_world_http',
+#    ]
 
 
   # Build the examples using the builder. Keep these in alphabetical order.
   - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
+#    waitFor: ['site-hello_world_http-prefetch']
     id: 'hello-cloud-event'
     args: ['build',
       '--env', 'GOOGLE_FUNCTION_TARGET=HelloCloudEvent',
@@ -78,312 +78,312 @@ steps:
       'hello-cloud-event',
     ]
 
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'hello-from-namespace'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_from_namespace::HelloWorld',
-      '--path', 'examples/hello_from_namespace',
-      'hello-from-namespace',
-    ]
-
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'hello-from-namespace-rooted'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=::hello_from_namespace::HelloWorld',
-      '--path', 'examples/hello_from_namespace',
-      'hello-from-namespace-rooted',
-    ]
-
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'hello-from-nested-namespace'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_from_nested_namespace::ns0::ns1::HelloWorld',
-      '--path', 'examples/hello_from_nested_namespace',
-      'hello-from-nested-namespace',
-    ]
-
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'hello-multiple-sources'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloMultipleSources',
-      '--path', 'examples/hello_multiple_sources',
-      'hello-multiple-sources',
-    ]
-
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'hello-gcs'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloGcs',
-      '--path', 'examples/hello_gcs',
-      'hello-gcs',
-    ]
-
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'hello-with-third-party'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloWithThirdParty',
-      '--path', 'examples/hello_with_third_party',
-      'hello-with-third-party',
-    ]
-
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'hello-world'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloWorld',
-      '--path', 'examples/hello_world',
-      'hello-world',
-    ]
-
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'hello-world-rooted'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=::HelloWorld',
-      '--path', 'examples/hello_world',
-      'hello-world-rooted',
-    ]
-
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'howto-use-legacy-code'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HowtoUseLegacyCode',
-      '--path', 'examples/howto_use_legacy_code',
-      'howto-use-legacy-code',
-    ]
-
-  # Build the cloud site examples.
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-bearer_token'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=bearer_token',
-      '--path', 'examples/site/bearer_token',
-      'site-bearer_token',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-concepts_after_response'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_after_response',
-      '--path', 'examples/site/concepts_after_response',
-      'site-concepts_after_response',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-concepts_after_timeout'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_after_timeout',
-      '--path', 'examples/site/concepts_after_timeout',
-      'site-concepts_after_timeout',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-concepts_filesystem'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_filesystem',
-      '--path', 'examples/site/concepts_filesystem',
-      'site-concepts_filesystem',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-concepts_request'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_request',
-      '--path', 'examples/site/concepts_request',
-      'site-concepts_request',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-concepts_stateless'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_stateless',
-      '--path', 'examples/site/concepts_stateless',
-      'site-concepts_stateless',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-env_vars'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=env_vars',
-      '--path', 'examples/site/env_vars',
-      'site-env_vars',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-hello_world_error'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_error',
-      '--path', 'examples/site/hello_world_error',
-      'site-hello_world_error',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-hello_world_get'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_get',
-      '--path', 'examples/site/hello_world_get',
-      'site-hello_world_get',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-hello_world_http'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_http',
-      '--path', 'examples/site/hello_world_http',
-      'site-hello_world_http',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-hello_world_pubsub'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_pubsub',
-      '--path', 'examples/site/hello_world_pubsub',
-      'site-hello_world_pubsub',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-hello_world_storage'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_storage',
-      '--path', 'examples/site/hello_world_storage',
-      'site-hello_world_storage',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-http_content'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=http_content',
-      '--path', 'examples/site/http_content',
-      'site-http_content',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-http_cors'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=http_cors',
-      '--path', 'examples/site/http_cors',
-      'site-http_cors',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-http_cors_auth'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=http_cors_auth',
-      '--path', 'examples/site/http_cors_auth',
-      'site-http_cors_auth',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-http_form_data'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=http_form_data',
-      '--path', 'examples/site/http_form_data',
-      'site-http_form_data',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-http_method'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=http_method',
-      '--path', 'examples/site/http_method',
-      'site-http_method',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-http_xml'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=http_xml',
-      '--path', 'examples/site/http_xml',
-      'site-http_xml',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-log_helloworld'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=log_helloworld',
-      '--path', 'examples/site/log_helloworld',
-      'site-log_helloworld',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-log_stackdriver'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=log_stackdriver',
-      '--path', 'examples/site/log_stackdriver',
-      'site-log_stackdriver',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-pubsub_subscribe'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=pubsub_subscribe',
-      '--path', 'examples/site/pubsub_subscribe',
-      'site-pubsub_subscribe',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-tips_gcp_apis'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=tips_gcp_apis',
-      '--path', 'examples/site/tips_gcp_apis',
-      'site-tips_gcp_apis',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-tips_infinite_retries'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=tips_infinite_retries',
-      '--path', 'examples/site/tips_infinite_retries',
-      'site-tips_infinite_retries',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-tips_lazy_globals'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=tips_lazy_globals',
-      '--path', 'examples/site/tips_lazy_globals',
-      'site-tips_lazy_globals',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-tips_retry'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=tips_retry',
-      '--path', 'examples/site/tips_retry',
-      'site-tips_retry',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-tips_scopes'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=tips_scopes',
-      '--path', 'examples/site/tips_scopes',
-      'site-tips_scopes',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-tutorial_cloud_bigtable'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=tutorial_cloud_bigtable',
-      '--path', 'examples/site/tutorial_cloud_bigtable',
-      'site-tutorial_cloud_bigtable',
-    ]
-  - name: 'pack'
-    waitFor: ['site-hello_world_http-prefetch']
-    id: 'site-tutorial_cloud_spanner'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=tutorial_cloud_spanner',
-      '--path', 'examples/site/tutorial_cloud_spanner',
-      'site-tutorial_cloud_spanner',
-    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'hello-from-namespace'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_from_namespace::HelloWorld',
+#      '--path', 'examples/hello_from_namespace',
+#      'hello-from-namespace',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'hello-from-namespace-rooted'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=::hello_from_namespace::HelloWorld',
+#      '--path', 'examples/hello_from_namespace',
+#      'hello-from-namespace-rooted',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'hello-from-nested-namespace'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_from_nested_namespace::ns0::ns1::HelloWorld',
+#      '--path', 'examples/hello_from_nested_namespace',
+#      'hello-from-nested-namespace',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'hello-multiple-sources'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloMultipleSources',
+#      '--path', 'examples/hello_multiple_sources',
+#      'hello-multiple-sources',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'hello-gcs'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloGcs',
+#      '--path', 'examples/hello_gcs',
+#      'hello-gcs',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'hello-with-third-party'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloWithThirdParty',
+#      '--path', 'examples/hello_with_third_party',
+#      'hello-with-third-party',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'hello-world'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloWorld',
+#      '--path', 'examples/hello_world',
+#      'hello-world',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'hello-world-rooted'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=::HelloWorld',
+#      '--path', 'examples/hello_world',
+#      'hello-world-rooted',
+#    ]
+#
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'howto-use-legacy-code'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HowtoUseLegacyCode',
+#      '--path', 'examples/howto_use_legacy_code',
+#      'howto-use-legacy-code',
+#    ]
+#
+#  # Build the cloud site examples.
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-bearer_token'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=bearer_token',
+#      '--path', 'examples/site/bearer_token',
+#      'site-bearer_token',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-concepts_after_response'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_after_response',
+#      '--path', 'examples/site/concepts_after_response',
+#      'site-concepts_after_response',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-concepts_after_timeout'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_after_timeout',
+#      '--path', 'examples/site/concepts_after_timeout',
+#      'site-concepts_after_timeout',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-concepts_filesystem'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_filesystem',
+#      '--path', 'examples/site/concepts_filesystem',
+#      'site-concepts_filesystem',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-concepts_request'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_request',
+#      '--path', 'examples/site/concepts_request',
+#      'site-concepts_request',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-concepts_stateless'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=concepts_stateless',
+#      '--path', 'examples/site/concepts_stateless',
+#      'site-concepts_stateless',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-env_vars'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=env_vars',
+#      '--path', 'examples/site/env_vars',
+#      'site-env_vars',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-hello_world_error'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_error',
+#      '--path', 'examples/site/hello_world_error',
+#      'site-hello_world_error',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-hello_world_get'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_get',
+#      '--path', 'examples/site/hello_world_get',
+#      'site-hello_world_get',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-hello_world_http'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_http',
+#      '--path', 'examples/site/hello_world_http',
+#      'site-hello_world_http',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-hello_world_pubsub'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_pubsub',
+#      '--path', 'examples/site/hello_world_pubsub',
+#      'site-hello_world_pubsub',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-hello_world_storage'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=hello_world_storage',
+#      '--path', 'examples/site/hello_world_storage',
+#      'site-hello_world_storage',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-http_content'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=http_content',
+#      '--path', 'examples/site/http_content',
+#      'site-http_content',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-http_cors'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=http_cors',
+#      '--path', 'examples/site/http_cors',
+#      'site-http_cors',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-http_cors_auth'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=http_cors_auth',
+#      '--path', 'examples/site/http_cors_auth',
+#      'site-http_cors_auth',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-http_form_data'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=http_form_data',
+#      '--path', 'examples/site/http_form_data',
+#      'site-http_form_data',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-http_method'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=http_method',
+#      '--path', 'examples/site/http_method',
+#      'site-http_method',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-http_xml'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=http_xml',
+#      '--path', 'examples/site/http_xml',
+#      'site-http_xml',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-log_helloworld'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=log_helloworld',
+#      '--path', 'examples/site/log_helloworld',
+#      'site-log_helloworld',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-log_stackdriver'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=log_stackdriver',
+#      '--path', 'examples/site/log_stackdriver',
+#      'site-log_stackdriver',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-pubsub_subscribe'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=pubsub_subscribe',
+#      '--path', 'examples/site/pubsub_subscribe',
+#      'site-pubsub_subscribe',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-tips_gcp_apis'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=tips_gcp_apis',
+#      '--path', 'examples/site/tips_gcp_apis',
+#      'site-tips_gcp_apis',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-tips_infinite_retries'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=tips_infinite_retries',
+#      '--path', 'examples/site/tips_infinite_retries',
+#      'site-tips_infinite_retries',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-tips_lazy_globals'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=tips_lazy_globals',
+#      '--path', 'examples/site/tips_lazy_globals',
+#      'site-tips_lazy_globals',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-tips_retry'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=tips_retry',
+#      '--path', 'examples/site/tips_retry',
+#      'site-tips_retry',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-tips_scopes'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=tips_scopes',
+#      '--path', 'examples/site/tips_scopes',
+#      'site-tips_scopes',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-tutorial_cloud_bigtable'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=tutorial_cloud_bigtable',
+#      '--path', 'examples/site/tutorial_cloud_bigtable',
+#      'site-tutorial_cloud_bigtable',
+#    ]
+#  - name: 'pack'
+#    waitFor: ['site-hello_world_http-prefetch']
+#    id: 'site-tutorial_cloud_spanner'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=tutorial_cloud_spanner',
+#      '--path', 'examples/site/tutorial_cloud_spanner',
+#      'site-tutorial_cloud_spanner',
+#    ]
 
   # Verify generated images are deployable
   - name: 'gcr.io/cloud-builders/docker'
