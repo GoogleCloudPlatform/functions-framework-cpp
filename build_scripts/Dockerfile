@@ -102,8 +102,6 @@ RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linu
 
 # The build spends a lot of time downloading boost deps multiple times unless we
 # fetch them before hand.
-RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-vcpkg-helpers
-
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-algorithm
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-align
 RUN /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug boost-any
