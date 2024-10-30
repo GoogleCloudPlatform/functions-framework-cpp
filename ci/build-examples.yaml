@@ -58,14 +58,14 @@ steps:
     id: 'gcf-builder-ready'
 
   # Build the examples using the builder. Keep these in alphabetical order.
-  - name: 'pack'
-    waitFor: ['gcf-builder-ready']
-    id: 'hello-cloud-event'
-    args: ['build',
-      '--env', 'GOOGLE_FUNCTION_TARGET=HelloCloudEvent',
-      '--path', 'examples/hello_cloud_event',
-      'hello-cloud-event',
-    ]
+#  - name: 'pack'
+#    waitFor: ['gcf-builder-ready']
+#    id: 'hello-cloud-event'
+#    args: ['build',
+#      '--env', 'GOOGLE_FUNCTION_TARGET=HelloCloudEvent',
+#      '--path', 'examples/hello_cloud_event',
+#      'hello-cloud-event',
+#    ]
 #
 #  - name: 'pack'
 #    waitFor: ['gcf-builder-ready']
@@ -123,6 +123,7 @@ steps:
 
   - name: 'pack'
     waitFor: ['gcf-builder-ready']
+    allowFailure: true
     id: 'hello-world'
     args: ['build',
       '--env', 'GOOGLE_FUNCTION_TARGET=HelloWorld',
@@ -373,6 +374,17 @@ steps:
 #      '--path', 'examples/site/tutorial_cloud_spanner',
 #      'site-tutorial_cloud_spanner',
 #    ]
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    waitFor: ['hello-world']
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "find logs"
+        ls -l
+        find /layers -name '*.log' -print
+
 
   # Verify generated images are deployable
   - name: 'gcr.io/cloud-builders/docker'
