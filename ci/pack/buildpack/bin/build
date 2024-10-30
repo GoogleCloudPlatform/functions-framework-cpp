@@ -72,14 +72,18 @@ project(functions-framework-application CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(CMakePrintHelpers)
 find_package(functions_framework_cpp REQUIRED)
 
 function (functions_framework_cpp_define_target_with_glob directory)
+    cmake_print_variables(directory)
     file(GLOB_RECURSE application_sources "${directory}/*.cc"
          "${directory}/*.cpp" "${directory}/*.cxx")
+    cmake_print_variables(application_sources)
     add_library(functions_framework_cpp_function ${application_sources})
     target_link_libraries(functions_framework_cpp_function
                           PUBLIC functions-framework-cpp::framework)
+
 endfunction ()
 
 if (EXISTS "${CNB_APP_DIR}/CMakeLists.txt")
@@ -266,13 +270,33 @@ cache = true
 launch = false
 _EOF_
 
+echo "cmake configure"
 /usr/local/bin/cmake -S "${layers}/source" -B "${layers}/binary" -GNinja -DCMAKE_MAKE_PROGRAM=/usr/local/bin/ninja \
   -DCNB_APP_DIR="${PWD}" \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="${layers}/local" \
   -DVCPKG_TARGET_TRIPLET="${VCPKG_DEFAULT_TRIPLET}" \
-  -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-/usr/local/bin/cmake --build "${layers}/binary" --target install
+  -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" || true
+
+#cat /layers/com.google.buildpack.cpp/vcpkg/buildtrees/functions-framework-cpp/config-x64-linux-nodebug-rel-CMakeCache.txt.log
+#cat /layers/com.google.buildpack.cpp/vcpkg/buildtrees/functions-framework-cpp/config-x64-linux-nodebug-rel-out.log
+#cat /layers/com.google.buildpack.cpp/vcpkg/buildtrees/functions-framework-cpp/config-x64-linux-nodebug-rel-err.log
+
+echo "cat ${layers}/source/main.cc"
+cat "${layers}/source/main.cc" || true
+find /workspace -name '*.cc' -print -exec cat {} \;
+echo "cat ${layers}/source/CMakeLists.txt"
+cat "${layers}/source/CMakeLists.txt" || true
+
+echo "cmake build"
+/usr/local/bin/cmake --build "${layers}/binary" --target install || true
+
+#find "${layers}/binary" -name 'hello_world.cc.o' -print
+#nm  /layers/com.google.buildpack.cpp/binary/CMakeFiles/functions_framework_cpp_function.dir/workspace/hello_world.cc.o| c++filt
+find "${layers}/binary" -name 'libfunctions_framework_cpp_function*.a' -print -exec sh -c "nm {} | c++filt" \;
+
+/usr/bin/c++ --version
+/usr/bin/g++ --version
 
 cat >"${layers}/local.toml" <<_EOF_
 launch = true

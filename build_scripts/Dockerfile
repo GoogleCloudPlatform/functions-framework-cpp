@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM gcr.io/gcp-runtimes/ubuntu_18_0_4 AS parent
+FROM gcr.io/gcp-runtimes/ubuntu_20_0_4 AS parent
 
 ARG cnb_uid=1000
 ARG cnb_gid=1000
@@ -21,14 +21,14 @@ ARG stack_id="google"
 # Required by python/runtime.
 RUN apt-get update && apt-get install -y --no-install-recommends \
   libexpat1 \
-  libffi6 \
+#  libffi6 \
   libmpdec2 \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Required by dotnet/runtime.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  libicu60 \
-  && apt-get clean && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#  libicu60 \
+#  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Required by cpp/runtime.
 RUN apt-get update \
@@ -53,10 +53,14 @@ USER cnb
 FROM parent AS gcf-cpp-incremental-0
 RUN apt-get update \
     && apt install -y  --no-install-recommends \
-       build-essential g++-8 gcc-8 git libstdc++-8-dev pkg-config python3 tar unzip zip \
+      build-essential  \
+#      g++-8 gcc-8  \
+      git  \
+ #     libstdc++-8-dev \
+      pkg-config python3 tar unzip zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
-    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100
+#RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
+#    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100
 
 # Install cmake, ninja and vcpkg. The first two are build systems for C++, the
 # latter is the package manager we use. In an open source builder these would
@@ -65,15 +69,15 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
 FROM gcf-cpp-incremental-0 AS gcf-cpp-incremental-1
 
 WORKDIR /usr/local
-RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.19.4/cmake-3.19.4-Linux-x86_64.tar.gz | \
+RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.29.2/cmake-3.29.2-Linux-x86_64.tar.gz | \
     tar -xzf - --strip-components=1
 
-RUN curl -sSL https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip | \
+RUN curl -sSL https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip | \
     funzip >/usr/local/bin/ninja && \
     chmod 755 /usr/local/bin/ninja
 
 WORKDIR /usr/local/vcpkg
-RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/2023.06.20.tar.gz | \
+RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/2024.09.30.tar.gz | \
     tar -xzf - --strip-components=1 && \
     ./bootstrap-vcpkg.sh -disableMetrics -useSystemBinaries && \
     rm -fr toolsrc/build.rel downloads/*

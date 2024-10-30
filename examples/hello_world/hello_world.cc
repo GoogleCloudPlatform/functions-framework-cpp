@@ -16,6 +16,10 @@
 
 namespace gcf = ::google::cloud::functions;
 
+//gcf::HttpResponse HelloWorld(gcf::HttpRequest) {
+//  return {};
+//}
+
 gcf::Function HelloWorld() {
   return gcf::MakeFunction([](gcf::HttpRequest const& /*request*/) {
     return gcf::HttpResponse{}
