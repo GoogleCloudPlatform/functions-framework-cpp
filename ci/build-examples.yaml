@@ -383,7 +383,8 @@ steps:
       - |
         echo "find logs"
         ls -l
-        find /layers -name '*.log' -print
+        ls -l /
+        find / -name '*nodebug*.log' -print
 
 
   # Verify generated images are deployable
