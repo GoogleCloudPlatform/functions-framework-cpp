@@ -394,6 +394,7 @@ steps:
         ls -l
         ls -l /
         find / -name '*nodebug*.log' -print
+        ls -lR /var/cache/vcpkg-cache
 
 
   # Verify generated images are deployable
