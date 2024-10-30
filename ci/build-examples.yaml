@@ -57,6 +57,14 @@ steps:
     args: ['config', 'default-builder', 'gcf-cpp-builder:bionic', ]
     id: 'gcf-builder-ready'
 
+  - name: 'pack'
+    waitFor: ['gcf-builder-ready']
+    allowFailure: true
+    id: 'pack-version'
+    args: ['--version',
+    ]
+
+
   # Build the examples using the builder. Keep these in alphabetical order.
 #  - name: 'pack'
 #    waitFor: ['gcf-builder-ready']
@@ -126,6 +134,7 @@ steps:
     allowFailure: true
     id: 'hello-world'
     args: ['build',
+      '--verbose',
       '--env', 'GOOGLE_FUNCTION_TARGET=HelloWorld',
       '--path', 'examples/hello_world',
       'hello-world',
