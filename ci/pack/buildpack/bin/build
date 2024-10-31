@@ -31,7 +31,9 @@ fi
 if [[ ! -d "${VCPKG_ROOT}" ]]; then
   echo "-----> Install vcpkg"
   mkdir -p "${VCPKG_ROOT}"
-  curl -sSL https://github.com/Microsoft/vcpkg/archive/2023.06.20.tar.gz | \
+  # This version of vcpkg should match the version in build_scripts/Dockerfile
+  # otherwise the contents of the vcpkg cache may not be used.
+  curl -sSL https://github.com/Microsoft/vcpkg/archive/2024.09.30.tar.gz | \
     tar -C "${VCPKG_ROOT}" -xzf - --strip-components=1
   cat >"${VCPKG_ROOT}/triplets/x64-linux-nodebug.cmake" <<_EOF_
 set(VCPKG_BUILD_TYPE release)
@@ -131,9 +133,9 @@ generate_http_main_no_namespace() {
   cat <<_EOF_
 #include <google/cloud/functions/framework.h>
 namespace gcf = ::google::cloud::functions;
-extern gcf::HttpResponse ${function}(gcf::HttpRequest);
+extern gcf::Function ${function}();
 int main(int argc, char* argv[]) {
-  return gcf::Run(argc, argv, gcf::UserHttpFunction(${function}));
+  return gcf::Run(argc, argv, ${function}());
 }
 _EOF_
 }
@@ -146,10 +148,10 @@ generate_http_main_with_namespace() {
 #include <google/cloud/functions/framework.h>
 namespace gcf = ::google::cloud::functions;
 namespace ${namespace} {
-  extern gcf::HttpResponse ${function}(gcf::HttpRequest);
+  extern gcf::Function ${function}();
 } // namespace
 int main(int argc, char* argv[]) {
-  return gcf::Run(argc, argv, gcf::UserHttpFunction(::${namespace}::${function}));
+  return gcf::Run(argc, argv, ::${namespace}::${function}());
 }
 _EOF_
 }
@@ -159,9 +161,9 @@ generate_cloud_event_main_no_namespace() {
   cat <<_EOF_
 #include <google/cloud/functions/framework.h>
 namespace gcf = ::google::cloud::functions;
-extern void ${function}(gcf::CloudEvent);
+extern gcf::Function ${function}();
 int main(int argc, char* argv[]) {
-  return gcf::Run(argc, argv, gcf::UserCloudEventFunction(${function}));
+  return gcf::Run(argc, argv, ${function}());
 }
 _EOF_
 }
@@ -174,10 +176,10 @@ generate_cloud_event_main_with_namespace() {
 #include <google/cloud/functions/framework.h>
 namespace gcf = ::google::cloud::functions;
 namespace ${namespace} {
-  extern void ${function}(gcf::CloudEvent);
+  extern gcf::Function ${function}();
 } // namespace
 int main(int argc, char* argv[]) {
-  return gcf::Run(argc, argv, gcf::UserCloudEventFunction(::${namespace}::${function}));
+  return gcf::Run(argc, argv, ::${namespace}::${function}());
 }
 _EOF_
 }
@@ -266,12 +268,16 @@ cache = true
 launch = false
 _EOF_
 
-/usr/local/bin/cmake -S "${layers}/source" -B "${layers}/binary" -GNinja -DCMAKE_MAKE_PROGRAM=/usr/local/bin/ninja \
+echo "--> cmake configure"
+/usr/local/bin/cmake -S "${layers}/source" -B "${layers}/binary" \
+  -GNinja -DCMAKE_MAKE_PROGRAM=/usr/local/bin/ninja \
   -DCNB_APP_DIR="${PWD}" \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="${layers}/local" \
   -DVCPKG_TARGET_TRIPLET="${VCPKG_DEFAULT_TRIPLET}" \
   -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+
+echo "--> cmake build"
 /usr/local/bin/cmake --build "${layers}/binary" --target install
 
 cat >"${layers}/local.toml" <<_EOF_
