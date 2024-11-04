@@ -1,6 +1,6 @@
 {
   "name": "functions-framework-cpp-dev",
-  "version-string": "0.6.0",
+  "version-string": "1.2.0",
   "homepage": "https://github.com/GoogleCloudPlatform/functions-framework-cpp/",
   "description": [
     "A functions as a service (FaaS) framework for writing portable C++ functions.",

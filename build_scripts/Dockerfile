@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM gcr.io/gcp-runtimes/ubuntu_18_0_4 AS parent
+FROM gcr.io/gcp-runtimes/ubuntu_20_0_4 AS parent
 
 ARG cnb_uid=1000
 ARG cnb_gid=1000
@@ -21,18 +21,18 @@ ARG stack_id="google"
 # Required by python/runtime.
 RUN apt-get update && apt-get install -y --no-install-recommends \
   libexpat1 \
-  libffi6 \
+  libffi7 \
   libmpdec2 \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Required by dotnet/runtime.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  libicu60 \
+  libicu66 \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Required by cpp/runtime.
 RUN apt-get update \
-    && apt-get install -y libc++1-9 \
+    && apt-get install -y libc++1-10 libc++abi1-10 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 LABEL io.buildpacks.stack.id=${stack_id}
@@ -53,10 +53,8 @@ USER cnb
 FROM parent AS gcf-cpp-incremental-0
 RUN apt-get update \
     && apt install -y  --no-install-recommends \
-       build-essential g++-8 gcc-8 git libstdc++-8-dev pkg-config python3 tar unzip zip \
+       build-essential git pkg-config python3 tar unzip zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
-    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100
 
 # Install cmake, ninja and vcpkg. The first two are build systems for C++, the
 # latter is the package manager we use. In an open source builder these would
@@ -65,7 +63,10 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
 FROM gcf-cpp-incremental-0 AS gcf-cpp-incremental-1
 
 WORKDIR /usr/local
-RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.19.4/cmake-3.19.4-Linux-x86_64.tar.gz | \
+# Depending on the version of vcpkg, vcpkg may or may not prefer newer versions
+# of cmake and will try to download it for every build_example. Instead, make
+# sure we have already installed a suitable version of cmake.
+RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.29.8/cmake-3.29.8-Linux-x86_64.tar.gz | \
     tar -xzf - --strip-components=1
 
 RUN curl -sSL https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip | \
@@ -73,7 +74,9 @@ RUN curl -sSL https://github.com/ninja-build/ninja/releases/download/v1.10.2/nin
     chmod 755 /usr/local/bin/ninja
 
 WORKDIR /usr/local/vcpkg
-RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/2023.06.20.tar.gz | \
+# This version of vcpkg should match the version in ci/pack/buildpack/bin/build
+# otherwise the contents of the vcpkg cache may not be used.
+RUN curl -sSL https://github.com/Microsoft/vcpkg/archive/2024.09.30.tar.gz | \
     tar -xzf - --strip-components=1 && \
     ./bootstrap-vcpkg.sh -disableMetrics -useSystemBinaries && \
     rm -fr toolsrc/build.rel downloads/*
@@ -141,6 +144,9 @@ FROM gcf-cpp-incremental-2 AS gcf-cpp-ci-0
 COPY . /usr/local/share/gcf
 RUN find /usr/local/share/gcf -type f | xargs chmod 644
 RUN find /usr/local/share/gcf -type d | xargs chmod 755
+# More recent versions of cmake error when attempting to run `configure_file` on
+# files owned by root. Changing the owner to user cnb fixes this.
+RUN chown -R cnb:cnb /usr/local/share/gcf
 RUN VCPKG_OVERLAY_PORTS=/usr/local/share/gcf/build_scripts/vcpkg-overlays \
     /usr/local/vcpkg/vcpkg install --feature-flags=-manifests --triplet x64-linux-nodebug functions-framework-cpp
 
