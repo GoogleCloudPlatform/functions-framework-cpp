@@ -125,7 +125,6 @@ Set the active project:
 gcloud config set project ${GOOGLE_CLOUD_PROJECT}
 ```
 
-
 ```sh
 gcloud run deploy gcf-cpp-hello-world-http \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-http:latest" \
