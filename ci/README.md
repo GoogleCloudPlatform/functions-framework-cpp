@@ -27,8 +27,14 @@ the name of the project you want to use.
 
 ## Enable the Services
 
+Set the active project:
+
 ```sh
-gcloud services enable --project="${GOOGLE_CLOUD_PROJECT}" \
+gcloud config set project ${GOOGLE_CLOUD_PROJECT}
+```
+
+```sh
+gcloud services enable \
     bigtable.googleapis.com \
     cloudbuild.googleapis.com \
     cloudfunctions.googleapis.com \
@@ -44,10 +50,8 @@ gcloud services enable --project="${GOOGLE_CLOUD_PROJECT}" \
 ## Create Pub/Sub Topics
 
 ```sh
-gcloud pubsub topics create testing \
-  --project="${GOOGLE_CLOUD_PROJECT}"
-gcloud pubsub topics create gcs-changes \
-  --project="${GOOGLE_CLOUD_PROJECT}"
+gcloud pubsub topics create testing
+gcloud pubsub topics create gcs-changes
 ```
 
 ## Create a Bucket
@@ -77,7 +81,6 @@ Add this service account to the topic:Grant the
 
 ```shell
 gcloud pubsub topics add-iam-policy-binding \
-  --project="${GOOGLE_CLOUD_PROJECT}" \
   --role="roles/pubsub.publisher" \
   --member="serviceAccount:${GCS_SA}" \
   gcs-changes
@@ -98,7 +101,6 @@ readonly SA_ID="eventarc-trigger-sa"
 readonly SA_NAME="${SA_ID}@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com"
 
 gcloud iam service-accounts create "${SA_ID}" \
-    "--project=${GOOGLE_CLOUD_PROJECT}" \
     --description="Event Arg Triggers"
 ```
 
@@ -158,7 +160,6 @@ Create a Cloud Run deployment running the hello world example:
 
 ```sh
 gcloud run deploy gcf-hello-world-http \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-http:latest" \
     --region="us-central1" \
     --platform="managed" \
@@ -169,7 +170,6 @@ Test it by sending a request with `curl(1)`:
 
 ```sh
 HTTP_SERVICE_URL=$(gcloud run services describe \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --platform="managed" \
     --region="us-central1" \
     --format="value(status.url)" \
@@ -185,7 +185,6 @@ triggers:
 
 ```sh
 gcloud run deploy gcf-hello-world-pubsub \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-pubsub:latest" \
     --region="us-central1" \
     --platform="managed" \
@@ -199,7 +198,6 @@ PROJECT_NUMBER="$(gcloud projects list \
     --filter="PROJECT_ID=${GOOGLE_CLOUD_PROJECT}" \
     --format="value(project_number)")"
 gcloud beta eventarc triggers create gcf-hello-world-pubsub-trigger \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --location="us-central1" \
     --destination-run-service="gcf-hello-world-pubsub" \
     --destination-run-region="us-central1" \
@@ -210,7 +208,6 @@ Test by sending a message to the right topic:
 
 ```sh
 TOPIC=$(gcloud beta eventarc triggers describe gcf-hello-world-pubsub-trigger \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --location="us-central1" \
     --format="value(transport.pubsub.topic)")
 NONCE=$(date +%s)-${RANDOM}
@@ -221,7 +218,6 @@ And then verify this message shows up in the log:
 
 ```sh
 gcloud logging read \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --format="value(textPayload)" \
     "resource.type=cloud_run_revision AND resource.labels.service_name=gcf-hello-world-pubsub AND logName:stdout"
 ```
@@ -233,7 +229,6 @@ triggers:
 
 ```sh
 gcloud run deploy gcf-hello-world-storage \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-storage:latest" \
     --region="us-central1" \
     --platform="managed" \
@@ -244,7 +239,6 @@ Create a trigger for Cloud Storage events:
 
 ```sh
 gcloud beta eventarc triggers create gcf-hello-world-storage-trigger \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --location="us-central1" \
     --destination-run-service="gcf-hello-world-storage" \
     --destination-run-region="us-central1" \
@@ -257,7 +251,6 @@ And then verify this message shows up in the log:
 
 ```sh
 gcloud logging read \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --format="value(textPayload)" \
     "resource.type=cloud_run_revision AND resource.labels.service_name=gcf-hello-world-storage AND logName:stdout"
 ```
@@ -268,7 +261,6 @@ Finally verify this works by running the Cloud Build:
 
 ```sh
 gcloud builds submit \
-    "--project=${GOOGLE_CLOUD_PROJECT}" \
     "--substitutions=SHORT_SHA=$(git rev-parse --short HEAD)" \
     "--config=ci/build-examples.yaml"
 ```
@@ -314,13 +306,11 @@ pack build -v \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-bigtable"
 docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-bigtable"
 gcloud run deploy gcf-tutorial-cloud-bigtable \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-bigtable:latest" \
     --region="us-central1" \
     --platform="managed" \
     --allow-unauthenticated
 BIGTABLE_SERVICE_URL=$(gcloud run services describe \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --platform="managed" \
     --region="us-central1" \
     --format="value(status.url)" \
@@ -333,7 +323,7 @@ curl -H "projectID: ${GOOGLE_CLOUD_PROJECT}" -H "instanceID: test-instance-0" -H
 Create the instance:
 
 ```shell
-gcloud --project="${GOOGLE_CLOUD_PROJECT}" spanner instances create test-instance-0 \
+gcloud spanner instances create test-instance-0 \
     --config="regional-us-central1" \
     --description="Test instance for CI builds" \
     --nodes=1
@@ -358,14 +348,12 @@ pack build -v \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-spanner"
 docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-spanner"
 gcloud run deploy gcf-tutorial-cloud-spanner \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-tutorial-cloud-spanner:latest" \
     --region="us-central1" \
     --platform="managed" \
     --set-env-vars=GOOGLE_CLOUD_PROJECT="${GOOGLE_CLOUD_PROJECT}",SPANNER_INSTANCE=test-instance-0,SPANNER_DATABASE=test-db \
     --allow-unauthenticated
 SPANNER_SERVICE_URL=$(gcloud run services describe \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --platform="managed" \
     --region="us-central1" \
     --format="value(status.url)" \

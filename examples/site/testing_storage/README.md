@@ -73,12 +73,17 @@ pack build \
     "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-storage"
 ```
 
+Set the active project:
+
+```sh
+gcloud config set project ${GOOGLE_CLOUD_PROJECT}
+```
+
 Then deploy this function to Cloud Run:
 
 ```shell
 docker push "gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-storage"
 gcloud run deploy gcf-hello-world-storage \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-hello-world-storage:latest" \
     --region="us-central1" \
     --platform="managed" \
@@ -105,7 +110,6 @@ topic:
 
 ```shell
 gcloud beta eventarc triggers create gcf-hello-world-storage-trigger \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --location="us-central1" \
     --destination-run-service="gcf-hello-world-storage" \
     --destination-run-region="us-central1" \
@@ -129,7 +133,6 @@ Remember to remove your deployment and the image once you have finished:
 
 ```sh
 gcloud run services delete gcf-cpp-hello-world-storage \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --region="us-central1" \
     --platform="managed"
 gcloud container images delete \

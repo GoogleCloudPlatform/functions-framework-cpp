@@ -80,7 +80,7 @@ docker kill ${ID}
 ## Deploying to Cloud Run
 
 This example assumes that `GOOGLE_CLOUD_PROJECT` is set to a GCP project with
-the right services enabled:
+the correct services enabled:
 
 ```sh
 GOOGLE_CLOUD_PROJECT=...          # use a real project
@@ -102,11 +102,16 @@ Push this image to Google Container Registry:
 docker push gcr.io/${GOOGLE_CLOUD_PROJECT}/hello-world:latest
 ```
 
+Set the active project:
+
+```sh
+gcloud config set project ${GOOGLE_CLOUD_PROJECT}
+```
+
 Deploy this application to Cloud Run:
 
 ```sh
 gcloud run deploy gcf-cpp-hello \
-    "--project=${GOOGLE_CLOUD_PROJECT}" \
     "--image=gcr.io/${GOOGLE_CLOUD_PROJECT}/hello-world:latest" \
     "--region=${GOOGLE_CLOUD_REGION}" \
     "--platform=managed" \
@@ -117,7 +122,6 @@ Fetch the service URL:
 
 ```bash
 SERVICE_URL=$(gcloud run services list \
-    "--project=${GOOGLE_CLOUD_PROJECT}" \
     "--platform=managed" \
     '--format=csv[no-heading](URL)' \
     "--filter=SERVICE:gcf-cpp-hello")

@@ -119,9 +119,15 @@ To deploy this image in Cloud Run use this command. You need to select
 a Cloud Run region for your deployment. We will use `us-central1` in this
 guide:
 
+Set the active project:
+
+```sh
+gcloud config set project ${GOOGLE_CLOUD_PROJECT}
+```
+
+
 ```sh
 gcloud run deploy gcf-cpp-hello-world-http \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --image="gcr.io/${GOOGLE_CLOUD_PROJECT}/gcf-cpp-hello-world-http:latest" \
     --region="us-central1" \
     --platform="managed" \
@@ -134,7 +140,6 @@ Find out what URL was assigned to your function, and use `curl` to send a reques
 
 ```shell
 HTTP_SERVICE_URL=$(gcloud run services describe \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --platform="managed" \
     --region="us-central1" \
     --format="value(status.url)" \
@@ -150,7 +155,6 @@ Delete the Cloud Run deployment:
 
 ```sh
 gcloud run services delete gcf-cpp-hello-world-http \
-    --project="${GOOGLE_CLOUD_PROJECT}" \
     --region="us-central1" \
     --platform="managed"
 ```
