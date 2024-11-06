@@ -11,7 +11,7 @@ env:
 jobs:
   build-ubuntu-focal:
     name: ubuntu-22.04
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - name: install ninja
       run: sudo apt install ninja-build
@@ -59,7 +59,7 @@ jobs:
   # current version of `functions-framework-cpp` through vcpkg.
   build-ubuntu-focal-howto:
     name: ubuntu-22.04
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: install ninja
         run: sudo apt install ninja-build
