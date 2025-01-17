@@ -78,7 +78,7 @@ int RunForTestImpl(int argc, char const* const argv[],
 
   asio::io_context ioc{1};
   tcp::acceptor acceptor{ioc, {address, static_cast<std::uint16_t>(port)}};
-  acceptor.listen(boost::asio::socket_base::max_connections);
+  acceptor.listen(boost::asio::socket_base::max_listen_connections);
   actual_port(acceptor.local_endpoint().port());
 
   auto handler = FunctionImpl::GetImpl(function)->GetHandler(target);
