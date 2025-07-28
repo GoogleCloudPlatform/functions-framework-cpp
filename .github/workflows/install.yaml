@@ -8,7 +8,7 @@ on:
 jobs:
   static:
     name: ubuntu-22.04
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: install-dependencies
         run: sudo apt install ninja-build libboost-dev libboost-program-options-dev nlohmann-json3-dev libabsl-dev
@@ -32,7 +32,7 @@ jobs:
 
   shared:
     name: ubuntu-22.04-shared
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: install-dependencies
         run: >
