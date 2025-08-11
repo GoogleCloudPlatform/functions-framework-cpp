@@ -13,7 +13,7 @@ jobs:
     name: clang-format
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: clang-format
         run: >
           git ls-files -z -- '*.h' '*.cc' |
@@ -25,7 +25,7 @@ jobs:
     name: cmake-format
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: install cmake-format
         run: pip install cmakelang==0.6.13
       - name: cmake-format
@@ -39,7 +39,7 @@ jobs:
     name: generated-files
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: install ninja
         run: sudo apt install moreutils
       - name: regenerate-build-examples
