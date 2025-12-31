@@ -57,7 +57,7 @@ gcloud pubsub topics create gcs-changes
 ## Create a Bucket
 
 ```sh
-gsutil mb -p "${GOOGLE_CLOUD_PROJECT}" \
+gcloud storage buckets create --project="${GOOGLE_CLOUD_PROJECT}" \
     "gs://${GOOGLE_CLOUD_PROJECT}-testing-bucket"
 ```
 
@@ -89,8 +89,8 @@ gcloud pubsub topics add-iam-policy-binding \
 ### Configure the Bucket to notify changes via Pub/Sub
 
 ```sh
-gsutil notification create -f json \
-  -t "projects/${GOOGLE_CLOUD_PROJECT}/topics/gcs-changes" \
+gcloud storage buckets notifications create --payload-format=json \
+  --topic="projects/${GOOGLE_CLOUD_PROJECT}/topics/gcs-changes" \
   "gs://${GOOGLE_CLOUD_PROJECT}-testing-bucket"
 ```
 
