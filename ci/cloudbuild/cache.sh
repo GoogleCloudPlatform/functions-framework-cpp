@@ -121,8 +121,8 @@ function save_cache() {
   tmpd="$(mktemp -d)"
   tmpf="${tmpd}/cache.tar.gz"
   tar -czf "${tmpf}" "${paths[@]}"
-  gsutil cp "${tmpf}" "${PRIMARY_CACHE_URL}"
-  gsutil stat "${PRIMARY_CACHE_URL}"
+  gcloud storage cp "${tmpf}" "${PRIMARY_CACHE_URL}"
+  gcloud storage objects list --stat --fetch-encrypted-object-hashes "${PRIMARY_CACHE_URL}"
   rm "${tmpf}"
   rmdir "${tmpd}"
 }
@@ -133,9 +133,9 @@ function restore_cache() {
     urls+=("${BUCKET_URL}/${FALLBACK_KEY}/cache.tar.gz")
   fi
   for url in "${urls[@]}"; do
-    if gsutil stat "${url}"; then
+    if gcloud storage objects list --stat --fetch-encrypted-object-hashes "${url}"; then
       io::log "Fetching cache url ${url}"
-      gsutil cp "${url}" - | tar -zxf - || continue
+      gcloud storage cp "${url}" - | tar -zxf - || continue
       break
     fi
   done

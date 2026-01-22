@@ -94,7 +94,7 @@ If needed, create a Google Cloud Storage bucket for these tests:
 
 ```shell
 BUCKET_NAME=... # assign a valid bucket name
-gsutil mb -p "${GOOGLE_CLOUD_PROJECT}" "gs://${BUCKET_NAME}"
+gcloud storage buckets create --project="${GOOGLE_CLOUD_PROJECT}" "gs://${BUCKET_NAME}"
 ```
 
 Then change the bucket to publish all changes to a Cloud Pub/Sub topic. This
@@ -102,7 +102,7 @@ command will create the topic if needed, and assign the right permissions:
 
 ```shell
 TOPIC_ID=... # set this variable to a valid topic id.
-gsutil notification create -f json -t "${TOPIC_ID}" "gs://${BUCKET_NAME}"
+gcloud storage buckets notifications create --payload-format=json --topic="${TOPIC_ID}" "gs://${BUCKET_NAME}"
 ```
 
 Setup a Cloud Pub/Sub trigger for your function when messages appear on this
