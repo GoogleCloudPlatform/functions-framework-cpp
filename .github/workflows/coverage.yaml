@@ -78,7 +78,7 @@ jobs:
         cmd: '${{runner.workspace}}/build/google/cloud/functions/integration_tests/http_conformance'
 
     - name: coverage-upload
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         directory: ${{ runner.workspace }}
         token: ${{ vars.CODECOV_TOKEN }}
