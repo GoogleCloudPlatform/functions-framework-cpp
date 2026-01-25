@@ -11,7 +11,7 @@ env:
 jobs:
   clang-format:
     name: clang-format
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: clang-format
@@ -23,7 +23,7 @@ jobs:
 
   cmake-format:
     name: cmake-format
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: install cmake-format
@@ -37,7 +37,7 @@ jobs:
 
   generated-files:
     name: generated-files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: install ninja
