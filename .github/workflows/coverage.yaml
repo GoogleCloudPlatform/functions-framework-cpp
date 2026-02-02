@@ -15,7 +15,7 @@ jobs:
     steps:
     - name: install tools
       run: sudo apt install ninja-build lcov
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: clone-vcpkg
       working-directory: "${{runner.temp}}"
       run: >
